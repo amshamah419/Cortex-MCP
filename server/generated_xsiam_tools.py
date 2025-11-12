@@ -22,36 +22,36 @@ def set_server(s: Server) -> None:
 
 
 @server.call_tool()
-async def post_start_xql_query(
+async def start_xql_query(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Execute an XQL query.
+    Execute an XQL query.
 
-    For more information on how to run XQL queries, see [*Running XQL query APIs*](https://cortex-panw.stoplight.io/docs/cortex-xsiam-1/90ay3tlx6l9dh-running-xql-query-ap-is).
+For more information on how to run XQL queries, see [*Running XQL query APIs*](https://cortex-panw.stoplight.io/docs/cortex-xsiam-1/90ay3tlx6l9dh-running-xql-query-ap-is).
 
-    <!-- theme: info -->
+<!-- theme: info -->
 
-    > #### Note
-    >
-    > To ensure you don't surpass your quota, Cortex XSIAM allows you to run up to four API queries in parallel.
+> #### Note
+>
+> To ensure you don't surpass your quota, Cortex XSIAM allows you to run up to four API queries in parallel.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -63,7 +63,7 @@ async def post_start_xql_query(
     url = "https://api-yourfqdn/public_api/v1/xql/start_xql_query"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -75,7 +75,7 @@ async def post_start_xql_query(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -84,8 +84,8 @@ async def post_start_xql_query(
     ]
 
 
-# Schema for post_start_xql_query
-post_start_xql_query_schema = {
+# Schema for start_xql_query
+start_xql_query_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -94,42 +94,41 @@ post_start_xql_query_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_get_query_results(
+async def get_query_results(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Retrieve results of an executed XQL query API.
+    Retrieve results of an executed XQL query API. 
 
-    Note: This endpoint only works on XQL queries initiated by `/public_api/v1/xql/start_xql_query/`.
+Note: This endpoint only works on XQL queries initiated by `/public_api/v1/xql/start_xql_query/`.
 
-    Maximum result set size is 1000. The API does not support pagination, therefore, you can set values to determine the result size limitation and how to wait for the results. To view response with greater than 1000 results you must call **Get XQL query results Stream**.
+Maximum result set size is 1000. The API does not support pagination, therefore, you can set values to determine the result size limitation and how to wait for the results. To view response with greater than 1000 results you must call **Get XQL query results Stream**.
 
-    For more information on how to run XQL queries, see [*Running XQL query APIs*](https://cortex-panw.stoplight.io/docs/cortex-xsiam-1/90ay3tlx6l9dh-running-xql-query-ap-is).
+For more information on how to run XQL queries, see [*Running XQL query APIs*](https://cortex-panw.stoplight.io/docs/cortex-xsiam-1/90ay3tlx6l9dh-running-xql-query-ap-is).
 
-    <!-- theme: info -->
+<!-- theme: info -->
 
-    > #### Note
-    >
-    > To ensure you don't surpass your quota, Cortex XSIAM allows you to run up to four API queries in parallel.
+> #### Note
+>
+> To ensure you don't surpass your quota, Cortex XSIAM allows you to run up to four API queries in parallel.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -141,7 +140,7 @@ async def post_get_query_results(
     url = "https://api-yourfqdn/public_api/v1/xql/get_query_results"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -153,7 +152,7 @@ async def post_get_query_results(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -162,8 +161,8 @@ async def post_get_query_results(
     ]
 
 
-# Schema for post_get_query_results
-post_get_query_results_schema = {
+# Schema for get_query_results
+get_query_results_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -172,41 +171,43 @@ post_get_query_results_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_get_quota() -> List[types.TextContent]:
+async def get_quota(
+
+) -> List[types.TextContent]:
     """
-        Retrieve the amount of query quota available and used.
+    Retrieve the amount of query quota available and used. 
 
-    Note: This endpoint only works on XQL queries initiated by `/public_api/v1/xql/start_xql_query/`.
+Note: This endpoint only works on XQL queries initiated by `/public_api/v1/xql/start_xql_query/`.
 
-    For more information on how to run XQL queries, see [*Running XQL query APIs*](https://cortex-panw.stoplight.io/docs/cortex-xsiam-1/90ay3tlx6l9dh-running-xql-query-ap-is).
+For more information on how to run XQL queries, see [*Running XQL query APIs*](https://cortex-panw.stoplight.io/docs/cortex-xsiam-1/90ay3tlx6l9dh-running-xql-query-ap-is).
 
-    <!-- theme: info -->
+<!-- theme: info -->
 
-    > #### Note
-    >
-    > To ensure you don't surpass your quota, Cortex XSIAM allows you to run up to four API queries in parallel.
+> #### Note
+>
+> To ensure you don't surpass your quota, Cortex XSIAM allows you to run up to four API queries in parallel.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Build URL
     url = "https://api-yourfqdn/public_api/v1/xql/get_quota"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -218,7 +219,7 @@ async def post_get_quota() -> List[types.TextContent]:
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -227,49 +228,50 @@ async def post_get_quota() -> List[types.TextContent]:
     ]
 
 
-# Schema for post_get_quota
-post_get_quota_schema = {
+# Schema for get_quota
+get_quota_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def post_get_query_results_stream(
+async def get_query_results_stream(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
     accept__encoding: str | None = None,
 ) -> List[types.TextContent]:
     """
-        Retrieve XQL query results with more than 1000 results.
+    Retrieve XQL query results with more than 1000 results. 
 
-    Note: This endpoint only works on XQL queries initiated by `/public_api/v1/xql/start_xql_query/`.
+Note: This endpoint only works on XQL queries initiated by `/public_api/v1/xql/start_xql_query/`.
 
-    Response is returned as chunked (Transfer-Encoding: chunked). To retrieve a compressed gzipped response (Content-Encoding: gzip), in your header add Accept-Encoding: gzip.
+Response is returned as chunked (Transfer-Encoding: chunked). To retrieve a compressed gzipped response (Content-Encoding: gzip), in your header add Accept-Encoding: gzip.
 
-    For more information on how to run XQL queries, see [*Running XQL query APIs*](https://cortex-panw.stoplight.io/docs/cortex-xsiam-1/90ay3tlx6l9dh-running-xql-query-ap-is).
+For more information on how to run XQL queries, see [*Running XQL query APIs*](https://cortex-panw.stoplight.io/docs/cortex-xsiam-1/90ay3tlx6l9dh-running-xql-query-ap-is).
 
-    <!-- theme: info -->
+<!-- theme: info -->
 
-    > #### Note
-    >
-    > To ensure you don't surpass your quota, Cortex XSIAM allows you to run up to four API queries in parallel.
+> #### Note
+>
+> To ensure you don't surpass your quota, Cortex XSIAM allows you to run up to four API queries in parallel.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -283,7 +285,7 @@ async def post_get_query_results_stream(
     url = "https://api-yourfqdn/public_api/v1/xql/get_query_results_stream"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -295,7 +297,7 @@ async def post_get_query_results_stream(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -304,49 +306,45 @@ async def post_get_query_results_stream(
     ]
 
 
-# Schema for post_get_query_results_stream
-post_get_query_results_stream_schema = {
+# Schema for get_query_results_stream
+get_query_results_stream_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "accept__encoding": {
-            "type": "str",
-            "description": "For retrieving a compressed gzipped response",
-        },
+        "accept__encoding": {"type": "str", "description": "For retrieving a compressed gzipped response"},
         "request_data": {"type": "Dict[str, Any]", "description": ""},
     },
 }
 
-
 @server.call_tool()
-async def post_get_incidents(
+async def get_incidents(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Get a list of incidents filtered by a list of incident IDs, modification time, or creation time.  This includes all incident types and severities, including correlation-generated incidents.
-    - The response is concatenated using AND condition (OR is not supported).
-    - The maximum result set size is >100.
-    - Offset is the zero-based number of incidents from the start of the result set.
+    Get a list of incidents filtered by a list of incident IDs, modification time, or creation time.  This includes all incident types and severities, including correlation-generated incidents.
+- The response is concatenated using AND condition (OR is not supported).
+- The maximum result set size is >100.
+- Offset is the zero-based number of incidents from the start of the result set.
 
-    Note: You can send a request to retrieve either **all** or **filtered** results.
+Note: You can send a request to retrieve either **all** or **filtered** results.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -358,7 +356,7 @@ async def post_get_incidents(
     url = "https://api-yourfqdn/public_api/v1/incidents/get_incidents"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -370,7 +368,7 @@ async def post_get_incidents(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -379,48 +377,44 @@ async def post_get_incidents(
     ]
 
 
-# Schema for post_get_incidents
-post_get_incidents_schema = {
+# Schema for get_incidents
+get_incidents_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields. An empty dictionary returns all results.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields. An empty dictionary returns all results."},
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_alerts_get_alerts(
+async def _public_api_v1_alerts_get_alerts(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Get a list of all or filtered alerts.  The alerts listed are what remains after alert exclusions are applied by Cortex XSIAM.
+    Get a list of all or filtered alerts.  The alerts listed are what remains after alert exclusions are applied by Cortex XSIAM.
 
-    - Response is concatenated using AND condition (OR is not supported).
-    - Maximum result set size is 100.
-    - Offset is the zero-based number of alerts from the start of the result set.
-    The response indicates whether an PAN NGFW type alert contains a PCAP triggering packet. Use the Retrieve PCAP Packet API to retrieve a list of alert IDs and their associated PCAP data.
+- Response is concatenated using AND condition (OR is not supported).
+- Maximum result set size is 100.
+- Offset is the zero-based number of alerts from the start of the result set.
+The response indicates whether an PAN NGFW type alert contains a PCAP triggering packet. Use the Retrieve PCAP Packet API to retrieve a list of alert IDs and their associated PCAP data.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -432,7 +426,7 @@ async def post_public_api_v1_alerts_get_alerts(
     url = "https://api-yourfqdn/public_api/v1/alerts/get_alerts"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -444,7 +438,7 @@ async def post_public_api_v1_alerts_get_alerts(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -453,8 +447,8 @@ async def post_public_api_v1_alerts_get_alerts(
     ]
 
 
-# Schema for post_public_api_v1_alerts_get_alerts
-post_public_api_v1_alerts_get_alerts_schema = {
+# Schema for _public_api_v1_alerts_get_alerts
+_public_api_v1_alerts_get_alerts_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -463,37 +457,36 @@ post_public_api_v1_alerts_get_alerts_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v2_alerts_get_alerts_multi_events(
+async def _public_api_v2_alerts_get_alerts_multi_events(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Get a list of alerts with multiple events.
-    - The response is concatenated using AND condition (OR is not supported).
-    - The maximum result set size is 100.
-    - Offset is the zero-based number of alerts from the start of the result set.
+    Get a list of alerts with multiple events.
+- The response is concatenated using AND condition (OR is not supported).
+- The maximum result set size is 100.
+- Offset is the zero-based number of alerts from the start of the result set.
 
-    Cortex XDR displays in the API response whether a PAN NGFW type alert contains a PCAP triggering packet. Use the **Retrieve PCAP Packet** API to retrieve a list of alert IDs and their associated PCAP data.
+Cortex XDR displays in the API response whether a PAN NGFW type alert contains a PCAP triggering packet. Use the **Retrieve PCAP Packet** API to retrieve a list of alert IDs and their associated PCAP data.
 
-    Note: You can send a request to retrieve either all or filtered results.
+Note: You can send a request to retrieve either all or filtered results.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -505,7 +498,7 @@ async def post_public_api_v2_alerts_get_alerts_multi_events(
     url = "https://api-yourfqdn/public_api/v2/alerts/get_alerts_multi_events"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -517,7 +510,7 @@ async def post_public_api_v2_alerts_get_alerts_multi_events(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -526,51 +519,47 @@ async def post_public_api_v2_alerts_get_alerts_multi_events(
     ]
 
 
-# Schema for post_public_api_v2_alerts_get_alerts_multi_events
-post_public_api_v2_alerts_get_alerts_multi_events_schema = {
+# Schema for _public_api_v2_alerts_get_alerts_multi_events
+_public_api_v2_alerts_get_alerts_multi_events_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields. An empty dictionary returns all results.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields. An empty dictionary returns all results."},
     },
 }
 
-
 @server.call_tool()
-async def post_get_alerts_multi_events(
+async def get_alerts_multi_events(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        **Note: ** This endpoint is legacy. Use the [Get Alerts Multi-Events v2](https://cortex-panw.stoplight.io/docs/cortex-xsiam-1/guxcmlw6h3y8v-get-alerts-multi-events-v2) endpoint.
+    **Note: ** This endpoint is legacy. Use the [Get Alerts Multi-Events v2](https://cortex-panw.stoplight.io/docs/cortex-xsiam-1/guxcmlw6h3y8v-get-alerts-multi-events-v2) endpoint.
 
-    Get a list of alerts with multiple events.
-    - Response is concatenated using AND condition (OR is not supported).
-    - Maximum result set size is 100.
-    - Offset is the zero-based number of alerts from the start of the result set.
-    Cortex XDR displays in the APIs response whether an PAN NGFW type alert contains a PCAP triggering packet. Use the Retrieve PCAP Packet API to retrieve a list of alert IDs and their associated PCAP data.
+Get a list of alerts with multiple events.
+- Response is concatenated using AND condition (OR is not supported).
+- Maximum result set size is 100.
+- Offset is the zero-based number of alerts from the start of the result set.
+Cortex XDR displays in the APIs response whether an PAN NGFW type alert contains a PCAP triggering packet. Use the Retrieve PCAP Packet API to retrieve a list of alert IDs and their associated PCAP data.
 
-    Note: You can send a request to retrieve either all or filtered results.
+Note: You can send a request to retrieve either all or filtered results.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -582,7 +571,7 @@ async def post_get_alerts_multi_events(
     url = "https://api-yourfqdn/public_api/v1/alerts/get_alerts_multi_events"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -594,7 +583,7 @@ async def post_get_alerts_multi_events(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -603,8 +592,8 @@ async def post_get_alerts_multi_events(
     ]
 
 
-# Schema for post_get_alerts_multi_events
-post_get_alerts_multi_events_schema = {
+# Schema for get_alerts_multi_events
+get_alerts_multi_events_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -613,32 +602,31 @@ post_get_alerts_multi_events_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_update_incident(
+async def update_incident(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Update one or more fields of a specific incident. Missing fields are ignored.
-    **Note**:
-    - `assigned_user_mail` field is validated by Cortex XSIAM to confirm the provided assignee email address belongs to a user that exists in the same Cortex XSIAM tenant.
-    - To unassign an incident pass `none` or `"assigned_user_mail": ""`.
-    - To remove a manually set severity pass `none` or `"manual_severity": ""`.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+    Update one or more fields of a specific incident. Missing fields are ignored.
+**Note**:
+- `assigned_user_mail` field is validated by Cortex XSIAM to confirm the provided assignee email address belongs to a user that exists in the same Cortex XSIAM tenant.
+- To unassign an incident pass `none` or `"assigned_user_mail": ""`.
+- To remove a manually set severity pass `none` or `"manual_severity": ""`.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -650,7 +638,7 @@ async def post_update_incident(
     url = "https://api-yourfqdn/public_api/v1/incidents/update_incident"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -662,7 +650,7 @@ async def post_update_incident(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -671,8 +659,8 @@ async def post_update_incident(
     ]
 
 
-# Schema for post_update_incident
-post_update_incident_schema = {
+# Schema for update_incident
+update_incident_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -681,30 +669,29 @@ post_update_incident_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_update_alerts(
+async def update_alerts(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Update one or more alerts. You can update up to 100 alerts per request. Missing fields are ignored.
+    Update one or more alerts. You can update up to 100 alerts per request. Missing fields are ignored.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -716,7 +703,7 @@ async def post_update_alerts(
     url = "https://api-yourfqdn/public_api/v1/alerts/update_alerts"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -728,7 +715,7 @@ async def post_update_alerts(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -737,44 +724,40 @@ async def post_update_alerts(
     ]
 
 
-# Schema for post_update_alerts
-post_update_alerts_schema = {
+# Schema for update_alerts
+update_alerts_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "(Required) A dictionary containing the API request fields. An empty dictionary returns all results.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "(Required) A dictionary containing the API request fields. An empty dictionary returns all results."},
     },
 }
 
-
 @server.call_tool()
-async def post_insert_cef_alerts(
+async def insert_cef_alerts(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Upload alerts in CEF format from external alert sources. After you map CEF alert fields to Cortex XDR fields, Cortex XDR displays the alerts in related incidents and views.
-    You can send 600 alerts per minute.
+    Upload alerts in CEF format from external alert sources. After you map CEF alert fields to Cortex XDR fields, Cortex XDR displays the alerts in related incidents and views.
+You can send 600 alerts per minute.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -786,7 +769,7 @@ async def post_insert_cef_alerts(
     url = "https://api-yourfqdn/public_api/v1/alerts/insert_cef_alerts"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -798,7 +781,7 @@ async def post_insert_cef_alerts(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -807,8 +790,8 @@ async def post_insert_cef_alerts(
     ]
 
 
-# Schema for post_insert_cef_alerts
-post_insert_cef_alerts_schema = {
+# Schema for insert_cef_alerts
+insert_cef_alerts_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -817,31 +800,30 @@ post_insert_cef_alerts_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_insert_parsed_alerts(
+async def insert_parsed_alerts(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Upload alerts from external alert sources in Cortex XSIAM format. Cortex XSIAM displays alerts that are parsed successfully in related incidents and views.
-    You can send 600 alerts per minute. Each request can contain a maximum of 60 alerts.
+    Upload alerts from external alert sources in Cortex XSIAM format. Cortex XSIAM displays alerts that are parsed successfully in related incidents and views.
+You can send 600 alerts per minute. Each request can contain a maximum of 60 alerts.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -853,7 +835,7 @@ async def post_insert_parsed_alerts(
     url = "https://api-yourfqdn/public_api/v1/alerts/insert_parsed_alerts"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -865,7 +847,7 @@ async def post_insert_parsed_alerts(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -874,8 +856,8 @@ async def post_insert_parsed_alerts(
     ]
 
 
-# Schema for post_insert_parsed_alerts
-post_insert_parsed_alerts_schema = {
+# Schema for insert_parsed_alerts
+insert_parsed_alerts_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -884,31 +866,30 @@ post_insert_parsed_alerts_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_get_alerts_pcap(
+async def get_alerts_pcap(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Retrieve a list of alert IDs and the associated PCAP triggering packets of PAN NGFW type alerts returned when running the **Get Alerts** and **Get Extra Incident Data** APIs. Maximum result set size is 100.
+    Retrieve a list of alert IDs and the associated PCAP triggering packets of PAN NGFW type alerts returned when running the **Get Alerts** and **Get Extra Incident Data** APIs. Maximum result set size is 100.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
 
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -920,7 +901,7 @@ async def post_get_alerts_pcap(
     url = "https://api-yourfqdn/public_api/v1/alerts/get_alerts_pcap"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -932,7 +913,7 @@ async def post_get_alerts_pcap(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -941,8 +922,8 @@ async def post_get_alerts_pcap(
     ]
 
 
-# Schema for post_get_alerts_pcap
-post_get_alerts_pcap_schema = {
+# Schema for get_alerts_pcap
+get_alerts_pcap_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -951,49 +932,48 @@ post_get_alerts_pcap_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_create_alert(
+async def create_alert(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Create a custom alert.
+    Create a custom alert.
 
-    In addition to the mandatory fields (`vendor`, `product`, `severity`, `category`), any field that appears in the alert table can be used. In order to use a field from the alert table, use its lower camel case representation. For example: `Container ID` -> `container_id`. If the field in the alert table contains a hyphen, replace it with underscore, for example: `App - ID` -> `app_id`.
+In addition to the mandatory fields (`vendor`, `product`, `severity`, `category`), any field that appears in the alert table can be used. In order to use a field from the alert table, use its lower camel case representation. For example: `Container ID` -> `container_id`. If the field in the alert table contains a hyphen, replace it with underscore, for example: `App - ID` -> `app_id`.
 
-    The following fields are recommended for creating an alert:
-            - `remote_ip`
-            - `remote_host`
-            - `host_name`
-            - `group_id`
-            - `initiated_by`
-            - `initiator_sha256`
-            - `target_process_sha256`
-            - `cgo_sha256`
-            - `file_sha256`
-            - `os_parent_cmd`
-            - `os_parent_user_name`
+The following fields are recommended for creating an alert:
+	- `remote_ip`
+	- `remote_host`
+	- `host_name`
+	- `group_id`
+	- `initiated_by`
+	- `initiator_sha256`
+	- `target_process_sha256`
+	- `cgo_sha256`
+	- `file_sha256`
+	- `os_parent_cmd`
+	- `os_parent_user_name`
 
-    By using multiple calls of `create_alert`, you can send up to 600 alerts per minute.
+By using multiple calls of `create_alert`, you can send up to 600 alerts per minute.
 
-    Required role: **App Service Account**
+Required role: **App Service Account**
 
-    Required licenses: **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required licenses: **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -1005,7 +985,7 @@ async def post_create_alert(
     url = "https://api-yourfqdn/public_api/v1/alerts/create_alert"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -1017,7 +997,7 @@ async def post_create_alert(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -1026,8 +1006,8 @@ async def post_create_alert(
     ]
 
 
-# Schema for post_create_alert
-post_create_alert_schema = {
+# Schema for create_alert
+create_alert_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -1036,32 +1016,31 @@ post_create_alert_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_replace_hosts(
+async def replace_hosts(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Replace the featured hosts listed in your environment.
+    Replace the featured hosts listed in your environment.
 
-    Note: Running this API will delete all existing host names.
+Note: Running this API will delete all existing host names.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -1073,7 +1052,7 @@ async def post_replace_hosts(
     url = "https://api-yourfqdn/public_api/v1/featured_fields/replace_hosts"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -1085,7 +1064,7 @@ async def post_replace_hosts(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -1094,8 +1073,8 @@ async def post_replace_hosts(
     ]
 
 
-# Schema for post_replace_hosts
-post_replace_hosts_schema = {
+# Schema for replace_hosts
+replace_hosts_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -1104,32 +1083,31 @@ post_replace_hosts_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_replace_users(
+async def replace_users(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Replace the featured users listed in your environment.
+    Replace the featured users listed in your environment.
 
-    Note: Running this API will delete all existing user names.
+Note: Running this API will delete all existing user names.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -1141,7 +1119,7 @@ async def post_replace_users(
     url = "https://api-yourfqdn/public_api/v1/featured_fields/replace_users"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -1153,7 +1131,7 @@ async def post_replace_users(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -1162,8 +1140,8 @@ async def post_replace_users(
     ]
 
 
-# Schema for post_replace_users
-post_replace_users_schema = {
+# Schema for replace_users
+replace_users_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -1172,32 +1150,31 @@ post_replace_users_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_replace_ip_addresses(
+async def replace_ip_addresses(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Replace the featured IP addresses listed in your environment.
+    Replace the featured IP addresses listed in your environment.
 
-    Note: Running this API will delete all existing IP addresses.
+Note: Running this API will delete all existing IP addresses.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -1209,7 +1186,7 @@ async def post_replace_ip_addresses(
     url = "https://api-yourfqdn/public_api/v1/featured_fields/replace_ip_addresses"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -1221,7 +1198,7 @@ async def post_replace_ip_addresses(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -1230,8 +1207,8 @@ async def post_replace_ip_addresses(
     ]
 
 
-# Schema for post_replace_ip_addresses
-post_replace_ip_addresses_schema = {
+# Schema for replace_ip_addresses
+replace_ip_addresses_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -1240,32 +1217,31 @@ post_replace_ip_addresses_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_replace_ad_groups(
+async def replace_ad_groups(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Replace the featured active directory groups and organizational units listed in your environment.
+    Replace the featured active directory groups and organizational units listed in your environment.
 
-    Note: Running this API will delete all existing active directory groups.
+Note: Running this API will delete all existing active directory groups.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -1277,7 +1253,7 @@ async def post_replace_ad_groups(
     url = "https://api-yourfqdn/public_api/v1/featured_fields/replace_ad_groups"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -1289,7 +1265,7 @@ async def post_replace_ad_groups(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -1298,8 +1274,8 @@ async def post_replace_ad_groups(
     ]
 
 
-# Schema for post_replace_ad_groups
-post_replace_ad_groups_schema = {
+# Schema for replace_ad_groups
+replace_ad_groups_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -1308,29 +1284,28 @@ post_replace_ad_groups_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_get_versions(
+async def get_versions(
     authorization: str,
     x_xdr_auth_id: str,
 ) -> List[types.TextContent]:
     """
-        Get a list of all the agent versions to use for creating a distribution list.
+    Get a list of all the agent versions to use for creating a distribution list.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -1340,7 +1315,7 @@ async def post_get_versions(
     url = "https://api-yourfqdn/public_api/v1/distributions/get_versions"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -1352,7 +1327,7 @@ async def post_get_versions(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -1361,8 +1336,8 @@ async def post_get_versions(
     ]
 
 
-# Schema for post_get_versions
-post_get_versions_schema = {
+# Schema for get_versions
+get_versions_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -1370,29 +1345,28 @@ post_get_versions_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_get_endpoints(
+async def get_endpoints(
     authorization: str,
     x_xdr_auth_id: str,
 ) -> List[types.TextContent]:
     """
-        Gets a list of all of your endpoints. The response is concatenated using AND condition (OR is not supported).
+    Gets a list of all of your endpoints. The response is concatenated using AND condition (OR is not supported).
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -1402,7 +1376,7 @@ async def post_get_endpoints(
     url = "https://api-yourfqdn/public_api/v1/endpoints/get_endpoints"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -1414,7 +1388,7 @@ async def post_get_endpoints(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -1423,8 +1397,8 @@ async def post_get_endpoints(
     ]
 
 
-# Schema for post_get_endpoints
-post_get_endpoints_schema = {
+# Schema for get_endpoints
+get_endpoints_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -1432,30 +1406,29 @@ post_get_endpoints_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_get_policy(
+async def get_policy(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Get the policy name for a specific endpoint.
+    Get the policy name for a specific endpoint.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -1467,7 +1440,7 @@ async def post_get_policy(
     url = "https://api-yourfqdn/public_api/v1/endpoints/get_policy"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -1479,7 +1452,7 @@ async def post_get_policy(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -1488,8 +1461,8 @@ async def post_get_policy(
     ]
 
 
-# Schema for post_get_policy
-post_get_policy_schema = {
+# Schema for get_policy
+get_policy_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -1498,37 +1471,36 @@ post_get_policy_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_delete(
+async def delete(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Delete selected endpoints in the Cortex XDR app. You can delete up to 1000 endpoints.
+    Delete selected endpoints in the Cortex XDR app. You can delete up to 1000 endpoints.
 
-    Note: Endpoints are deleted from the Cortex XDR app web interface, however they still exist in the database.
+Note: Endpoints are deleted from the Cortex XDR app web interface, however they still exist in the database.
 
-    When filtering by multiple fields:
-    - Response is concatenated using AND condition (OR is not supported).
-    - Maximum result set size is 1000.
-    - Offset is the zero-based number of incidents from the start of the result set.
+When filtering by multiple fields:
+- Response is concatenated using AND condition (OR is not supported).
+- Maximum result set size is 1000.
+- Offset is the zero-based number of incidents from the start of the result set.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -1540,7 +1512,7 @@ async def post_delete(
     url = "https://api-yourfqdn/public_api/v1/endpoints/delete"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -1552,7 +1524,7 @@ async def post_delete(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -1561,8 +1533,8 @@ async def post_delete(
     ]
 
 
-# Schema for post_delete
-post_delete_schema = {
+# Schema for delete
+delete_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -1571,30 +1543,29 @@ post_delete_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_create(
+async def create(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Create an installation package. This is an async call that returns the distribution ID; it does not mean that the creation succeeded. To confirm the package has been created, check the status of the distribution by running the **Get Distribution Status** API.
+    Create an installation package. This is an async call that returns the distribution ID; it does not mean that the creation succeeded. To confirm the package has been created, check the status of the distribution by running the **Get Distribution Status** API.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -1606,7 +1577,7 @@ async def post_create(
     url = "https://api-yourfqdn/public_api/v1/distributions/create"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -1618,7 +1589,7 @@ async def post_create(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -1627,8 +1598,8 @@ async def post_create(
     ]
 
 
-# Schema for post_create
-post_create_schema = {
+# Schema for create
+create_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -1637,35 +1608,34 @@ post_create_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_get_violations(
+async def get_violations(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Gets a list of device control violations filtered by selected fields. You can retrieve up to 100 violations.
+    Gets a list of device control violations filtered by selected fields. You can retrieve up to 100 violations.
 
-    When filtering by multiple fields:
-    - Response is concatenated using AND condition (OR is not supported).
-    - Maximum result set size is 100.
-    - Offset is the zero-based number of incidents from the start of the result set.
+When filtering by multiple fields:
+- Response is concatenated using AND condition (OR is not supported).
+- Maximum result set size is 100.
+- Offset is the zero-based number of incidents from the start of the result set.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -1677,7 +1647,7 @@ async def post_get_violations(
     url = "https://api-yourfqdn/public_api/v1/device_control/get_violations"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -1689,7 +1659,7 @@ async def post_get_violations(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -1698,43 +1668,39 @@ async def post_get_violations(
     ]
 
 
-# Schema for post_get_violations
-post_get_violations_schema = {
+# Schema for get_violations
+get_violations_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "An empty object returns all results.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "An empty object returns all results."},
     },
 }
 
-
 @server.call_tool()
-async def post_get_status(
+async def get_status(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Check the status of the installation package.
+    Check the status of the installation package.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -1746,7 +1712,7 @@ async def post_get_status(
     url = "https://api-yourfqdn/public_api/v1/distributions/get_status"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -1758,7 +1724,7 @@ async def post_get_status(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -1767,8 +1733,8 @@ async def post_get_status(
     ]
 
 
-# Schema for post_get_status
-post_get_status_schema = {
+# Schema for get_status
+get_status_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -1777,30 +1743,29 @@ post_get_status_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_get_dist_url(
+async def get_dist_url(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Get the distribution URL for downloading the installation package.
+    Get the distribution URL for downloading the installation package.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -1812,7 +1777,7 @@ async def post_get_dist_url(
     url = "https://api-yourfqdn/public_api/v1/distributions/get_dist_url"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -1824,7 +1789,7 @@ async def post_get_dist_url(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -1833,8 +1798,8 @@ async def post_get_dist_url(
     ]
 
 
-# Schema for post_get_dist_url
-post_get_dist_url_schema = {
+# Schema for get_dist_url
+get_dist_url_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -1843,30 +1808,29 @@ post_get_dist_url_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_update_agent_name(
+async def update_agent_name(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Set or modify an Alias field for your endpoints.
+    Set or modify an Alias field for your endpoints.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -1878,7 +1842,7 @@ async def post_update_agent_name(
     url = "https://api-yourfqdn/public_api/v1/endpoints/update_agent_name"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -1890,7 +1854,7 @@ async def post_update_agent_name(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -1899,8 +1863,8 @@ async def post_update_agent_name(
     ]
 
 
-# Schema for post_update_agent_name
-post_update_agent_name_schema = {
+# Schema for update_agent_name
+update_agent_name_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -1909,30 +1873,29 @@ post_update_agent_name_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_assign(
+async def assign(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Assign one or more tags to one or more endpoints.
+    Assign one or more tags to one or more endpoints.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -1944,7 +1907,7 @@ async def post_assign(
     url = "https://api-yourfqdn/public_api/v1/tags/agents/assign"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -1956,7 +1919,7 @@ async def post_assign(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -1965,8 +1928,8 @@ async def post_assign(
     ]
 
 
-# Schema for post_assign
-post_assign_schema = {
+# Schema for assign
+assign_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -1975,30 +1938,29 @@ post_assign_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_remove(
+async def remove(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Remove one or more tags from one or more endpoints.
+    Remove one or more tags from one or more endpoints.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -2010,7 +1972,7 @@ async def post_remove(
     url = "https://api-yourfqdn/public_api/v1/tags/agents/remove"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -2022,7 +1984,7 @@ async def post_remove(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -2031,47 +1993,43 @@ async def post_remove(
     ]
 
 
-# Schema for post_remove
-post_remove_schema = {
+# Schema for remove
+remove_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the following API request fields.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the following API request fields."},
     },
 }
 
-
 @server.call_tool()
-async def post_restore(
+async def restore(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Restore a quarantined file on a requested endpoints.
-    When filtering by multiple fields:
-    - Response is concatenated using AND condition (OR is not supported).
-    - Maximum result set size is 100.
-    - Offset is the zero-based number of incidents from the start of the result set.
+    Restore a quarantined file on a requested endpoints.
+When filtering by multiple fields:
+- Response is concatenated using AND condition (OR is not supported).
+- Maximum result set size is 100.
+- Offset is the zero-based number of incidents from the start of the result set.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -2083,7 +2041,7 @@ async def post_restore(
     url = "https://api-yourfqdn/public_api/v1/endpoints/restore"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -2095,7 +2053,7 @@ async def post_restore(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -2104,58 +2062,54 @@ async def post_restore(
     ]
 
 
-# Schema for post_restore
-post_restore_schema = {
+# Schema for restore
+restore_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields."},
     },
 }
 
-
 @server.call_tool()
-async def post_file_retrieval_details(
+async def file_retrieval_details(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        View the API required to call in order to download the file retrieved by the **Retrieve File** API request according to the action ID.
+    View the API required to call in order to download the file retrieved by the **Retrieve File** API request according to the action ID.
 
-    The response contains a file hash you need to download and then unzip to view:
-    1. Download the file.
+The response contains a file hash you need to download and then unzip to view:
+1. Download the file.
 
-    <!--
-    title: "Request Example"
-    -->
-    ``` curl
-    curl -XPOST "https://api-{fqdn}/public_api/v1/download/<api_value>"
-    -H "x-xdr-auth-id:{API_KEY_ID}"
-    -H "Authorization:{API_KEY}"
-    -H 'Content-Type:application/json'
-    --output /tmp/file.zip
-    ```
-    2. Unzip the file: `unzip /tmp/file.zip`
+<!--
+title: "Request Example"
+-->
+``` curl
+curl -XPOST "https://api-{fqdn}/public_api/v1/download/<api_value>" 
+-H "x-xdr-auth-id:{API_KEY_ID}"  
+-H "Authorization:{API_KEY}" 
+-H 'Content-Type:application/json' 
+--output /tmp/file.zip
+```
+2. Unzip the file: `unzip /tmp/file.zip`
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -2167,7 +2121,7 @@ async def post_file_retrieval_details(
     url = "https://api-yourfqdn/public_api/v1/actions/file_retrieval_details"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -2179,7 +2133,7 @@ async def post_file_retrieval_details(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -2188,43 +2142,39 @@ async def post_file_retrieval_details(
     ]
 
 
-# Schema for post_file_retrieval_details
-post_file_retrieval_details_schema = {
+# Schema for file_retrieval_details
+file_retrieval_details_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields."},
     },
 }
 
-
 @server.call_tool()
-async def post_allowlist(
+async def allowlist(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Add files which do not exist in the allow or block lists to an allow list.
+    Add files which do not exist in the allow or block lists to an allow list.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -2236,7 +2186,7 @@ async def post_allowlist(
     url = "https://api-yourfqdn/public_api/v1/hash_exceptions/allowlist"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -2248,7 +2198,7 @@ async def post_allowlist(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -2257,43 +2207,39 @@ async def post_allowlist(
     ]
 
 
-# Schema for post_allowlist
-post_allowlist_schema = {
+# Schema for allowlist
+allowlist_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields."},
     },
 }
 
-
 @server.call_tool()
-async def post_status(
+async def status(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Retrieve the quarantine status for specified files.
+    Retrieve the quarantine status for specified files.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -2305,7 +2251,7 @@ async def post_status(
     url = "https://api-yourfqdn/public_api/v1/quarantine/status"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -2317,7 +2263,7 @@ async def post_status(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -2326,8 +2272,8 @@ async def post_status(
     ]
 
 
-# Schema for post_status
-post_status_schema = {
+# Schema for status
+status_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -2336,35 +2282,34 @@ post_status_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_quarantine(
+async def quarantine(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Quarantine file on selected endpoints. You can select up to 1000 endpoints.
+    Quarantine file on selected endpoints. You can select up to 1000 endpoints.
 
-    Note: A success response means that the request reached the defined endpoints, however if the file was not found there, no quarantine action will take place. To ensure if the file has been quarantined, check the Cortex XDR Action Center.
+Note: A success response means that the request reached the defined endpoints, however if the file was not found there, no quarantine action will take place. To ensure if the file has been quarantined, check the Cortex XDR Action Center.
 
-    When filtering by multiple fields:
-    - Response is concatenated using AND condition (OR is not supported).
-    - Maximum result set size is 1000.
-    - Offset is the zero-based number of incidents from the start of the result set.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+When filtering by multiple fields:
+- Response is concatenated using AND condition (OR is not supported).
+- Maximum result set size is 1000.
+- Offset is the zero-based number of incidents from the start of the result set.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -2376,7 +2321,7 @@ async def post_quarantine(
     url = "https://api-yourfqdn/public_api/v1/endpoints/quarantine"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -2388,7 +2333,7 @@ async def post_quarantine(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -2397,43 +2342,39 @@ async def post_quarantine(
     ]
 
 
-# Schema for post_quarantine
-post_quarantine_schema = {
+# Schema for quarantine
+quarantine_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields."},
     },
 }
 
-
 @server.call_tool()
-async def post_blocklist(
+async def blocklist(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Add files which do not exist in the allow or block lists to a block list. You can view the block list in the UI at **Incident Response** > **Action Center** > **Block List**.
+    Add files which do not exist in the allow or block lists to a block list. You can view the block list in the UI at **Incident Response** > **Action Center** > **Block List**.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -2445,7 +2386,7 @@ async def post_blocklist(
     url = "https://api-yourfqdn/public_api/v1/hash_exceptions/blocklist"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -2457,7 +2398,7 @@ async def post_blocklist(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -2466,45 +2407,41 @@ async def post_blocklist(
     ]
 
 
-# Schema for post_blocklist
-post_blocklist_schema = {
+# Schema for blocklist
+blocklist_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields."},
     },
 }
 
-
 @server.call_tool()
-async def post_unisolate(
+async def unisolate(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Reverse the isolation of one or more endpoints in single request.
+    Reverse the isolation of one or more endpoints in single request.
 
-    Note: You can only send a request with either `endpoint_id` to unisolate one endpoint or with filters to unisolate more than one endpoint. An error is raised if you try to use both `endpoint_id` and the filters.
+Note: You can only send a request with either `endpoint_id` to unisolate one endpoint or with filters to unisolate more than one endpoint. An error is raised if you try to use both `endpoint_id` and the filters.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -2516,7 +2453,7 @@ async def post_unisolate(
     url = "https://api-yourfqdn/public_api/v1/endpoints/unisolate"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -2528,7 +2465,7 @@ async def post_unisolate(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -2537,47 +2474,43 @@ async def post_unisolate(
     ]
 
 
-# Schema for post_unisolate
-post_unisolate_schema = {
+# Schema for unisolate
+unisolate_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields."},
     },
 }
 
-
 @server.call_tool()
-async def post_abort_scan(
+async def abort_scan(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Cancel the scan of selected endpoints. A scan can only be aborted if the selected endpoints are in **Pending** or in **Progress** status.
+    Cancel the scan of selected endpoints. A scan can only be aborted if the selected endpoints are in **Pending** or in **Progress** status.
 
-    When filtering by multiple fields:
-    - Response is concatenated using AND condition (OR is not supported).
-    - Offset is the zero-based number of endpoints from the start of the result set.
+When filtering by multiple fields:
+- Response is concatenated using AND condition (OR is not supported).
+- Offset is the zero-based number of endpoints from the start of the result set.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -2589,7 +2522,7 @@ async def post_abort_scan(
     url = "https://api-yourfqdn/public_api/v1/endpoints/abort_scan"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -2601,7 +2534,7 @@ async def post_abort_scan(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -2610,45 +2543,41 @@ async def post_abort_scan(
     ]
 
 
-# Schema for post_abort_scan
-post_abort_scan_schema = {
+# Schema for abort_scan
+abort_scan_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields."},
     },
 }
 
-
 @server.call_tool()
-async def post_scan(
+async def scan(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Run a scan on selected endpoints.
-    - Response is concatenated using AND condition (OR is not supported).
-    - Offset is the zero-based number of incidents from the start of the result set.
+    Run a scan on selected endpoints.
+- Response is concatenated using AND condition (OR is not supported).
+- Offset is the zero-based number of incidents from the start of the result set.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -2660,7 +2589,7 @@ async def post_scan(
     url = "https://api-yourfqdn/public_api/v1/endpoints/scan"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -2672,7 +2601,7 @@ async def post_scan(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -2681,43 +2610,39 @@ async def post_scan(
     ]
 
 
-# Schema for post_scan
-post_scan_schema = {
+# Schema for scan
+scan_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields."},
     },
 }
 
-
 @server.call_tool()
-async def post_get_action_status(
+async def get_action_status(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Retrieve the status of the requested actions according to the action ID.
+    Retrieve the status of the requested actions according to the action ID.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -2729,7 +2654,7 @@ async def post_get_action_status(
     url = "https://api-yourfqdn/public_api/v1/actions/get_action_status"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -2741,7 +2666,7 @@ async def post_get_action_status(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -2750,43 +2675,39 @@ async def post_get_action_status(
     ]
 
 
-# Schema for post_get_action_status
-post_get_action_status_schema = {
+# Schema for get_action_status
+get_action_status_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields."},
     },
 }
 
-
 @server.call_tool()
-async def post_run_snippet_code_script(
+async def run_snippet_code_script(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Initiate a new endpoint script execution action using provided snippet code. Cortex XDR supports sending your request in Base64.
+    Initiate a new endpoint script execution action using provided snippet code. Cortex XDR supports sending your request in Base64.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -2798,7 +2719,7 @@ async def post_run_snippet_code_script(
     url = "https://api-yourfqdn/public_api/v1/scripts/run_snippet_code_script"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -2810,7 +2731,7 @@ async def post_run_snippet_code_script(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -2819,43 +2740,39 @@ async def post_run_snippet_code_script(
     ]
 
 
-# Schema for post_run_snippet_code_script
-post_run_snippet_code_script_schema = {
+# Schema for run_snippet_code_script
+run_snippet_code_script_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields."},
     },
 }
 
-
 @server.call_tool()
-async def post_run_script(
+async def run_script(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Initiate a new endpoint script execution action using a script from the script library. The script can be run on up to 1000 endpoints.
+    Initiate a new endpoint script execution action using a script from the script library. The script can be run on up to 1000 endpoints.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -2867,7 +2784,7 @@ async def post_run_script(
     url = "https://api-yourfqdn/public_api/v1/scripts/run_script"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -2879,7 +2796,7 @@ async def post_run_script(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -2888,43 +2805,39 @@ async def post_run_script(
     ]
 
 
-# Schema for post_run_script
-post_run_script_schema = {
+# Schema for run_script
+run_script_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields."},
     },
 }
 
-
 @server.call_tool()
-async def post_get_script_metadata(
+async def get_script_metadata(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Get the full definitions of a specific script in the scripts library.
+    Get the full definitions of a specific script in the scripts library.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -2936,7 +2849,7 @@ async def post_get_script_metadata(
     url = "https://api-yourfqdn/public_api/v1/scripts/get_script_metadata"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -2948,7 +2861,7 @@ async def post_get_script_metadata(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -2957,43 +2870,39 @@ async def post_get_script_metadata(
     ]
 
 
-# Schema for post_get_script_metadata
-post_get_script_metadata_schema = {
+# Schema for get_script_metadata
+get_script_metadata_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields."},
     },
 }
 
-
 @server.call_tool()
-async def post_get_script_execution_status(
+async def get_script_execution_status(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Retrieve the status of a script execution action.
+    Retrieve the status of a script execution action.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -3005,7 +2914,7 @@ async def post_get_script_execution_status(
     url = "https://api-yourfqdn/public_api/v1/scripts/get_script_execution_status"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -3017,7 +2926,7 @@ async def post_get_script_execution_status(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -3026,43 +2935,39 @@ async def post_get_script_execution_status(
     ]
 
 
-# Schema for post_get_script_execution_status
-post_get_script_execution_status_schema = {
+# Schema for get_script_execution_status
+get_script_execution_status_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields."},
     },
 }
 
-
 @server.call_tool()
-async def post_get_scripts(
+async def get_scripts(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Get a list of scripts available in the scripts library.
+    Get a list of scripts available in the scripts library.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -3074,7 +2979,7 @@ async def post_get_scripts(
     url = "https://api-yourfqdn/public_api/v1/scripts/get_scripts"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -3086,7 +2991,7 @@ async def post_get_scripts(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -3095,43 +3000,39 @@ async def post_get_scripts(
     ]
 
 
-# Schema for post_get_scripts
-post_get_scripts_schema = {
+# Schema for get_scripts
+get_scripts_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields. An empty dictionary returns all results.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields. An empty dictionary returns all results."},
     },
 }
 
-
 @server.call_tool()
-async def post_get_script_execution_results(
+async def get_script_execution_results(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Retrieve the results of a script execution action.
+    Retrieve the results of a script execution action.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -3143,7 +3044,7 @@ async def post_get_script_execution_results(
     url = "https://api-yourfqdn/public_api/v1/scripts/get_script_execution_results"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -3155,7 +3056,7 @@ async def post_get_script_execution_results(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -3164,43 +3065,39 @@ async def post_get_script_execution_results(
     ]
 
 
-# Schema for post_get_script_execution_results
-post_get_script_execution_results_schema = {
+# Schema for get_script_execution_results
+get_script_execution_results_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields."},
     },
 }
 
-
 @server.call_tool()
-async def post_get_script_execution_results_files(
+async def get_script_execution_results_files(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Get the files retrieved from a specific endpoint during a script execution.
+    Get the files retrieved from a specific endpoint during a script execution.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -3212,7 +3109,7 @@ async def post_get_script_execution_results_files(
     url = "https://api-yourfqdn/public_api/v1/scripts/get_script_execution_results_files"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -3224,7 +3121,7 @@ async def post_get_script_execution_results_files(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -3233,43 +3130,39 @@ async def post_get_script_execution_results_files(
     ]
 
 
-# Schema for post_get_script_execution_results_files
-post_get_script_execution_results_files_schema = {
+# Schema for get_script_execution_results_files
+get_script_execution_results_files_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields."},
     },
 }
 
-
 @server.call_tool()
-async def post_get_script_code(
+async def get_script_code(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Get the code of a specific script in the script library.
+    Get the code of a specific script in the script library.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -3281,7 +3174,7 @@ async def post_get_script_code(
     url = "https://api-yourfqdn/public_api/v1/scripts/get_script_code"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -3293,7 +3186,7 @@ async def post_get_script_code(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -3302,46 +3195,42 @@ async def post_get_script_code(
     ]
 
 
-# Schema for post_get_script_code
-post_get_script_code_schema = {
+# Schema for get_script_code
+get_script_code_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields."},
     },
 }
 
-
 @server.call_tool()
-async def post_insert_csv(
+async def insert_csv(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: str,
     validate: bool | None = None,
 ) -> List[types.TextContent]:
     """
-        Upload IOCs in CSV format that you retrieved from external threat intelligence sources.
+    Upload IOCs in CSV format that you retrieved from external threat intelligence sources. 
 
-    Note: Cortex XDR does not scan historic data, but rather only new incoming data.
+Note: Cortex XDR does not scan historic data, but rather only new incoming data.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -3355,7 +3244,7 @@ async def post_insert_csv(
     url = "https://api-yourfqdn/public_api/v1/indicators/insert_csv"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -3367,7 +3256,7 @@ async def post_insert_csv(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -3376,50 +3265,43 @@ async def post_insert_csv(
     ]
 
 
-# Schema for post_insert_csv
-post_insert_csv_schema = {
+# Schema for insert_csv
+insert_csv_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "str",
-            "description": "The body of this request contains a JSON object with a single field: `request_data`. This field is required. Its value is as string containing two or more comma-separated lines. The first line must contain the CSV header. All subsequent lines must represent IOC data. Each line must include at a minimum the required CSV fields, which are identified below. To help you validate the upload, you can send a separate validate field to view an array of errors with an unsuccessful call. | Field | Description | | ----------- | ----------- | | indicator | (Required) String that identifies the indicator you want to insert into Cortex XDR. | | type | (Required) Keyword identifying the type of indicator. Valid values are: `HASH`, `IP`, `PATH`, `DOMAIN_NAME`, or `FILENAME` | | severity | (Required) Keyword identifying the indicator's severity. Valid values are: `INFO`, `LOW`, `MEDIUM`, `HIGH`, or `CRITICAL` | | expiration_date | Integer representing the indicator's expiration timestamp. This is a Unix epoch timestamp value, in milliseconds. If this indicator has no expiration, use `Never`. If this value is NULL, the indicator receives the indicator's type value with the default expiration date. Valid values are: 7 days, 30 days, 90 days, or 180 days | | comment | Comment string. | | reputation | Keyword representing the indicator's reputation. Valid values are: `GOOD`, `BAD`, `SUSPICIOUS`, or `UNKNOWN` | | reliability | Character representing the indicator's reliability rating. Valid values are A-F. A is the most reliable, F is the least. | | class | String representing the indicator class (for example, \"Malware\") | | vendor.name | String representing the name of the vendor who reported this indicator. | | vendor.reputation | Keyword representing the vendor's reputation. Valid values are: `GOOD`, `BAD`, `SUSPICIOUS`, or `UNKNOWN` | | vendor.reliability | Character representing the vendor's reliability rating. Valid values are A-F. A is the most reliable, F is the least. |",
-        },
-        "validate": {
-            "type": "bool",
-            "description": "Indicates whether to return an array of errors in the case of an unsuccessful update indicator API request.",
-        },
+        "request_data": {"type": "str", "description": "The body of this request contains a JSON object with a single field: `request_data`. This field is required. Its value is as string containing two or more comma-separated lines. The first line must contain the CSV header. All subsequent lines must represent IOC data. Each line must include at a minimum the required CSV fields, which are identified below. To help you validate the upload, you can send a separate validate field to view an array of errors with an unsuccessful call. | Field | Description | | ----------- | ----------- | | indicator | (Required) String that identifies the indicator you want to insert into Cortex XDR. | | type | (Required) Keyword identifying the type of indicator. Valid values are: `HASH`, `IP`, `PATH`, `DOMAIN_NAME`, or `FILENAME` | | severity | (Required) Keyword identifying the indicator's severity. Valid values are: `INFO`, `LOW`, `MEDIUM`, `HIGH`, or `CRITICAL` | | expiration_date | Integer representing the indicator's expiration timestamp. This is a Unix epoch timestamp value, in milliseconds. If this indicator has no expiration, use `Never`. If this value is NULL, the indicator receives the indicator's type value with the default expiration date. Valid values are: 7 days, 30 days, 90 days, or 180 days | | comment | Comment string. | | reputation | Keyword representing the indicator's reputation. Valid values are: `GOOD`, `BAD`, `SUSPICIOUS`, or `UNKNOWN` | | reliability | Character representing the indicator's reliability rating. Valid values are A-F. A is the most reliable, F is the least. | | class | String representing the indicator class (for example, \"Malware\") | | vendor.name | String representing the name of the vendor who reported this indicator. | | vendor.reputation | Keyword representing the vendor's reputation. Valid values are: `GOOD`, `BAD`, `SUSPICIOUS`, or `UNKNOWN` | | vendor.reliability | Character representing the vendor's reliability rating. Valid values are A-F. A is the most reliable, F is the least. |"},
+        "validate": {"type": "bool", "description": "Indicates whether to return an array of errors in the case of an unsuccessful update indicator API request."},
     },
 }
 
-
 @server.call_tool()
-async def post_insert_jsons(
+async def insert_jsons(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: List[Any],
     validate: bool | None = None,
 ) -> List[types.TextContent]:
     """
-        Upload IOCs as JSON objects that you retrieved from external threat intelligence sources.
+    Upload IOCs as JSON objects that you retrieved from external threat intelligence sources.
 
-    Note: Cortex XSIAM does not scan historic data, rather only new incoming data.
+Note: Cortex XSIAM does not scan historic data, rather only new incoming data.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -3433,7 +3315,7 @@ async def post_insert_jsons(
     url = "https://api-yourfqdn/public_api/v1/indicators/insert_jsons"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -3445,7 +3327,7 @@ async def post_insert_jsons(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -3454,45 +3336,41 @@ async def post_insert_jsons(
     ]
 
 
-# Schema for post_insert_jsons
-post_insert_jsons_schema = {
+# Schema for insert_jsons
+insert_jsons_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
         "request_data": {"type": "List[Any]", "description": ""},
-        "validate": {
-            "type": "bool",
-            "description": "Whether to return an array of errors in the case of an unsuccessful update indicator API request.",
-        },
+        "validate": {"type": "bool", "description": "Whether to return an array of errors in the case of an unsuccessful update indicator API request."},
     },
 }
 
-
 @server.call_tool()
-async def post_management_logs(
+async def management_logs(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Get audit management logs.
-    - Response is concatenated using AND condition (OR is not supported).
-    - Maximum result set size is 100.
-    - Offset is the zero-based number of incidents from the start of the result set.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+    Get audit management logs.
+- Response is concatenated using AND condition (OR is not supported).
+- Maximum result set size is 100.
+- Offset is the zero-based number of incidents from the start of the result set.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -3504,7 +3382,7 @@ async def post_management_logs(
     url = "https://api-yourfqdn/public_api/v1/audits/management_logs"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -3516,7 +3394,7 @@ async def post_management_logs(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -3525,42 +3403,38 @@ async def post_management_logs(
     ]
 
 
-# Schema for post_management_logs
-post_management_logs_schema = {
+# Schema for management_logs
+management_logs_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields. An empty dictionary returns all results.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields. An empty dictionary returns all results."},
     },
 }
 
-
 @server.call_tool()
-async def get_healthcheck(
+async def healthcheck(
     authorization: str,
     x_xdr_auth_id: str,
 ) -> List[types.TextContent]:
     """
-        Perform a health check of your Cortex XSIAM environment.
+    Perform a health check of your Cortex XSIAM environment.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -3570,7 +3444,7 @@ async def get_healthcheck(
     url = "https://api-yourfqdn/public_api/v1/healthcheck"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -3582,7 +3456,7 @@ async def get_healthcheck(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -3591,8 +3465,8 @@ async def get_healthcheck(
     ]
 
 
-# Schema for get_healthcheck
-get_healthcheck_schema = {
+# Schema for healthcheck
+healthcheck_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -3600,30 +3474,29 @@ get_healthcheck_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_system_get_tenant_info(
+async def _public_api_v1_system_get_tenant_info(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Get your tenant license information.
+    Get your tenant license information.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -3635,7 +3508,7 @@ async def post_public_api_v1_system_get_tenant_info(
     url = "https://api-yourfqdn/public_api/v1/system/get_tenant_info"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -3647,7 +3520,7 @@ async def post_public_api_v1_system_get_tenant_info(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -3656,8 +3529,8 @@ async def post_public_api_v1_system_get_tenant_info(
     ]
 
 
-# Schema for post_public_api_v1_system_get_tenant_info
-post_public_api_v1_system_get_tenant_info_schema = {
+# Schema for _public_api_v1_system_get_tenant_info
+_public_api_v1_system_get_tenant_info_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -3666,35 +3539,34 @@ post_public_api_v1_system_get_tenant_info_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_incidents_get_incident_extra_data(
+async def _public_api_v1_incidents_get_incident_extra_data(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Get extra data fields of a specific incident including alerts and key artifacts.
+    Get extra data fields of a specific incident including alerts and key artifacts.
 
-    - Cortex XDR displays in the APIs response whether a PAN NGFW type alert contains a PCAP triggering packet.
-    Use the **Retrieve PCAP Packet** API to retrieve a list of alert IDs and their associated PCAP data.
+- Cortex XDR displays in the APIs response whether a PAN NGFW type alert contains a PCAP triggering packet.
+Use the **Retrieve PCAP Packet** API to retrieve a list of alert IDs and their associated PCAP data.
 
-    Note: The API includes a limit rate of 10 API requests per minute.
+Note: The API includes a limit rate of 10 API requests per minute.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -3706,7 +3578,7 @@ async def post_public_api_v1_incidents_get_incident_extra_data(
     url = "https://api-yourfqdn/public_api/v1/incidents/get_incident_extra_data"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -3718,7 +3590,7 @@ async def post_public_api_v1_incidents_get_incident_extra_data(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -3727,42 +3599,38 @@ async def post_public_api_v1_incidents_get_incident_extra_data(
     ]
 
 
-# Schema for post_public_api_v1_incidents_get_incident_extra_data
-post_public_api_v1_incidents_get_incident_extra_data_schema = {
+# Schema for _public_api_v1_incidents_get_incident_extra_data
+_public_api_v1_incidents_get_incident_extra_data_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields."},
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_rbac_get_users(
+async def _public_api_v1_rbac_get_users(
     authorization: str,
     x_xdr_auth_id: str,
 ) -> List[types.TextContent]:
     """
-        Retrieve a list of the current users in your environment.
+    Retrieve a list of the current users in your environment.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -3772,7 +3640,7 @@ async def post_public_api_v1_rbac_get_users(
     url = "https://api-yourfqdn/public_api/v1/rbac/get_users"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -3784,7 +3652,7 @@ async def post_public_api_v1_rbac_get_users(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -3793,8 +3661,8 @@ async def post_public_api_v1_rbac_get_users(
     ]
 
 
-# Schema for post_public_api_v1_rbac_get_users
-post_public_api_v1_rbac_get_users_schema = {
+# Schema for _public_api_v1_rbac_get_users
+_public_api_v1_rbac_get_users_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -3802,30 +3670,29 @@ post_public_api_v1_rbac_get_users_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_rbac_get_roles(
+async def _public_api_v1_rbac_get_roles(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Retrieve information about one or more roles created in your environment.
+    Retrieve information about one or more roles created in your environment.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -3837,7 +3704,7 @@ async def post_public_api_v1_rbac_get_roles(
     url = "https://api-yourfqdn/public_api/v1/rbac/get_roles"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -3849,7 +3716,7 @@ async def post_public_api_v1_rbac_get_roles(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -3858,43 +3725,39 @@ async def post_public_api_v1_rbac_get_roles(
     ]
 
 
-# Schema for post_public_api_v1_rbac_get_roles
-post_public_api_v1_rbac_get_roles_schema = {
+# Schema for _public_api_v1_rbac_get_roles
+_public_api_v1_rbac_get_roles_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields."},
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_rbac_get_user_group(
+async def _public_api_v1_rbac_get_user_group(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Retrieve a list of the current user emails associated with one or more user groups in your environment.
+    Retrieve a list of the current user emails associated with one or more user groups in your environment.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -3906,7 +3769,7 @@ async def post_public_api_v1_rbac_get_user_group(
     url = "https://api-yourfqdn/public_api/v1/rbac/get_user_group"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -3918,7 +3781,7 @@ async def post_public_api_v1_rbac_get_user_group(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -3927,43 +3790,39 @@ async def post_public_api_v1_rbac_get_user_group(
     ]
 
 
-# Schema for post_public_api_v1_rbac_get_user_group
-post_public_api_v1_rbac_get_user_group_schema = {
+# Schema for _public_api_v1_rbac_get_user_group
+_public_api_v1_rbac_get_user_group_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields."},
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_rbac_set_user_role(
+async def _public_api_v1_rbac_set_user_role(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Add or remove one or more users from a role.
+    Add or remove one or more users from a role.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -3975,7 +3834,7 @@ async def post_public_api_v1_rbac_set_user_role(
     url = "https://api-yourfqdn/public_api/v1/rbac/set_user_role"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -3987,7 +3846,7 @@ async def post_public_api_v1_rbac_set_user_role(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -3996,46 +3855,42 @@ async def post_public_api_v1_rbac_set_user_role(
     ]
 
 
-# Schema for post_public_api_v1_rbac_set_user_role
-post_public_api_v1_rbac_set_user_role_schema = {
+# Schema for _public_api_v1_rbac_set_user_role
+_public_api_v1_rbac_set_user_role_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields."},
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_endpoints_get_endpoint(
+async def _public_api_v1_endpoints_get_endpoint(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Gets a list of filtered endpoints.
-    - The response is concatenated using AND condition (OR is not supported).
-    - The maximum result set size is 100.
-    - Offset is the zero-based number of endpoints from the start of the result set.
+    Gets a list of filtered endpoints.
+- The response is concatenated using AND condition (OR is not supported).
+- The maximum result set size is 100.
+- Offset is the zero-based number of endpoints from the start of the result set.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -4047,7 +3902,7 @@ async def post_public_api_v1_endpoints_get_endpoint(
     url = "https://api-yourfqdn/public_api/v1/endpoints/get_endpoint"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -4059,7 +3914,7 @@ async def post_public_api_v1_endpoints_get_endpoint(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -4068,43 +3923,39 @@ async def post_public_api_v1_endpoints_get_endpoint(
     ]
 
 
-# Schema for post_public_api_v1_endpoints_get_endpoint
-post_public_api_v1_endpoints_get_endpoint_schema = {
+# Schema for _public_api_v1_endpoints_get_endpoint
+_public_api_v1_endpoints_get_endpoint_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields. An empty dictionary returns all results.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields. An empty dictionary returns all results."},
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_get_risk_score(
+async def _public_api_v1_get_risk_score(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Retrieve the risk score of a specific user or endpoint in your environment, along with the reason for the score.
+    Retrieve the risk score of a specific user or endpoint in your environment, along with the reason for the score.
 
-    Required license: **Cortex XSIAM Premium** or **Identity Threat Module**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Identity Threat Module**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -4116,7 +3967,7 @@ async def post_public_api_v1_get_risk_score(
     url = "https://api-yourfqdn/public_api/v1/get_risk_score"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -4128,7 +3979,7 @@ async def post_public_api_v1_get_risk_score(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -4137,42 +3988,38 @@ async def post_public_api_v1_get_risk_score(
     ]
 
 
-# Schema for post_public_api_v1_get_risk_score
-post_public_api_v1_get_risk_score_schema = {
+# Schema for _public_api_v1_get_risk_score
+_public_api_v1_get_risk_score_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields."},
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_get_risky_users(
+async def _public_api_v1_get_risky_users(
     authorization: str,
     x_xdr_auth_id: str,
 ) -> List[types.TextContent]:
     """
-        Retrieve a list of users with the highest risk score in your environment along with the reason affecting each score.
+    Retrieve a list of users with the highest risk score in your environment along with the reason affecting each score.
 
-    Required license: **Cortex XSIAM Premium** or **Identity Threat Module**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Identity Threat Module**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -4182,7 +4029,7 @@ async def post_public_api_v1_get_risky_users(
     url = "https://api-yourfqdn/public_api/v1/get_risky_users"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -4194,7 +4041,7 @@ async def post_public_api_v1_get_risky_users(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -4203,8 +4050,8 @@ async def post_public_api_v1_get_risky_users(
     ]
 
 
-# Schema for post_public_api_v1_get_risky_users
-post_public_api_v1_get_risky_users_schema = {
+# Schema for _public_api_v1_get_risky_users
+_public_api_v1_get_risky_users_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -4212,29 +4059,28 @@ post_public_api_v1_get_risky_users_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_get_risky_hosts(
+async def _public_api_v1_get_risky_hosts(
     authorization: str,
     x_xdr_auth_id: str,
 ) -> List[types.TextContent]:
     """
-        Retrieve a list of endpoints with the highest risk score in your environment along with the reason for each score.
+    Retrieve a list of endpoints with the highest risk score in your environment along with the reason for each score.
 
-    Required license: **Cortex XSIAM Premium** or **Identity Threat Module**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Identity Threat Module**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -4244,7 +4090,7 @@ async def post_public_api_v1_get_risky_hosts(
     url = "https://api-yourfqdn/public_api/v1/get_risky_hosts"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -4256,7 +4102,7 @@ async def post_public_api_v1_get_risky_hosts(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -4265,8 +4111,8 @@ async def post_public_api_v1_get_risky_hosts(
     ]
 
 
-# Schema for post_public_api_v1_get_risky_hosts
-post_public_api_v1_get_risky_hosts_schema = {
+# Schema for _public_api_v1_get_risky_hosts
+_public_api_v1_get_risky_hosts_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -4274,32 +4120,31 @@ post_public_api_v1_get_risky_hosts_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_endpoints_file_retrieval(
+async def _public_api_v1_endpoints_file_retrieval(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Retrieve files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints.
-    - Response is concatenated using AND condition (OR is not supported).
-    - Offset is the zero-based number of incidents from the start of the result set.
+    Retrieve files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints.
+- Response is concatenated using AND condition (OR is not supported).
+- Offset is the zero-based number of incidents from the start of the result set.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -4311,7 +4156,7 @@ async def post_public_api_v1_endpoints_file_retrieval(
     url = "https://api-yourfqdn/public_api/v1/endpoints/file_retrieval"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -4323,7 +4168,7 @@ async def post_public_api_v1_endpoints_file_retrieval(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -4332,43 +4177,39 @@ async def post_public_api_v1_endpoints_file_retrieval(
     ]
 
 
-# Schema for post_public_api_v1_endpoints_file_retrieval
-post_public_api_v1_endpoints_file_retrieval_schema = {
+# Schema for _public_api_v1_endpoints_file_retrieval
+_public_api_v1_endpoints_file_retrieval_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields."},
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_endpoints_isolate(
+async def _public_api_v1_endpoints_isolate(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Isolate one or more endpoints in a single request. Request is limited to 1000 endpoints.
+    Isolate one or more endpoints in a single request. Request is limited to 1000 endpoints.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -4380,7 +4221,7 @@ async def post_public_api_v1_endpoints_isolate(
     url = "https://api-yourfqdn/public_api/v1/endpoints/isolate"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -4392,7 +4233,7 @@ async def post_public_api_v1_endpoints_isolate(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -4401,46 +4242,42 @@ async def post_public_api_v1_endpoints_isolate(
     ]
 
 
-# Schema for post_public_api_v1_endpoints_isolate
-post_public_api_v1_endpoints_isolate_schema = {
+# Schema for _public_api_v1_endpoints_isolate
+_public_api_v1_endpoints_isolate_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields."},
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_audits_agents_reports(
+async def _public_api_v1_audits_agents_reports(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Get agent event reports.
-    - Response is concatenated using AND condition (OR is not supported).
-    - Maximum result set size is 100.
-    - Offset is the zero-based number of incidents from the start of the result set.
+    Get agent event reports.
+- Response is concatenated using AND condition (OR is not supported).
+- Maximum result set size is 100.
+- Offset is the zero-based number of incidents from the start of the result set.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -4452,7 +4289,7 @@ async def post_public_api_v1_audits_agents_reports(
     url = "https://api-yourfqdn/public_api/v1/audits/agents_reports"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -4464,7 +4301,7 @@ async def post_public_api_v1_audits_agents_reports(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -4473,43 +4310,39 @@ async def post_public_api_v1_audits_agents_reports(
     ]
 
 
-# Schema for post_public_api_v1_audits_agents_reports
-post_public_api_v1_audits_agents_reports_schema = {
+# Schema for _public_api_v1_audits_agents_reports
+_public_api_v1_audits_agents_reports_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields. An empty dictionary returns all results.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields. An empty dictionary returns all results."},
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_assets_get_external_service(
+async def _public_api_v1_assets_get_external_service(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Get service details according to the service ID. You can send up to 20 IDs.
+    Get service details according to the service ID. You can send up to 20 IDs.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise**, **Cortex XSIAM Enterprise Plus** or **Cortex XSIAM Premium**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise**, **Cortex XSIAM Enterprise Plus** or **Cortex XSIAM Premium**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -4521,7 +4354,7 @@ async def post_public_api_v1_assets_get_external_service(
     url = "https://api-yourfqdn/public_api/v1/assets/get_external_service"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -4533,7 +4366,7 @@ async def post_public_api_v1_assets_get_external_service(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -4542,45 +4375,41 @@ async def post_public_api_v1_assets_get_external_service(
     ]
 
 
-# Schema for post_public_api_v1_assets_get_external_service
-post_public_api_v1_assets_get_external_service_schema = {
+# Schema for _public_api_v1_assets_get_external_service
+_public_api_v1_assets_get_external_service_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields."},
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_assets_get_external_services(
+async def _public_api_v1_assets_get_external_services(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Get a complete or filtered list of all your external services.
+    Get a complete or filtered list of all your external services.
 
-    The maximum result limit is 500.
+The maximum result limit is 500.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise**, **Cortex XSIAM Enterprise Plus** or **Cortex XSIAM Premium**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise**, **Cortex XSIAM Enterprise Plus** or **Cortex XSIAM Premium**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -4592,7 +4421,7 @@ async def post_public_api_v1_assets_get_external_services(
     url = "https://api-yourfqdn/public_api/v1/assets/get_external_services"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -4604,7 +4433,7 @@ async def post_public_api_v1_assets_get_external_services(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -4613,8 +4442,8 @@ async def post_public_api_v1_assets_get_external_services(
     ]
 
 
-# Schema for post_public_api_v1_assets_get_external_services
-post_public_api_v1_assets_get_external_services_schema = {
+# Schema for _public_api_v1_assets_get_external_services
+_public_api_v1_assets_get_external_services_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "api-key"},
@@ -4623,34 +4452,33 @@ post_public_api_v1_assets_get_external_services_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_assets_get_assets_internet_exposure(
+async def _public_api_v1_assets_get_assets_internet_exposure(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Get a list of all your Internet exposure filtered by business units, externally detected providers, externally inferred CVEs, mac addresses, names, IP addresses, whether it has an XDR agent, whether it has active external services, and type.
+    Get a list of all your Internet exposure filtered by business units, externally detected providers, externally inferred CVEs, mac addresses, names, IP addresses, whether it has an XDR agent, whether it has active external services, and type.
 
-    The maximum result limit is 500 assets.
+The maximum result limit is 500 assets.
 
-    Note: You can send a request to retrieve either all or filtered results.
+Note: You can send a request to retrieve either all or filtered results.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -4662,7 +4490,7 @@ async def post_public_api_v1_assets_get_assets_internet_exposure(
     url = "https://api-yourfqdn/public_api/v1/assets/get_assets_internet_exposure"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -4674,7 +4502,7 @@ async def post_public_api_v1_assets_get_assets_internet_exposure(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -4683,43 +4511,39 @@ async def post_public_api_v1_assets_get_assets_internet_exposure(
     ]
 
 
-# Schema for post_public_api_v1_assets_get_assets_internet_exposure
-post_public_api_v1_assets_get_assets_internet_exposure_schema = {
+# Schema for _public_api_v1_assets_get_assets_internet_exposure
+_public_api_v1_assets_get_assets_internet_exposure_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields. An empty dictionary returns all results.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields. An empty dictionary returns all results."},
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_assets_get_asset_internet_exposure(
+async def _public_api_v1_assets_get_asset_internet_exposure(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Get Internet exposure asset details according to the asset ID. You can send up to 20 IDs.
+    Get Internet exposure asset details according to the asset ID. You can send up to 20 IDs.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -4731,7 +4555,7 @@ async def post_public_api_v1_assets_get_asset_internet_exposure(
     url = "https://api-yourfqdn/public_api/v1/assets/get_asset_internet_exposure"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -4743,7 +4567,7 @@ async def post_public_api_v1_assets_get_asset_internet_exposure(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -4752,47 +4576,43 @@ async def post_public_api_v1_assets_get_asset_internet_exposure(
     ]
 
 
-# Schema for post_public_api_v1_assets_get_asset_internet_exposure
-post_public_api_v1_assets_get_asset_internet_exposure_schema = {
+# Schema for _public_api_v1_assets_get_asset_internet_exposure
+_public_api_v1_assets_get_asset_internet_exposure_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields."},
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_assets_get_external_ip_address_ranges(
+async def _public_api_v1_assets_get_external_ip_address_ranges(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Get a list of all your Internet exposure filtered by business units and organization handles.
+    Get a list of all your Internet exposure filtered by business units and organization handles.
 
-    The maximum result limit is 1000 ranges.
+The maximum result limit is 1000 ranges.
 
-    Note: You can send a request to retrieve either **all** or **filtered** results.
+Note: You can send a request to retrieve either **all** or **filtered** results.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -4804,7 +4624,7 @@ async def post_public_api_v1_assets_get_external_ip_address_ranges(
     url = "https://api-yourfqdn/public_api/v1/assets/get_external_ip_address_ranges"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -4816,7 +4636,7 @@ async def post_public_api_v1_assets_get_external_ip_address_ranges(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -4825,43 +4645,39 @@ async def post_public_api_v1_assets_get_external_ip_address_ranges(
     ]
 
 
-# Schema for post_public_api_v1_assets_get_external_ip_address_ranges
-post_public_api_v1_assets_get_external_ip_address_ranges_schema = {
+# Schema for _public_api_v1_assets_get_external_ip_address_ranges
+_public_api_v1_assets_get_external_ip_address_ranges_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields. An empty dictionary returns all results.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields. An empty dictionary returns all results."},
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_assets_get_external_ip_address_range(
+async def _public_api_v1_assets_get_external_ip_address_range(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Get external IP address range details according to the range IDs. You can send up to 100 IDs.
+    Get external IP address range details according to the range IDs. You can send up to 100 IDs.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -4873,7 +4689,7 @@ async def post_public_api_v1_assets_get_external_ip_address_range(
     url = "https://api-yourfqdn/public_api/v1/assets/get_external_ip_address_range"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -4885,7 +4701,7 @@ async def post_public_api_v1_assets_get_external_ip_address_range(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -4894,47 +4710,43 @@ async def post_public_api_v1_assets_get_external_ip_address_range(
     ]
 
 
-# Schema for post_public_api_v1_assets_get_external_ip_address_range
-post_public_api_v1_assets_get_external_ip_address_range_schema = {
+# Schema for _public_api_v1_assets_get_external_ip_address_range
+_public_api_v1_assets_get_external_ip_address_range_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields."},
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_triage_endpoint(
+async def _public_api_v1_triage_endpoint(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Initiate forensics triage for the specified agents.
-    - Maximum of 10 concurrent triage actions at a time.
-    - Specified agents must have Forensics License enabled.
-    - Specified agents must be the same OS, Windows or macOS, but not a mixture of both.
-    - Specified configuration must have type "Online = True".
+    Initiate forensics triage for the specified agents.
+- Maximum of 10 concurrent triage actions at a time.
+- Specified agents must have Forensics License enabled.
+- Specified agents must be the same OS, Windows or macOS, but not a mixture of both.
+- Specified configuration must have type "Online = True".
 
-    Required license: **Cortex XSIAM Premium** or
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or  
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -4946,7 +4758,7 @@ async def post_public_api_v1_triage_endpoint(
     url = "https://api-yourfqdn/public_api/v1/triage_endpoint"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -4958,7 +4770,7 @@ async def post_public_api_v1_triage_endpoint(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -4967,8 +4779,8 @@ async def post_public_api_v1_triage_endpoint(
     ]
 
 
-# Schema for post_public_api_v1_triage_endpoint
-post_public_api_v1_triage_endpoint_schema = {
+# Schema for _public_api_v1_triage_endpoint
+_public_api_v1_triage_endpoint_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -4977,19 +4789,18 @@ post_public_api_v1_triage_endpoint_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_assets_get_vulnerability_tests(
+async def _public_api_v1_assets_get_vulnerability_tests(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
     Get a complete or filtered list of vulnerability tests. Results include details about each test, including the number of services confirmed vulnerable.
-
+    
     Args:
         Tool arguments are defined in the schema below
-
+    
     Returns:
         List of text content with the API response
     """
@@ -4998,7 +4809,7 @@ async def post_public_api_v1_assets_get_vulnerability_tests(
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -5010,7 +4821,7 @@ async def post_public_api_v1_assets_get_vulnerability_tests(
     url = "https://api-yourfqdn/public_api/v1/assets/get_vulnerability_tests"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -5022,7 +4833,7 @@ async def post_public_api_v1_assets_get_vulnerability_tests(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -5031,8 +4842,8 @@ async def post_public_api_v1_assets_get_vulnerability_tests(
     ]
 
 
-# Schema for post_public_api_v1_assets_get_vulnerability_tests
-post_public_api_v1_assets_get_vulnerability_tests_schema = {
+# Schema for _public_api_v1_assets_get_vulnerability_tests
+_public_api_v1_assets_get_vulnerability_tests_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -5041,19 +4852,18 @@ post_public_api_v1_assets_get_vulnerability_tests_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_assets_bulk_update_vulnerability_tests(
+async def _public_api_v1_assets_bulk_update_vulnerability_tests(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
     Enable or disable vulnerability tests.
-
+    
     Args:
         Tool arguments are defined in the schema below
-
+    
     Returns:
         List of text content with the API response
     """
@@ -5062,7 +4872,7 @@ async def post_public_api_v1_assets_bulk_update_vulnerability_tests(
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -5074,7 +4884,7 @@ async def post_public_api_v1_assets_bulk_update_vulnerability_tests(
     url = "https://api-yourfqdn/public_api/v1/assets/bulk_update_vulnerability_tests"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -5086,7 +4896,7 @@ async def post_public_api_v1_assets_bulk_update_vulnerability_tests(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -5095,8 +4905,8 @@ async def post_public_api_v1_assets_bulk_update_vulnerability_tests(
     ]
 
 
-# Schema for post_public_api_v1_assets_bulk_update_vulnerability_tests
-post_public_api_v1_assets_bulk_update_vulnerability_tests_schema = {
+# Schema for _public_api_v1_assets_bulk_update_vulnerability_tests
+_public_api_v1_assets_bulk_update_vulnerability_tests_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -5105,32 +4915,31 @@ post_public_api_v1_assets_bulk_update_vulnerability_tests_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_dataset_define_dataset(
+async def _public_api_v1_dataset_define_dataset(
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Define an XQL user dataset based on an existing BigQuery table created by the user.
+    Define an XQL user dataset based on an existing BigQuery table created by the user.
 
-    **Note:** BigQuery table must be an existing table under public_access_user.
+**Note:** BigQuery table must be an existing table under public_access_user.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**.
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**.
 
-    These APIs are only applicable from within the XSIAM Notebook environment.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+These APIs are only applicable from within the XSIAM Notebook environment.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if request_data is not None:
         body["request_data"] = request_data
 
@@ -5138,7 +4947,7 @@ async def post_public_api_v1_dataset_define_dataset(
     url = "https://api-yourfqdn/public_api/v1/dataset/define_dataset"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -5150,7 +4959,7 @@ async def post_public_api_v1_dataset_define_dataset(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -5159,41 +4968,43 @@ async def post_public_api_v1_dataset_define_dataset(
     ]
 
 
-# Schema for post_public_api_v1_dataset_define_dataset
-post_public_api_v1_dataset_define_dataset_schema = {
+# Schema for _public_api_v1_dataset_define_dataset
+_public_api_v1_dataset_define_dataset_schema = {
     "type": "object",
     "properties": {
         "request_data": {"type": "Dict[str, Any]", "description": ""},
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_dataset_get_created_datasets() -> List[types.TextContent]:
+async def _public_api_v1_dataset_get_created_datasets(
+
+) -> List[types.TextContent]:
     """
-        Retrieve a list of all XQL user datasets created using the Cortex SDK.
+    Retrieve a list of all XQL user datasets created using the Cortex SDK.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**.
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**.
 
-    These APIs are only applicable from within the XSIAM Notebook environment.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+These APIs are only applicable from within the XSIAM Notebook environment.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Build URL
     url = "https://api-yourfqdn/public_api/v1/dataset/get_created_datasets"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -5205,7 +5016,7 @@ async def post_public_api_v1_dataset_get_created_datasets() -> List[types.TextCo
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -5214,36 +5025,37 @@ async def post_public_api_v1_dataset_get_created_datasets() -> List[types.TextCo
     ]
 
 
-# Schema for post_public_api_v1_dataset_get_created_datasets
-post_public_api_v1_dataset_get_created_datasets_schema = {
+# Schema for _public_api_v1_dataset_get_created_datasets
+_public_api_v1_dataset_get_created_datasets_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_dataset_delete_dataset(
+async def _public_api_v1_dataset_delete_dataset(
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Delete an XQL user dataset that was created by the Cortex SDK.
+    Delete an XQL user dataset that was created by the Cortex SDK.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**.
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**.
 
-    These APIs are only applicable from within the XSIAM Notebook environment.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+These APIs are only applicable from within the XSIAM Notebook environment.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if request_data is not None:
         body["request_data"] = request_data
 
@@ -5251,7 +5063,7 @@ async def post_public_api_v1_dataset_delete_dataset(
     url = "https://api-yourfqdn/public_api/v1/dataset/delete_dataset"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -5263,7 +5075,7 @@ async def post_public_api_v1_dataset_delete_dataset(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -5272,38 +5084,37 @@ async def post_public_api_v1_dataset_delete_dataset(
     ]
 
 
-# Schema for post_public_api_v1_dataset_delete_dataset
-post_public_api_v1_dataset_delete_dataset_schema = {
+# Schema for _public_api_v1_dataset_delete_dataset
+_public_api_v1_dataset_delete_dataset_schema = {
     "type": "object",
     "properties": {
         "request_data": {"type": "Dict[str, Any]", "description": ""},
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_xql_add_dataset(
+async def _public_api_v1_xql_add_dataset(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Add a dataset of type `lookup` with the specified name and schema.
+    Add a dataset of type `lookup` with the specified name and schema.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -5315,7 +5126,7 @@ async def post_public_api_v1_xql_add_dataset(
     url = "https://api-yourfqdn/public_api/v1/xql/add_dataset"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -5327,7 +5138,7 @@ async def post_public_api_v1_xql_add_dataset(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -5336,8 +5147,8 @@ async def post_public_api_v1_xql_add_dataset(
     ]
 
 
-# Schema for post_public_api_v1_xql_add_dataset
-post_public_api_v1_xql_add_dataset_schema = {
+# Schema for _public_api_v1_xql_add_dataset
+_public_api_v1_xql_add_dataset_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -5346,32 +5157,31 @@ post_public_api_v1_xql_add_dataset_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_xql_delete_dataset(
+async def _public_api_v1_xql_delete_dataset(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Delete a dataset with the specified name. The following dataset types can be deleted: Lookup, Raw, User, Snapshot, and Correlation. You can only delete a dataset with dependencies by setting `force` to TRUE.
+    Delete a dataset with the specified name. The following dataset types can be deleted: Lookup, Raw, User, Snapshot, and Correlation. You can only delete a dataset with dependencies by setting `force` to TRUE.
 
-    **Note:** The System dataset and other protected datasets cannot be deleted.
+**Note:** The System dataset and other protected datasets cannot be deleted.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -5383,7 +5193,7 @@ async def post_public_api_v1_xql_delete_dataset(
     url = "https://api-yourfqdn/public_api/v2/xql/delete_dataset"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -5395,7 +5205,7 @@ async def post_public_api_v1_xql_delete_dataset(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -5404,8 +5214,8 @@ async def post_public_api_v1_xql_delete_dataset(
     ]
 
 
-# Schema for post_public_api_v1_xql_delete_dataset
-post_public_api_v1_xql_delete_dataset_schema = {
+# Schema for _public_api_v1_xql_delete_dataset
+_public_api_v1_xql_delete_dataset_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -5414,28 +5224,27 @@ post_public_api_v1_xql_delete_dataset_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_xql_get_datasets(
+async def _public_api_v1_xql_get_datasets(
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Retrieve a list of all the datasets and their properties.
+    Retrieve a list of all the datasets and their properties.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if request_data is not None:
         body["request_data"] = request_data
 
@@ -5443,7 +5252,7 @@ async def post_public_api_v1_xql_get_datasets(
     url = "https://api-yourfqdn/public_api/v1/xql/get_datasets"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -5455,7 +5264,7 @@ async def post_public_api_v1_xql_get_datasets(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -5464,47 +5273,46 @@ async def post_public_api_v1_xql_get_datasets(
     ]
 
 
-# Schema for post_public_api_v1_xql_get_datasets
-post_public_api_v1_xql_get_datasets_schema = {
+# Schema for _public_api_v1_xql_get_datasets
+_public_api_v1_xql_get_datasets_schema = {
     "type": "object",
     "properties": {
         "request_data": {"type": "Dict[str, Any]", "description": ""},
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_xql_lookups_add_data(
+async def _public_api_v1_xql_lookups_add_data(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Add or update data in a lookup dataset.
+    Add or update data in a lookup dataset.
 
-    When updating data, any field not specified in the `data` field, but specified on at least one of the rows, will be set to `None`.
+When updating data, any field not specified in the `data` field, but specified on at least one of the rows, will be set to `None`.
 
-    The `/public_api/xql/lookups/add_data/`  endpoint does not support concurrent edits. Sending concurrent calls to this endpoint can cause data to be unintentionally overwritten or deleted. To allow sufficient time for each API call to complete its operation before initiating another one, assume that 1000 entries can be added per API every 10 seconds.
+The `/public_api/xql/lookups/add_data/`  endpoint does not support concurrent edits. Sending concurrent calls to this endpoint can cause data to be unintentionally overwritten or deleted. To allow sufficient time for each API call to complete its operation before initiating another one, assume that 1000 entries can be added per API every 10 seconds.
 
-    **Note: **
+**Note: ** 
 
-    - The maximum size of a lookup dataset is 50 MB. Attemping to exceed this limit will fail.
-    - Requests time out after three minutes.
+- The maximum size of a lookup dataset is 50 MB. Attemping to exceed this limit will fail.
+- Requests time out after three minutes.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -5516,7 +5324,7 @@ async def post_public_api_v1_xql_lookups_add_data(
     url = "https://api-yourfqdn/public_api/v1/xql/lookups/add_data"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -5528,7 +5336,7 @@ async def post_public_api_v1_xql_lookups_add_data(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -5537,8 +5345,8 @@ async def post_public_api_v1_xql_lookups_add_data(
     ]
 
 
-# Schema for post_public_api_v1_xql_lookups_add_data
-post_public_api_v1_xql_lookups_add_data_schema = {
+# Schema for _public_api_v1_xql_lookups_add_data
+_public_api_v1_xql_lookups_add_data_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -5547,36 +5355,35 @@ post_public_api_v1_xql_lookups_add_data_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_xql_lookups_remove_data(
+async def _public_api_v1_xql_lookups_remove_data(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Remove data from a dataset based on the specified parameters. If any one of the filter sets are not found, the API does not delete any data.
+    Remove data from a dataset based on the specified parameters. If any one of the filter sets are not found, the API does not delete any data.
 
-    The `/public_api/xql/lookups/remove_data/`  endpoint does not support concurrent edits. Sending concurrent calls to this endpoint can cause data to be unintentionally overwritten or deleted. To allow sufficient time for each API call to complete its operation before initiating another one, assume that 1000 entries can be added per API every 10 seconds.
+The `/public_api/xql/lookups/remove_data/`  endpoint does not support concurrent edits. Sending concurrent calls to this endpoint can cause data to be unintentionally overwritten or deleted. To allow sufficient time for each API call to complete its operation before initiating another one, assume that 1000 entries can be added per API every 10 seconds.
 
-    **Note:**
-    - All lookup entries matching any of the filter blocks are deleted. To match a filter block, a lookup entry must match all the specified fields as if there were an `AND` operator between them.
-    - Requests time out after three minutes.
+**Note:** 
+- All lookup entries matching any of the filter blocks are deleted. To match a filter block, a lookup entry must match all the specified fields as if there were an `AND` operator between them. 
+- Requests time out after three minutes.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -5588,7 +5395,7 @@ async def post_public_api_v1_xql_lookups_remove_data(
     url = "https://api-yourfqdn/public_api/v1/xql/lookups/remove_data"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -5600,7 +5407,7 @@ async def post_public_api_v1_xql_lookups_remove_data(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -5609,8 +5416,8 @@ async def post_public_api_v1_xql_lookups_remove_data(
     ]
 
 
-# Schema for post_public_api_v1_xql_lookups_remove_data
-post_public_api_v1_xql_lookups_remove_data_schema = {
+# Schema for _public_api_v1_xql_lookups_remove_data
+_public_api_v1_xql_lookups_remove_data_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -5619,35 +5426,34 @@ post_public_api_v1_xql_lookups_remove_data_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_xql_lookups_get_data(
+async def _public_api_v1_xql_lookups_get_data(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Get data from a lookup dataset according to the specified filter fields. All lookup entries matching any of the filter blocks are returned. To match a filter block, a lookup entry must match all the specified fields as if there were an `AND` operator between them. If no filters are specified, return all lookup entries.
+    Get data from a lookup dataset according to the specified filter fields. All lookup entries matching any of the filter blocks are returned. To match a filter block, a lookup entry must match all the specified fields as if there were an `AND` operator between them. If no filters are specified, return all lookup entries. 
 
-    **Note:**
+**Note:** 
 
-    - The maximum number of entries returned is 10,000.
-    - Requests time out after three minutes.
+- The maximum number of entries returned is 10,000.
+- Requests time out after three minutes.
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -5659,7 +5465,7 @@ async def post_public_api_v1_xql_lookups_get_data(
     url = "https://api-yourfqdn/public_api/v1/xql/lookups/get_data"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -5671,7 +5477,7 @@ async def post_public_api_v1_xql_lookups_get_data(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -5680,8 +5486,8 @@ async def post_public_api_v1_xql_lookups_get_data(
     ]
 
 
-# Schema for post_public_api_v1_xql_lookups_get_data
-post_public_api_v1_xql_lookups_get_data_schema = {
+# Schema for _public_api_v1_xql_lookups_get_data
+_public_api_v1_xql_lookups_get_data_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -5690,30 +5496,29 @@ post_public_api_v1_xql_lookups_get_data_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_get_triage_presets(
+async def _public_api_v1_get_triage_presets(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Get all triage preset information including triage name, platform, description, created by, and triage type.
+    Get all triage preset information including triage name, platform, description, created by, and triage type.
 
-    Required license: **Cortex XSIAM Premium** or **Forensics add-on**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Forensics add-on**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -5725,7 +5530,7 @@ async def post_public_api_v1_get_triage_presets(
     url = "https://api-yourfqdn/public_api/v1/get_triage_presets"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -5737,7 +5542,7 @@ async def post_public_api_v1_get_triage_presets(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -5746,8 +5551,8 @@ async def post_public_api_v1_get_triage_presets(
     ]
 
 
-# Schema for post_public_api_v1_get_triage_presets
-post_public_api_v1_get_triage_presets_schema = {
+# Schema for _public_api_v1_get_triage_presets
+_public_api_v1_get_triage_presets_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -5756,30 +5561,29 @@ post_public_api_v1_get_triage_presets_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_authentication_settings_create(
+async def _public_api_v1_authentication_settings_create(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Create authentication settings for IdP SSO or metadata URL. You must include either the `metadata_url` field or all of the following fields: `idp_sso_url`, `idp_issuer`, and `idp_certificate`.
+    Create authentication settings for IdP SSO or metadata URL. You must include either the `metadata_url` field or all of the following fields: `idp_sso_url`, `idp_issuer`, and `idp_certificate`.
 
-    You must have **Instance Administrator** permissions to run this endpoint.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+You must have **Instance Administrator** permissions to run this endpoint.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -5791,7 +5595,7 @@ async def post_public_api_v1_authentication_settings_create(
     url = "https://api-yourfqdn/public_api/v1/authentication-settings/create"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -5803,7 +5607,7 @@ async def post_public_api_v1_authentication_settings_create(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -5812,8 +5616,8 @@ async def post_public_api_v1_authentication_settings_create(
     ]
 
 
-# Schema for post_public_api_v1_authentication_settings_create
-post_public_api_v1_authentication_settings_create_schema = {
+# Schema for _public_api_v1_authentication_settings_create
+_public_api_v1_authentication_settings_create_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -5822,30 +5626,29 @@ post_public_api_v1_authentication_settings_create_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_authentication_settings_update(
+async def _public_api_v1_authentication_settings_update(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Update existing authentication settings. To update the default domain, include empty value for both `current_domain_value` and `new_domain_value`.
+    Update existing authentication settings. To update the default domain, include empty value for both `current_domain_value` and `new_domain_value`.
 
-    You must have **Instance Administrator** permissions to run this endpoint.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+You must have **Instance Administrator** permissions to run this endpoint.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -5857,7 +5660,7 @@ async def post_public_api_v1_authentication_settings_update(
     url = "https://api-yourfqdn/public_api/v1/authentication-settings/update"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -5869,7 +5672,7 @@ async def post_public_api_v1_authentication_settings_update(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -5878,8 +5681,8 @@ async def post_public_api_v1_authentication_settings_update(
     ]
 
 
-# Schema for post_public_api_v1_authentication_settings_update
-post_public_api_v1_authentication_settings_update_schema = {
+# Schema for _public_api_v1_authentication_settings_update
+_public_api_v1_authentication_settings_update_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -5888,32 +5691,31 @@ post_public_api_v1_authentication_settings_update_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_authentication_settings_delete(
+async def _public_api_v1_authentication_settings_delete(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Delete all authentication settings for the specified domain.
+    Delete all authentication settings for the specified domain. 
 
-    **Note: ** The first configuration on the tenant is the default configuration and cannot be deleted.
+**Note: ** The first configuration on the tenant is the default configuration and cannot be deleted.
 
-    You must have **Instance Administrator** permissions to run this endpoint.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+You must have **Instance Administrator** permissions to run this endpoint.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -5925,7 +5727,7 @@ async def post_public_api_v1_authentication_settings_delete(
     url = "https://api-yourfqdn/public_api/v1/authentication-settings/delete"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -5937,7 +5739,7 @@ async def post_public_api_v1_authentication_settings_delete(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -5946,8 +5748,8 @@ async def post_public_api_v1_authentication_settings_delete(
     ]
 
 
-# Schema for post_public_api_v1_authentication_settings_delete
-post_public_api_v1_authentication_settings_delete_schema = {
+# Schema for _public_api_v1_authentication_settings_delete
+_public_api_v1_authentication_settings_delete_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -5956,31 +5758,30 @@ post_public_api_v1_authentication_settings_delete_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_authentication_settings_get_settings(
+async def _public_api_v1_authentication_settings_get_settings(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Get all the authentication settings for every configured domain in the tenant.
+    Get all the authentication settings for every configured domain in the tenant.
 
-    You must have **Instance Administrator** permissions to run this endpoint.
+You must have **Instance Administrator** permissions to run this endpoint.
 
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -5992,7 +5793,7 @@ async def post_public_api_v1_authentication_settings_get_settings(
     url = "https://api-yourfqdn/public_api/v1/authentication-settings/get/settings"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -6004,7 +5805,7 @@ async def post_public_api_v1_authentication_settings_get_settings(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -6013,8 +5814,8 @@ async def post_public_api_v1_authentication_settings_get_settings(
     ]
 
 
-# Schema for post_public_api_v1_authentication_settings_get_settings
-post_public_api_v1_authentication_settings_get_settings_schema = {
+# Schema for _public_api_v1_authentication_settings_get_settings
+_public_api_v1_authentication_settings_get_settings_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -6023,30 +5824,29 @@ post_public_api_v1_authentication_settings_get_settings_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_authentication_settings_get_metadata(
+async def _public_api_v1_authentication_settings_get_metadata(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Get the metadata for all IdPs.
+    Get the metadata for all IdPs.
 
-    You must have **Instance Administrator** permissions to run this endpoint.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+You must have **Instance Administrator** permissions to run this endpoint.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -6058,7 +5858,7 @@ async def post_public_api_v1_authentication_settings_get_metadata(
     url = "https://api-yourfqdn/public_api/v1/authentication-settings/get/metadata"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -6070,7 +5870,7 @@ async def post_public_api_v1_authentication_settings_get_metadata(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -6079,8 +5879,8 @@ async def post_public_api_v1_authentication_settings_get_metadata(
     ]
 
 
-# Schema for post_public_api_v1_authentication_settings_get_metadata
-post_public_api_v1_authentication_settings_get_metadata_schema = {
+# Schema for _public_api_v1_authentication_settings_get_metadata
+_public_api_v1_authentication_settings_get_metadata_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -6089,32 +5889,31 @@ post_public_api_v1_authentication_settings_get_metadata_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_asm_management_upload_asm_data(
+async def _public_api_v1_asm_management_upload_asm_data(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Upload domains (paid-level domains (PLD) and subdomains) and IPv4 address ranges. You can upload up to 500 IP address ranges or domains in each request.
+    Upload domains (paid-level domains (PLD) and subdomains) and IPv4 address ranges. You can upload up to 500 IP address ranges or domains in each request.
 
-    You must have **Instance Administrator** permissions to run this endpoint.
+You must have **Instance Administrator** permissions to run this endpoint.
 
-    Required license: **Cortex XSIAM Premium** or  Cortex XSIAM with ASM add-on
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or  Cortex XSIAM with ASM add-on
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -6126,7 +5925,7 @@ async def post_public_api_v1_asm_management_upload_asm_data(
     url = "https://api-yourfqdn/public_api/v1/asm_management/upload_asm_data"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -6138,7 +5937,7 @@ async def post_public_api_v1_asm_management_upload_asm_data(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -6147,43 +5946,39 @@ async def post_public_api_v1_asm_management_upload_asm_data(
     ]
 
 
-# Schema for post_public_api_v1_asm_management_upload_asm_data
-post_public_api_v1_asm_management_upload_asm_data_schema = {
+# Schema for _public_api_v1_asm_management_upload_asm_data
+_public_api_v1_asm_management_upload_asm_data_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields."},
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_assets_get_external_website(
+async def _public_api_v1_assets_get_external_website(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Get details about specific websites based on website IDs. You can submit up to 20 website IDs.
+    Get details about specific websites based on website IDs. You can submit up to 20 website IDs. 
 
-    Required license: **Cortex XSIAM Premium** or  Cortex XSIAM with ASM Add-on
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or  Cortex XSIAM with ASM Add-on
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -6195,7 +5990,7 @@ async def post_public_api_v1_assets_get_external_website(
     url = "https://api-yourfqdn/public_api/v1/assets/get_external_website"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -6207,7 +6002,7 @@ async def post_public_api_v1_assets_get_external_website(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -6216,44 +6011,40 @@ async def post_public_api_v1_assets_get_external_website(
     ]
 
 
-# Schema for post_public_api_v1_assets_get_external_website
-post_public_api_v1_assets_get_external_website_schema = {
+# Schema for _public_api_v1_assets_get_external_website
+_public_api_v1_assets_get_external_website_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields."},
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_assets_get_external_websites(
+async def _public_api_v1_assets_get_external_websites(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Get a complete or filtered list of your public-facing websites.
+    Get a complete or filtered list of your public-facing websites. 
 
-    Required license: **Cortex XSIAM Premium** or  Cortex XSIAM with ASM Add-on
+Required license: **Cortex XSIAM Premium** or  Cortex XSIAM with ASM Add-on
 
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -6265,7 +6056,7 @@ async def post_public_api_v1_assets_get_external_websites(
     url = "https://api-yourfqdn/public_api/v1/assets/get_external_websites"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -6277,7 +6068,7 @@ async def post_public_api_v1_assets_get_external_websites(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -6286,32 +6077,28 @@ async def post_public_api_v1_assets_get_external_websites(
     ]
 
 
-# Schema for post_public_api_v1_assets_get_external_websites
-post_public_api_v1_assets_get_external_websites_schema = {
+# Schema for _public_api_v1_assets_get_external_websites
+_public_api_v1_assets_get_external_websites_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields. An empty dictionary returns all results.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields. An empty dictionary returns all results."},
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_assets_get_external_websites_last_external_assessment(
+async def _public_api_v1_assets_get_external_websites_last_external_assessment(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
     Gets the time and status of the last update of websites data in Cortex. A status of "true" indicates the websites data update was successful.
-
+    
     Args:
         Tool arguments are defined in the schema below
-
+    
     Returns:
         List of text content with the API response
     """
@@ -6320,7 +6107,7 @@ async def post_public_api_v1_assets_get_external_websites_last_external_assessme
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -6332,7 +6119,7 @@ async def post_public_api_v1_assets_get_external_websites_last_external_assessme
     url = "https://api-yourfqdn/public_api/v1/assets/get_external_websites/last_external_assessment"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -6344,7 +6131,7 @@ async def post_public_api_v1_assets_get_external_websites_last_external_assessme
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -6353,43 +6140,39 @@ async def post_public_api_v1_assets_get_external_websites_last_external_assessme
     ]
 
 
-# Schema for post_public_api_v1_assets_get_external_websites_last_external_assessment
-post_public_api_v1_assets_get_external_websites_last_external_assessment_schema = {
+# Schema for _public_api_v1_assets_get_external_websites_last_external_assessment
+_public_api_v1_assets_get_external_websites_last_external_assessment_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "An empty dictionary returns the time and status of the last websites assessment.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "An empty dictionary returns the time and status of the last websites assessment."},
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_integrations_syslog_create(
+async def _public_api_v1_integrations_syslog_create(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Create a new syslog integration.
+    Create a new syslog integration.
 
-    You must have **View/Edit Alert Notification** permissions to run this endpoint.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+You must have **View/Edit Alert Notification** permissions to run this endpoint.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -6401,7 +6184,7 @@ async def post_public_api_v1_integrations_syslog_create(
     url = "https://api-yourfqdn/public_api/v1/integrations/syslog/create"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -6413,7 +6196,7 @@ async def post_public_api_v1_integrations_syslog_create(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -6422,43 +6205,39 @@ async def post_public_api_v1_integrations_syslog_create(
     ]
 
 
-# Schema for post_public_api_v1_integrations_syslog_create
-post_public_api_v1_integrations_syslog_create_schema = {
+# Schema for _public_api_v1_integrations_syslog_create
+_public_api_v1_integrations_syslog_create_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields."},
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_integrations_syslog_get(
+async def _public_api_v1_integrations_syslog_get(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Get a complete or filtered list of syslog servers.
+    Get a complete or filtered list of syslog servers.
 
-    You must have **View Alert Notification** permissions to run this endpoint.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+You must have **View Alert Notification** permissions to run this endpoint.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -6470,7 +6249,7 @@ async def post_public_api_v1_integrations_syslog_get(
     url = "https://api-yourfqdn/public_api/v1/integrations/syslog/get"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -6482,7 +6261,7 @@ async def post_public_api_v1_integrations_syslog_get(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -6491,43 +6270,39 @@ async def post_public_api_v1_integrations_syslog_get(
     ]
 
 
-# Schema for post_public_api_v1_integrations_syslog_get
-post_public_api_v1_integrations_syslog_get_schema = {
+# Schema for _public_api_v1_integrations_syslog_get
+_public_api_v1_integrations_syslog_get_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields. An empty dictionary returns all results.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields. An empty dictionary returns all results."},
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_integrations_syslog_update(
+async def _public_api_v1_integrations_syslog_update(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Update the details of the specified syslog integration.
+    Update the details of the specified syslog integration.
 
-    You must have **View/Edit Alert Notification** permissions to run this endpoint.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+You must have **View/Edit Alert Notification** permissions to run this endpoint.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -6539,7 +6314,7 @@ async def post_public_api_v1_integrations_syslog_update(
     url = "https://api-yourfqdn/public_api/v1/integrations/syslog/update"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -6551,7 +6326,7 @@ async def post_public_api_v1_integrations_syslog_update(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -6560,43 +6335,39 @@ async def post_public_api_v1_integrations_syslog_update(
     ]
 
 
-# Schema for post_public_api_v1_integrations_syslog_update
-post_public_api_v1_integrations_syslog_update_schema = {
+# Schema for _public_api_v1_integrations_syslog_update
+_public_api_v1_integrations_syslog_update_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields."},
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_integrations_syslog_delete(
+async def _public_api_v1_integrations_syslog_delete(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Delete all the syslog integrations or the ones who match the filter criteria.
+    Delete all the syslog integrations or the ones who match the filter criteria.
 
-    You must have **View/Edit Alert Notification** permissions to run this endpoint.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+You must have **View/Edit Alert Notification** permissions to run this endpoint.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -6608,7 +6379,7 @@ async def post_public_api_v1_integrations_syslog_delete(
     url = "https://api-yourfqdn/public_api/v1/integrations/syslog/delete"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -6620,7 +6391,7 @@ async def post_public_api_v1_integrations_syslog_delete(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -6629,43 +6400,39 @@ async def post_public_api_v1_integrations_syslog_delete(
     ]
 
 
-# Schema for post_public_api_v1_integrations_syslog_delete
-post_public_api_v1_integrations_syslog_delete_schema = {
+# Schema for _public_api_v1_integrations_syslog_delete
+_public_api_v1_integrations_syslog_delete_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields. An empty dictionary deletes all syslog servers.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields. An empty dictionary deletes all syslog servers."},
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_integrations_syslog_test(
+async def _public_api_v1_integrations_syslog_test(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Tests a syslog integration's validity.
+    Tests a syslog integration's validity.
 
-    You must have **View Alert Notification** permissions to run this endpoint.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+You must have **View Alert Notification** permissions to run this endpoint.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -6677,7 +6444,7 @@ async def post_public_api_v1_integrations_syslog_test(
     url = "https://api-yourfqdn/public_api/v1/integrations/syslog/test"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -6689,7 +6456,7 @@ async def post_public_api_v1_integrations_syslog_test(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -6698,22 +6465,18 @@ async def post_public_api_v1_integrations_syslog_test(
     ]
 
 
-# Schema for post_public_api_v1_integrations_syslog_test
-post_public_api_v1_integrations_syslog_test_schema = {
+# Schema for _public_api_v1_integrations_syslog_test
+_public_api_v1_integrations_syslog_test_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields."},
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_entries_insert(
+async def _public_api_v1_entries_insert(
     authorization: str,
     x_xdr_auth_id: str,
     id: str | None = None,
@@ -6721,10 +6484,10 @@ async def post_public_api_v1_entries_insert(
 ) -> List[types.TextContent]:
     """
     Add an entry to the incident or alert War Room, including data.
-
+    
     Args:
         Tool arguments are defined in the schema below
-
+    
     Returns:
         List of text content with the API response
     """
@@ -6733,7 +6496,7 @@ async def post_public_api_v1_entries_insert(
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -6747,7 +6510,7 @@ async def post_public_api_v1_entries_insert(
     url = "https://api-yourfqdn/public_api/v1/entries/insert"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -6759,7 +6522,7 @@ async def post_public_api_v1_entries_insert(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -6768,47 +6531,40 @@ async def post_public_api_v1_entries_insert(
     ]
 
 
-# Schema for post_public_api_v1_entries_insert
-post_public_api_v1_entries_insert_schema = {
+# Schema for _public_api_v1_entries_insert
+_public_api_v1_entries_insert_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "id": {
-            "type": "str",
-            "description": 'The ID of the incident or alert for which you want to add a War Room entry. For an incident ID, prepend "INCIDENT-" to the incident ID. For example, if the incident ID is 3, the value of `id` should be `INCIDENT-3`. For alert IDs, just put the ID. For example, if the alert ID is 3, the value of `id` should be `3`.',
-        },
-        "data": {
-            "type": "str",
-            "description": "The data you want to add or the command you want to run in the War Room.",
-        },
+        "id": {"type": "str", "description": "The ID of the incident or alert for which you want to add a War Room entry. For an incident ID, prepend \"INCIDENT-\" to the incident ID. For example, if the incident ID is 3, the value of `id` should be `INCIDENT-3`. For alert IDs, just put the ID. For example, if the alert ID is 3, the value of `id` should be `3`."},
+        "data": {"type": "str", "description": "The data you want to add or the command you want to run in the War Room."},
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_entries_get(
+async def _public_api_v1_entries_get(
     authorization: str,
     x_xdr_auth_id: str,
     id: str | None = None,
     filter: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Get the War Room entries for a specific incident or alert. You can filter by timestamp, ID, and tags. You can also choose which type of entries you want to retrieve (notes, chat, attachments...).
-    The response depends on what type of entry you choose to retrieve.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+    Get the War Room entries for a specific incident or alert. You can filter by timestamp, ID, and tags. You can also choose which type of entries you want to retrieve (notes, chat, attachments...).
+The response depends on what type of entry you choose to retrieve.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -6822,7 +6578,7 @@ async def post_public_api_v1_entries_get(
     url = "https://api-yourfqdn/public_api/v1/entries/get"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -6834,7 +6590,7 @@ async def post_public_api_v1_entries_get(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -6843,46 +6599,42 @@ async def post_public_api_v1_entries_get(
     ]
 
 
-# Schema for post_public_api_v1_entries_get
-post_public_api_v1_entries_get_schema = {
+# Schema for _public_api_v1_entries_get
+_public_api_v1_entries_get_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "id": {
-            "type": "str",
-            "description": 'The ID of the incident or alert you want to get the War Room entries of. For an incident ID, prepend "INCIDENT-" to the incident ID. For example, if the incident ID is 3, the value of `id` should be `INCIDENT-3`. For alert IDs, just put the ID. For example, if the alert ID is 3, the value of `id` should be `3`.',
-        },
+        "id": {"type": "str", "description": "The ID of the incident or alert you want to get the War Room entries of. For an incident ID, prepend \"INCIDENT-\" to the incident ID. For example, if the incident ID is 3, the value of `id` should be `INCIDENT-3`. For alert IDs, just put the ID. For example, if the alert ID is 3, the value of `id` should be `3`."},
         "filter": {"type": "Dict[str, Any]", "description": ""},
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_distributions_delete(
+async def _public_api_v1_distributions_delete(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Delete an agent installation package. The distribution ID is required and can be found in the [Create distributions](https://docs-cortex.paloaltonetworks.com/r/ppPm_R5Omz9LsbjR8gZJbg/NIB~j5teUOLZlFNOhL3dZg) API response or in the **Agent Installations** screen in the Cortex Console.
+    Delete an agent installation package. The distribution ID is required and can be found in the [Create distributions](https://docs-cortex.paloaltonetworks.com/r/ppPm_R5Omz9LsbjR8gZJbg/NIB~j5teUOLZlFNOhL3dZg) API response or in the **Agent Installations** screen in the Cortex Console.
 
-    **Note: ** Once you delete an installation package, it prevents new agents using the package, including VDI, from registering.
+**Note: ** Once you delete an installation package, it prevents new agents using the package, including VDI, from registering. 
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -6894,7 +6646,7 @@ async def post_public_api_v1_distributions_delete(
     url = "https://api-yourfqdn/public_api/v1/distributions/delete"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -6906,7 +6658,7 @@ async def post_public_api_v1_distributions_delete(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -6915,8 +6667,8 @@ async def post_public_api_v1_distributions_delete(
     ]
 
 
-# Schema for post_public_api_v1_distributions_delete
-post_public_api_v1_distributions_delete_schema = {
+# Schema for _public_api_v1_distributions_delete
+_public_api_v1_distributions_delete_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -6925,37 +6677,36 @@ post_public_api_v1_distributions_delete_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_asm_management_remove_asm_data(
+async def _public_api_v1_asm_management_remove_asm_data(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Remove certificates, domains (paid-level domains and subdomains), and IPv4 address ranges from your inventory. Remove up to 500 certificates, domains, or IP ranges per request.
+    Remove certificates, domains (paid-level domains and subdomains), and IPv4 address ranges from your inventory. Remove up to 500 certificates, domains, or IP ranges per request.
 
-    Removed assets appear the Asset Uploads/Removals table with the status **Removed**. Within 24 hours of submitting your request, assets are removed from the inventory. Within a few days, related incidents, alerts, and services are also removed.
-    You cannot remove an asset that was uploaded in a previous upload request.
+Removed assets appear the Asset Uploads/Removals table with the status **Removed**. Within 24 hours of submitting your request, assets are removed from the inventory. Within a few days, related incidents, alerts, and services are also removed.
+You cannot remove an asset that was uploaded in a previous upload request. 
 
-    When you remove a paid-level domain, related subdomains are also removed. When you remove an IPv4 range, the individual IPv4 addresses in that range are also removed.
+When you remove a paid-level domain, related subdomains are also removed. When you remove an IPv4 range, the individual IPv4 addresses in that range are also removed.
 
-    Required role: Instance Admin
+Required role: Instance Admin 
 
-    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM with ASM add-on**
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+Required license: **Cortex XSIAM Premium** or **Cortex XSIAM with ASM add-on**
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -6967,7 +6718,7 @@ async def post_public_api_v1_asm_management_remove_asm_data(
     url = "https://api-yourfqdn/public_api/v1/asm_management/remove_asm_data"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -6979,7 +6730,7 @@ async def post_public_api_v1_asm_management_remove_asm_data(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -6988,43 +6739,39 @@ async def post_public_api_v1_asm_management_remove_asm_data(
     ]
 
 
-# Schema for post_public_api_v1_asm_management_remove_asm_data
-post_public_api_v1_asm_management_remove_asm_data_schema = {
+# Schema for _public_api_v1_asm_management_remove_asm_data
+_public_api_v1_asm_management_remove_asm_data_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api-key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api-key-id}"},
-        "request_data": {
-            "type": "Dict[str, Any]",
-            "description": "A dictionary containing the API request fields.",
-        },
+        "request_data": {"type": "Dict[str, Any]", "description": "A dictionary containing the API request fields."},
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_scheduled_queries_list(
+async def _public_api_v1_scheduled_queries_list(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Return a list of scheduled queries. You can return all scheduled queries or filter results. You can also return extended results with all details included.
+    Return a list of scheduled queries. You can return all scheduled queries or filter results. You can also return extended results with all details included.
 
-    You must have **Instance Administrator** permissions to run this endpoint.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+You must have **Instance Administrator** permissions to run this endpoint.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -7036,7 +6783,7 @@ async def post_public_api_v1_scheduled_queries_list(
     url = "https://api-yourfqdn/public_api/v1/scheduled_queries/list"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -7048,7 +6795,7 @@ async def post_public_api_v1_scheduled_queries_list(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -7057,8 +6804,8 @@ async def post_public_api_v1_scheduled_queries_list(
     ]
 
 
-# Schema for post_public_api_v1_scheduled_queries_list
-post_public_api_v1_scheduled_queries_list_schema = {
+# Schema for _public_api_v1_scheduled_queries_list
+_public_api_v1_scheduled_queries_list_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -7067,30 +6814,29 @@ post_public_api_v1_scheduled_queries_list_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_scheduled_queries_insert(
+async def _public_api_v1_scheduled_queries_insert(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: List[Any],
 ) -> List[types.TextContent]:
     """
-        Insert new scheduled queries or update existing scheduled queries.
+    Insert new scheduled queries or update existing scheduled queries. 
 
-    You must have **Instance Administrator** permissions to run this endpoint.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+You must have **Instance Administrator** permissions to run this endpoint.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -7102,7 +6848,7 @@ async def post_public_api_v1_scheduled_queries_insert(
     url = "https://api-yourfqdn/public_api/v1/scheduled_queries/insert"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -7114,7 +6860,7 @@ async def post_public_api_v1_scheduled_queries_insert(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -7123,8 +6869,8 @@ async def post_public_api_v1_scheduled_queries_insert(
     ]
 
 
-# Schema for post_public_api_v1_scheduled_queries_insert
-post_public_api_v1_scheduled_queries_insert_schema = {
+# Schema for _public_api_v1_scheduled_queries_insert
+_public_api_v1_scheduled_queries_insert_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -7133,30 +6879,29 @@ post_public_api_v1_scheduled_queries_insert_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_scheduled_queries_delete(
+async def _public_api_v1_scheduled_queries_delete(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: List[Any],
 ) -> List[types.TextContent]:
     """
-        Delete scheduled queries.
+    Delete scheduled queries.
 
-    You must have **Instance Administrator** permissions to run this endpoint.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+You must have **Instance Administrator** permissions to run this endpoint.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -7168,7 +6913,7 @@ async def post_public_api_v1_scheduled_queries_delete(
     url = "https://api-yourfqdn/public_api/v1/scheduled_queries/delete"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -7180,7 +6925,7 @@ async def post_public_api_v1_scheduled_queries_delete(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -7189,8 +6934,8 @@ async def post_public_api_v1_scheduled_queries_delete(
     ]
 
 
-# Schema for post_public_api_v1_scheduled_queries_delete
-post_public_api_v1_scheduled_queries_delete_schema = {
+# Schema for _public_api_v1_scheduled_queries_delete
+_public_api_v1_scheduled_queries_delete_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -7199,30 +6944,29 @@ post_public_api_v1_scheduled_queries_delete_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_xql_library_get(
+async def _public_api_xql_library_get(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Retrieve a detailed list of XQL query libraries. You can filter by list of query names or by list of query tags.
+    Retrieve a detailed list of XQL query libraries. You can filter by list of query names or by list of query tags.
 
-    You must have **Instance Administrator** permissions to run this endpoint.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+You must have **Instance Administrator** permissions to run this endpoint.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -7234,7 +6978,7 @@ async def post_public_api_xql_library_get(
     url = "https://api-yourfqdn/public_api/xql_library/get"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -7246,7 +6990,7 @@ async def post_public_api_xql_library_get(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -7255,8 +6999,8 @@ async def post_public_api_xql_library_get(
     ]
 
 
-# Schema for post_public_api_xql_library_get
-post_public_api_xql_library_get_schema = {
+# Schema for _public_api_xql_library_get
+_public_api_xql_library_get_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -7265,32 +7009,31 @@ post_public_api_xql_library_get_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_xql_library_insert(
+async def _public_api_xql_library_insert(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Insert new XQL queries or update existing XQL queries.
+    Insert new XQL queries or update existing XQL queries.
 
-    **Note:** You should use unique `xql_query_name` for each XQL query on a given tenant.
+**Note:** You should use unique `xql_query_name` for each XQL query on a given tenant.
 
-    You must have **Instance Administrator** permissions to run this endpoint.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+You must have **Instance Administrator** permissions to run this endpoint.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -7302,7 +7045,7 @@ async def post_public_api_xql_library_insert(
     url = "https://api-yourfqdn/public_api/xql_library/insert"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -7314,7 +7057,7 @@ async def post_public_api_xql_library_insert(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -7323,8 +7066,8 @@ async def post_public_api_xql_library_insert(
     ]
 
 
-# Schema for post_public_api_xql_library_insert
-post_public_api_xql_library_insert_schema = {
+# Schema for _public_api_xql_library_insert
+_public_api_xql_library_insert_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -7333,30 +7076,29 @@ post_public_api_xql_library_insert_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_xql_library_delete(
+async def _public_api_xql_library_delete(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Delete XQL queries. You can filter by list of query names or by list of query tags.
+    Delete XQL queries. You can filter by list of query names or by list of query tags.
 
-    You must have **Instance Administrator** permissions to run this endpoint.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+You must have **Instance Administrator** permissions to run this endpoint.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -7368,7 +7110,7 @@ async def post_public_api_xql_library_delete(
     url = "https://api-yourfqdn/public_api/xql_library/delete"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -7380,7 +7122,7 @@ async def post_public_api_xql_library_delete(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -7389,8 +7131,8 @@ async def post_public_api_xql_library_delete(
     ]
 
 
-# Schema for post_public_api_xql_library_delete
-post_public_api_xql_library_delete_schema = {
+# Schema for _public_api_xql_library_delete
+_public_api_xql_library_delete_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -7399,36 +7141,35 @@ post_public_api_xql_library_delete_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_indicators_get(
+async def _public_api_v1_indicators_get(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Get a list of IOCs. You can return all IOCs or filter results. You can also return extended results with all details included.
-    - The response is concatenated using AND condition (OR is not supported).
-    - The maximum result set size is >100.
-    - Offset is the zero-based number of incidents from the start of the result set.
+    Get a list of IOCs. You can return all IOCs or filter results. You can also return extended results with all details included.
+- The response is concatenated using AND condition (OR is not supported).
+- The maximum result set size is >100.
+- Offset is the zero-based number of incidents from the start of the result set.
 
-    UI navigation: **XSIAM** > **Detection & Threat Intel** > **Detection Rules** > **IOC**.
+UI navigation: **XSIAM** > **Detection & Threat Intel** > **Detection Rules** > **IOC**.
 
-    You must have **Instance Administrator** permissions to run this endpoint.
+You must have **Instance Administrator** permissions to run this endpoint.
 
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -7440,7 +7181,7 @@ async def post_public_api_v1_indicators_get(
     url = "https://api-yourfqdn/public_api/v1/indicators/get"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -7452,7 +7193,7 @@ async def post_public_api_v1_indicators_get(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -7461,8 +7202,8 @@ async def post_public_api_v1_indicators_get(
     ]
 
 
-# Schema for post_public_api_v1_indicators_get
-post_public_api_v1_indicators_get_schema = {
+# Schema for _public_api_v1_indicators_get
+_public_api_v1_indicators_get_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -7471,32 +7212,31 @@ post_public_api_v1_indicators_get_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_indicators_insert(
+async def _public_api_v1_indicators_insert(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: List[Any],
 ) -> List[types.TextContent]:
     """
-        Insert new IOCs or update existing IOCs.
+    Insert new IOCs or update existing IOCs.
 
-    **Note:** The IOC `rule_id` is tenant specific and can't be used across tenants. Inserting IOCs with the same `rule_id` as an existing IOC on that tenant will overwrite the existing IOC.
+**Note:** The IOC `rule_id` is tenant specific and can't be used across tenants. Inserting IOCs with the same `rule_id` as an existing IOC on that tenant will overwrite the existing IOC.
 
-    You must have **Instance Administrator** permissions to run this endpoint.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+You must have **Instance Administrator** permissions to run this endpoint.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -7508,7 +7248,7 @@ async def post_public_api_v1_indicators_insert(
     url = "https://api-yourfqdn/public_api/v1/indicators/insert"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -7520,7 +7260,7 @@ async def post_public_api_v1_indicators_insert(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -7529,8 +7269,8 @@ async def post_public_api_v1_indicators_insert(
     ]
 
 
-# Schema for post_public_api_v1_indicators_insert
-post_public_api_v1_indicators_insert_schema = {
+# Schema for _public_api_v1_indicators_insert
+_public_api_v1_indicators_insert_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -7539,30 +7279,29 @@ post_public_api_v1_indicators_insert_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_indicators_delete(
+async def _public_api_v1_indicators_delete(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Delete IOCs selected by filter.
+    Delete IOCs selected by filter.
 
-    You must have **Instance Administrator** permissions to run this endpoint.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+You must have **Instance Administrator** permissions to run this endpoint.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -7574,7 +7313,7 @@ async def post_public_api_v1_indicators_delete(
     url = "https://api-yourfqdn/public_api/v1/indicators/delete"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -7586,7 +7325,7 @@ async def post_public_api_v1_indicators_delete(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -7595,8 +7334,8 @@ async def post_public_api_v1_indicators_delete(
     ]
 
 
-# Schema for post_public_api_v1_indicators_delete
-post_public_api_v1_indicators_delete_schema = {
+# Schema for _public_api_v1_indicators_delete
+_public_api_v1_indicators_delete_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -7605,33 +7344,32 @@ post_public_api_v1_indicators_delete_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_bioc_get(
+async def _public_api_v1_bioc_get(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Return a list of BIOCs. You can return all BIOCs or filter results. You can also return extended results with all details included.- The response is concatenated using AND condition (OR is not supported).
-    - The maximum result set size is >100.
-    - Offset is the zero-based number of incidents from the start of the result set.
+    Return a list of BIOCs. You can return all BIOCs or filter results. You can also return extended results with all details included.- The response is concatenated using AND condition (OR is not supported).
+- The maximum result set size is >100.
+- Offset is the zero-based number of incidents from the start of the result set.
 
-    You must have **Instance Administrator** permissions to run this endpoint.
+You must have **Instance Administrator** permissions to run this endpoint.
 
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -7643,7 +7381,7 @@ async def post_public_api_v1_bioc_get(
     url = "https://api-yourfqdn/public_api/v1/bioc/get"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -7655,7 +7393,7 @@ async def post_public_api_v1_bioc_get(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -7664,8 +7402,8 @@ async def post_public_api_v1_bioc_get(
     ]
 
 
-# Schema for post_public_api_v1_bioc_get
-post_public_api_v1_bioc_get_schema = {
+# Schema for _public_api_v1_bioc_get
+_public_api_v1_bioc_get_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -7674,32 +7412,31 @@ post_public_api_v1_bioc_get_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_bioc_insert(
+async def _public_api_v1_bioc_insert(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: List[Any],
 ) -> List[types.TextContent]:
     """
-        Insert new BIOCs or update existing BIOCs.
+    Insert new BIOCs or update existing BIOCs.
 
-    **Note:** The BIOC `rule_id` is tenant specific and can't be used across tenants. Inserting BIOCs with the same `rule_id` as an existing BIOC on that tenant will overwrite the existing BIOC.
+**Note:** The BIOC `rule_id` is tenant specific and can't be used across tenants. Inserting BIOCs with the same `rule_id` as an existing BIOC on that tenant will overwrite the existing BIOC.
 
-    You must have **Instance Administrator** permissions to run this endpoint.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+You must have **Instance Administrator** permissions to run this endpoint.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -7711,7 +7448,7 @@ async def post_public_api_v1_bioc_insert(
     url = "https://api-yourfqdn/public_api/v1/bioc/insert"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -7723,7 +7460,7 @@ async def post_public_api_v1_bioc_insert(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -7732,8 +7469,8 @@ async def post_public_api_v1_bioc_insert(
     ]
 
 
-# Schema for post_public_api_v1_bioc_insert
-post_public_api_v1_bioc_insert_schema = {
+# Schema for _public_api_v1_bioc_insert
+_public_api_v1_bioc_insert_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -7742,30 +7479,29 @@ post_public_api_v1_bioc_insert_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_bioc_delete(
+async def _public_api_v1_bioc_delete(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Delete BIOCs selected by filter.
+    Delete BIOCs selected by filter.
 
-    You must have **Instance Administrator** permissions to run this endpoint.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+You must have **Instance Administrator** permissions to run this endpoint.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -7777,7 +7513,7 @@ async def post_public_api_v1_bioc_delete(
     url = "https://api-yourfqdn/public_api/v1/bioc/delete"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -7789,7 +7525,7 @@ async def post_public_api_v1_bioc_delete(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -7798,8 +7534,8 @@ async def post_public_api_v1_bioc_delete(
     ]
 
 
-# Schema for post_public_api_v1_bioc_delete
-post_public_api_v1_bioc_delete_schema = {
+# Schema for _public_api_v1_bioc_delete
+_public_api_v1_bioc_delete_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -7808,34 +7544,33 @@ post_public_api_v1_bioc_delete_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_correlations_get(
+async def _public_api_v1_correlations_get(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Return a list of correlation rules. You can return all correlation rules or filter results. You can also return extended results with all details included.
-    - The response is concatenated using AND condition (OR is not supported).
-    - The maximum result set size is >100.
-    - Offset is the zero-based number of incidents from the start of the result set.
+    Return a list of correlation rules. You can return all correlation rules or filter results. You can also return extended results with all details included.
+- The response is concatenated using AND condition (OR is not supported).
+- The maximum result set size is >100.
+- Offset is the zero-based number of incidents from the start of the result set.
 
-    You must have **Instance Administrator** permissions to run this endpoint.
+You must have **Instance Administrator** permissions to run this endpoint.
 
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -7847,7 +7582,7 @@ async def post_public_api_v1_correlations_get(
     url = "https://api-yourfqdn/public_api/v1/correlations/get"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -7859,7 +7594,7 @@ async def post_public_api_v1_correlations_get(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -7868,8 +7603,8 @@ async def post_public_api_v1_correlations_get(
     ]
 
 
-# Schema for post_public_api_v1_correlations_get
-post_public_api_v1_correlations_get_schema = {
+# Schema for _public_api_v1_correlations_get
+_public_api_v1_correlations_get_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -7878,32 +7613,31 @@ post_public_api_v1_correlations_get_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_correlations_insert(
+async def _public_api_v1_correlations_insert(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: List[Any],
 ) -> List[types.TextContent]:
     """
-        Insert new Correlation Rules or update existing Correlation Rules.
+    Insert new Correlation Rules or update existing Correlation Rules.
 
-    **Note:** The Correlation Rule `id` is tenant specific and can't be used across tenants. Inserting Correlation Rules with the same `id` as an existing Correlation Rule on that tenant will overwrite the existing Correlation Rule.
+**Note:** The Correlation Rule `id` is tenant specific and can't be used across tenants. Inserting Correlation Rules with the same `id` as an existing Correlation Rule on that tenant will overwrite the existing Correlation Rule.
 
-    You must have **Instance Administrator** permissions to run this endpoint.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+You must have **Instance Administrator** permissions to run this endpoint.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -7915,7 +7649,7 @@ async def post_public_api_v1_correlations_insert(
     url = "https://api-yourfqdn/public_api/v1/correlations/insert"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -7927,7 +7661,7 @@ async def post_public_api_v1_correlations_insert(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -7936,8 +7670,8 @@ async def post_public_api_v1_correlations_insert(
     ]
 
 
-# Schema for post_public_api_v1_correlations_insert
-post_public_api_v1_correlations_insert_schema = {
+# Schema for _public_api_v1_correlations_insert
+_public_api_v1_correlations_insert_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -7946,30 +7680,29 @@ post_public_api_v1_correlations_insert_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_correlations_delete(
+async def _public_api_v1_correlations_delete(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Delete correlation rules selected by filter.
+    Delete correlation rules selected by filter.
 
-    You must have **Instance Administrator** permissions to run this endpoint.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+You must have **Instance Administrator** permissions to run this endpoint.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -7981,7 +7714,7 @@ async def post_public_api_v1_correlations_delete(
     url = "https://api-yourfqdn/public_api/v1/correlations/delete"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -7993,7 +7726,7 @@ async def post_public_api_v1_correlations_delete(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -8002,8 +7735,8 @@ async def post_public_api_v1_correlations_delete(
     ]
 
 
-# Schema for post_public_api_v1_correlations_delete
-post_public_api_v1_correlations_delete_schema = {
+# Schema for _public_api_v1_correlations_delete
+_public_api_v1_correlations_delete_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -8012,30 +7745,29 @@ post_public_api_v1_correlations_delete_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_playbooks_get(
+async def _public_api_v1_playbooks_get(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Get a playbook by filtering based on its name or ID. The playbook's YAML is returned in a ZIP file.
+     Get a playbook by filtering based on its name or ID. The playbook's YAML is returned in a ZIP file.
 
-    You must have **Instance Administrator** permissions to run this endpoint.
-
-       Args:
-           Tool arguments are defined in the schema below
-
-       Returns:
-           List of text content with the API response
+ You must have **Instance Administrator** permissions to run this endpoint.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -8047,7 +7779,7 @@ async def post_public_api_v1_playbooks_get(
     url = "https://api-yourfqdn/public_api/v1/playbooks/get"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -8059,7 +7791,7 @@ async def post_public_api_v1_playbooks_get(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -8068,8 +7800,8 @@ async def post_public_api_v1_playbooks_get(
     ]
 
 
-# Schema for post_public_api_v1_playbooks_get
-post_public_api_v1_playbooks_get_schema = {
+# Schema for _public_api_v1_playbooks_get
+_public_api_v1_playbooks_get_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -8078,29 +7810,28 @@ post_public_api_v1_playbooks_get_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_playbooks_insert(
+async def _public_api_v1_playbooks_insert(
     authorization: str,
     x_xdr_auth_id: str,
 ) -> List[types.TextContent]:
     """
-        Add or update a playbook by passing the YAML in a ZIP file.
+    Add or update a playbook by passing the YAML in a ZIP file.
 
-    You must have **Instance Administrator** permissions to run this endpoint.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+You must have **Instance Administrator** permissions to run this endpoint.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -8110,7 +7841,7 @@ async def post_public_api_v1_playbooks_insert(
     url = "https://api-yourfqdn/public_api/v1/playbooks/insert"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -8122,7 +7853,7 @@ async def post_public_api_v1_playbooks_insert(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -8131,8 +7862,8 @@ async def post_public_api_v1_playbooks_insert(
     ]
 
 
-# Schema for post_public_api_v1_playbooks_insert
-post_public_api_v1_playbooks_insert_schema = {
+# Schema for _public_api_v1_playbooks_insert
+_public_api_v1_playbooks_insert_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -8140,30 +7871,29 @@ post_public_api_v1_playbooks_insert_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_playbooks_delete(
+async def _public_api_v1_playbooks_delete(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Delete a playbook by filtering based on its name or ID.
+    Delete a playbook by filtering based on its name or ID.
 
-    You must have **Instance Administrator** permissions to run this endpoint.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+You must have **Instance Administrator** permissions to run this endpoint.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -8175,7 +7905,7 @@ async def post_public_api_v1_playbooks_delete(
     url = "https://api-yourfqdn/public_api/v1/playbooks/delete"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -8187,7 +7917,7 @@ async def post_public_api_v1_playbooks_delete(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -8196,8 +7926,8 @@ async def post_public_api_v1_playbooks_delete(
     ]
 
 
-# Schema for post_public_api_v1_playbooks_delete
-post_public_api_v1_playbooks_delete_schema = {
+# Schema for _public_api_v1_playbooks_delete
+_public_api_v1_playbooks_delete_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -8206,30 +7936,29 @@ post_public_api_v1_playbooks_delete_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_scripts_get(
+async def _public_api_v1_scripts_get(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Get a script by filtering based on its name or ID. The script's YAML is returned in a ZIP file.
+     Get a script by filtering based on its name or ID. The script's YAML is returned in a ZIP file.
 
-    You must have **Instance Administrator** permissions to run this endpoint.
-
-       Args:
-           Tool arguments are defined in the schema below
-
-       Returns:
-           List of text content with the API response
+ You must have **Instance Administrator** permissions to run this endpoint.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -8241,7 +7970,7 @@ async def post_public_api_v1_scripts_get(
     url = "https://api-yourfqdn/public_api/v1/scripts/get"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -8253,7 +7982,7 @@ async def post_public_api_v1_scripts_get(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -8262,8 +7991,8 @@ async def post_public_api_v1_scripts_get(
     ]
 
 
-# Schema for post_public_api_v1_scripts_get
-post_public_api_v1_scripts_get_schema = {
+# Schema for _public_api_v1_scripts_get
+_public_api_v1_scripts_get_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -8272,29 +8001,28 @@ post_public_api_v1_scripts_get_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_scripts_insert(
+async def _public_api_v1_scripts_insert(
     authorization: str,
     x_xdr_auth_id: str,
 ) -> List[types.TextContent]:
     """
-        Update or add a script by passing the YAML in a ZIP file.
+    Update or add a script by passing the YAML in a ZIP file.
 
-    You must have **Instance Administrator** permissions to run this endpoint.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+You must have **Instance Administrator** permissions to run this endpoint.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -8304,7 +8032,7 @@ async def post_public_api_v1_scripts_insert(
     url = "https://api-yourfqdn/public_api/v1/scripts/insert"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -8316,7 +8044,7 @@ async def post_public_api_v1_scripts_insert(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -8325,8 +8053,8 @@ async def post_public_api_v1_scripts_insert(
     ]
 
 
-# Schema for post_public_api_v1_scripts_insert
-post_public_api_v1_scripts_insert_schema = {
+# Schema for _public_api_v1_scripts_insert
+_public_api_v1_scripts_insert_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -8334,30 +8062,29 @@ post_public_api_v1_scripts_insert_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_scripts_delete(
+async def _public_api_v1_scripts_delete(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Delete a script by filtering based on its name or ID.
+    Delete a script by filtering based on its name or ID.
 
-    You must have **Instance Administrator** permissions to run this endpoint.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+You must have **Instance Administrator** permissions to run this endpoint.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -8369,7 +8096,7 @@ async def post_public_api_v1_scripts_delete(
     url = "https://api-yourfqdn/public_api/v1/scripts/delete"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -8381,7 +8108,7 @@ async def post_public_api_v1_scripts_delete(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -8390,8 +8117,8 @@ async def post_public_api_v1_scripts_delete(
     ]
 
 
-# Schema for post_public_api_v1_scripts_delete
-post_public_api_v1_scripts_delete_schema = {
+# Schema for _public_api_v1_scripts_delete
+_public_api_v1_scripts_delete_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -8400,31 +8127,30 @@ post_public_api_v1_scripts_delete_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_dashboards_get(
+async def _public_api_v1_dashboards_get(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Get dashboard details by filtering based on the dashboard name, dashboard ID, time the dashboard was generated, or dashboard source.
+    Get dashboard details by filtering based on the dashboard name, dashboard ID, time the dashboard was generated, or dashboard source.
 
-    You must have **Instance Administrator** permissions to run this endpoint.
+You must have **Instance Administrator** permissions to run this endpoint.
 
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -8436,7 +8162,7 @@ async def post_public_api_v1_dashboards_get(
     url = "https://api-yourfqdn/public_api/v1/dashboards/get"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -8448,7 +8174,7 @@ async def post_public_api_v1_dashboards_get(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -8457,8 +8183,8 @@ async def post_public_api_v1_dashboards_get(
     ]
 
 
-# Schema for post_public_api_v1_dashboards_get
-post_public_api_v1_dashboards_get_schema = {
+# Schema for _public_api_v1_dashboards_get
+_public_api_v1_dashboards_get_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -8467,30 +8193,29 @@ post_public_api_v1_dashboards_get_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_dashboards_insert(
+async def _public_api_v1_dashboards_insert(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Add or update the dashboards retrieved by the Get dashboards API.
+    Add or update the dashboards retrieved by the Get dashboards API.
 
-    You must have **Instance Administrator** permissions to run this endpoint.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+You must have **Instance Administrator** permissions to run this endpoint.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -8502,7 +8227,7 @@ async def post_public_api_v1_dashboards_insert(
     url = "https://api-yourfqdn/public_api/v1/dashboards/insert"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -8514,7 +8239,7 @@ async def post_public_api_v1_dashboards_insert(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -8523,8 +8248,8 @@ async def post_public_api_v1_dashboards_insert(
     ]
 
 
-# Schema for post_public_api_v1_dashboards_insert
-post_public_api_v1_dashboards_insert_schema = {
+# Schema for _public_api_v1_dashboards_insert
+_public_api_v1_dashboards_insert_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -8533,30 +8258,29 @@ post_public_api_v1_dashboards_insert_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_dashboards_delete(
+async def _public_api_v1_dashboards_delete(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Delete the dashboards retrieved by the Get dashboards API.
+    Delete the dashboards retrieved by the Get dashboards API.
 
-    You must have **Instance Administrator** permissions to run this endpoint.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+You must have **Instance Administrator** permissions to run this endpoint.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -8568,7 +8292,7 @@ async def post_public_api_v1_dashboards_delete(
     url = "https://api-yourfqdn/public_api/v1/dashboards/delete"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -8580,7 +8304,7 @@ async def post_public_api_v1_dashboards_delete(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -8589,8 +8313,8 @@ async def post_public_api_v1_dashboards_delete(
     ]
 
 
-# Schema for post_public_api_v1_dashboards_delete
-post_public_api_v1_dashboards_delete_schema = {
+# Schema for _public_api_v1_dashboards_delete
+_public_api_v1_dashboards_delete_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -8599,32 +8323,31 @@ post_public_api_v1_dashboards_delete_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_widgets_get(
+async def _public_api_v1_widgets_get(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Get widget details by filtering based on the widget title and widget creator.
+    Get widget details by filtering based on the widget title and widget creator.
 
-    **Note:** The endpoint only returns XQL widgets and not predefined widgets.
+**Note:** The endpoint only returns XQL widgets and not predefined widgets.
 
-    You must have **Instance Administrator** permissions to run this endpoint.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+You must have **Instance Administrator** permissions to run this endpoint.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -8636,7 +8359,7 @@ async def post_public_api_v1_widgets_get(
     url = "https://api-yourfqdn/public_api/v1/widgets/get"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -8648,7 +8371,7 @@ async def post_public_api_v1_widgets_get(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -8657,8 +8380,8 @@ async def post_public_api_v1_widgets_get(
     ]
 
 
-# Schema for post_public_api_v1_widgets_get
-post_public_api_v1_widgets_get_schema = {
+# Schema for _public_api_v1_widgets_get
+_public_api_v1_widgets_get_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -8667,30 +8390,29 @@ post_public_api_v1_widgets_get_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_widgets_insert(
+async def _public_api_v1_widgets_insert(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: List[Any] | None = None,
 ) -> List[types.TextContent]:
     """
-        Update or add the widgets retrieved by the Get widgets API.
+    Update or add the widgets retrieved by the Get widgets API.
 
-    You must have **Instance Administrator** permissions to run this endpoint.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+You must have **Instance Administrator** permissions to run this endpoint.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -8702,7 +8424,7 @@ async def post_public_api_v1_widgets_insert(
     url = "https://api-yourfqdn/public_api/v1/widgets/insert"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -8714,7 +8436,7 @@ async def post_public_api_v1_widgets_insert(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -8723,8 +8445,8 @@ async def post_public_api_v1_widgets_insert(
     ]
 
 
-# Schema for post_public_api_v1_widgets_insert
-post_public_api_v1_widgets_insert_schema = {
+# Schema for _public_api_v1_widgets_insert
+_public_api_v1_widgets_insert_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
@@ -8733,30 +8455,29 @@ post_public_api_v1_widgets_insert_schema = {
     },
 }
 
-
 @server.call_tool()
-async def post_public_api_v1_widgets_delete(
+async def _public_api_v1_widgets_delete(
     authorization: str,
     x_xdr_auth_id: str,
     request_data: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-        Delete the widgets retrieved by the Get widgets API.
+    Delete the widgets retrieved by the Get widgets API.
 
-    You must have **Instance Administrator** permissions to run this endpoint.
-
-        Args:
-            Tool arguments are defined in the schema below
-
-        Returns:
-            List of text content with the API response
+You must have **Instance Administrator** permissions to run this endpoint.
+    
+    Args:
+        Tool arguments are defined in the schema below
+    
+    Returns:
+        List of text content with the API response
     """
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if authorization is not None:
         headers["Authorization"] = authorization
     if x_xdr_auth_id is not None:
@@ -8768,7 +8489,7 @@ async def post_public_api_v1_widgets_delete(
     url = "https://api-yourfqdn/public_api/v1/widgets/delete"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
@@ -8780,7 +8501,7 @@ async def post_public_api_v1_widgets_delete(
         )
         response.raise_for_status()
         result = response.json()
-
+    
     return [
         types.TextContent(
             type="text",
@@ -8789,8 +8510,8 @@ async def post_public_api_v1_widgets_delete(
     ]
 
 
-# Schema for post_public_api_v1_widgets_delete
-post_public_api_v1_widgets_delete_schema = {
+# Schema for _public_api_v1_widgets_delete
+_public_api_v1_widgets_delete_schema = {
     "type": "object",
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},

@@ -19,11 +19,11 @@ def test_generated_files_content():
     """Test that generated files have expected content."""
     server_dir = Path(__file__).parent.parent / "server"
 
-    # Check XSIAM tools
+    # Check XSIAM tools - HTTP verb prefix should be removed
     xsiam_content = (server_dir / "generated_xsiam_tools.py").read_text()
-    assert "def post_start_xql_query" in xsiam_content
-    assert "def post_get_incidents" in xsiam_content
-    assert "def post_update_incident" in xsiam_content
+    assert "def start_xql_query" in xsiam_content
+    assert "def get_incidents" in xsiam_content
+    assert "def update_incident" in xsiam_content
     assert "@server.call_tool()" in xsiam_content
 
     # Check XSOAR tools
@@ -41,10 +41,13 @@ def test_snake_case_naming():
     xsiam_content = (server_dir / "generated_xsiam_tools.py").read_text()
 
     # Verify snake_case is used (not camelCase)
-    assert "post_start_xql_query" in xsiam_content
-    assert "post_get_incidents" in xsiam_content
+    assert "start_xql_query" in xsiam_content
+    assert "get_incidents" in xsiam_content
     # Should not have camelCase versions
     assert "postStartXqlQuery" not in xsiam_content
     assert "postGetIncidents" not in xsiam_content
+    # Should not have post_ prefix anymore (that's the whole point of this fix)
+    assert "post_start_xql_query" not in xsiam_content
+    assert "post_get_incidents" not in xsiam_content
     # Check header parameter conversion
     assert "x_xdr_auth_id" in xsiam_content  # Converted from x-xdr-auth-id

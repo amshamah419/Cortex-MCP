@@ -12,8 +12,57 @@ from typing import Any, Dict, List
 import yaml
 
 
-def to_snake_case(name: str) -> str:
-    """Convert camelCase or PascalCase to snake_case and handle hyphens."""
+def strip_http_verb_prefix(name: str, http_method: str = "") -> str:
+    """
+    Strip HTTP verb prefix from operation ID if it matches the actual HTTP method.
+    
+    For example:
+        postStartXqlQuery (POST) -> StartXqlQuery
+        getIncidents (GET) -> Incidents
+        getAutomationScripts (POST) -> getAutomationScripts (no change, doesn't match method)
+    
+    Args:
+        name: The operation ID to process
+        http_method: The actual HTTP method for this operation (get, post, put, patch, delete)
+    
+    Returns:
+        The name with HTTP verb prefix stripped if it matches the method
+    """
+    if not http_method:
+        return name
+    
+    # Normalize the HTTP method to lowercase
+    http_method = http_method.lower()
+    
+    # Check if name starts with the HTTP method (case-insensitive)
+    if name.lower().startswith(http_method):
+        # Check if there's a character after the method
+        method_len = len(http_method)
+        if len(name) > method_len:
+            # Get the character after the method
+            next_char = name[method_len]
+            # Strip the method if the next character is uppercase, underscore, or hyphen
+            # This ensures we don't strip "get" from "getter" but do strip from "getItems"
+            if next_char.isupper() or next_char in ["_", "-"]:
+                # Return the name without the method prefix
+                return name[method_len:]
+    
+    return name
+
+
+def to_snake_case(name: str, http_method: str = "") -> str:
+    """
+    Convert camelCase or PascalCase to snake_case and handle hyphens.
+    
+    Args:
+        name: The name to convert
+        http_method: Optional HTTP method to strip as prefix if it matches
+    
+    Returns:
+        The name converted to snake_case
+    """
+    # Strip HTTP verb prefix if it matches the method
+    name = strip_http_verb_prefix(name, http_method)
     # Replace hyphens with underscores first
     name = name.replace("-", "_")
     # Insert underscore before uppercase letters and convert to lowercase
@@ -120,7 +169,7 @@ def generate_tool_function(
     base_url: str,
 ) -> str:
     """Generate a single tool function from an OpenAPI operation."""
-    tool_name = to_snake_case(operation_id)
+    tool_name = to_snake_case(operation_id, method)
     summary = operation.get("summary", "")
     description = operation.get("description", summary)
 
