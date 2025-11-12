@@ -4442,7 +4442,7 @@ import_widget_schema = {
 }
 
 @server.call_tool()
-async def widget(
+async def get_widget(
     id: str,
 ) -> List[types.TextContent]:
     """
@@ -4471,7 +4471,7 @@ async def widget(
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
-            method="GET",
+            method="",
             url=url,
             params=params,
             headers=headers,
@@ -4488,8 +4488,8 @@ async def widget(
     ]
 
 
-# Schema for widget
-widget_schema = {
+# Schema for get_widget
+get_widget_schema = {
     "type": "object",
     "properties": {
         "id": {"type": "str", "description": "The ID of widget to get."},
@@ -4497,7 +4497,7 @@ widget_schema = {
 }
 
 @server.call_tool()
-async def widget(
+async def delete_widget(
     id: str,
 ) -> List[types.TextContent]:
     """
@@ -4526,7 +4526,7 @@ async def widget(
     # Make the API request
     async with httpx.AsyncClient() as client:
         response = await client.request(
-            method="DELETE",
+            method="",
             url=url,
             params=params,
             headers=headers,
@@ -4543,8 +4543,8 @@ async def widget(
     ]
 
 
-# Schema for widget
-widget_schema = {
+# Schema for delete_widget
+delete_widget_schema = {
     "type": "object",
     "properties": {
         "id": {"type": "str", "description": "Widget id to remove (returned from widget save or widgets get)"},

@@ -20,36 +20,39 @@ def test_strip_http_verb_prefix():
     assert strip_http_verb_prefix("postStartXqlQuery", "post") == "StartXqlQuery"
     assert strip_http_verb_prefix("postGetQueryResults", "post") == "GetQueryResults"
     assert strip_http_verb_prefix("postUpdateIncident", "post") == "UpdateIncident"
-    
+
     # Test GET prefix stripping when method is GET
     assert strip_http_verb_prefix("getIncidents", "get") == "Incidents"
     assert strip_http_verb_prefix("getAutomationScripts", "get") == "AutomationScripts"
-    
+
     # Test PUT prefix stripping when method is PUT
     assert strip_http_verb_prefix("putUpdateUser", "put") == "UpdateUser"
-    
+
     # Test PATCH prefix stripping when method is PATCH
     assert strip_http_verb_prefix("patchModifyIncident", "patch") == "ModifyIncident"
-    
+
     # Test DELETE prefix stripping when method is DELETE
     assert strip_http_verb_prefix("deleteRemoveAlert", "delete") == "RemoveAlert"
-    
+
     # Test with hyphens
-    assert strip_http_verb_prefix("post-public_api-v1-alerts-get_alerts", "post") == "-public_api-v1-alerts-get_alerts"
-    
+    assert (
+        strip_http_verb_prefix("post-public_api-v1-alerts-get_alerts", "post")
+        == "-public_api-v1-alerts-get_alerts"
+    )
+
     # Test no stripping when prefix doesn't match method
     assert strip_http_verb_prefix("getAutomationScripts", "post") == "getAutomationScripts"
     assert strip_http_verb_prefix("postGetIncidents", "get") == "postGetIncidents"
-    
+
     # Test no prefix (should remain unchanged)
     assert strip_http_verb_prefix("listIncidents", "post") == "listIncidents"
     assert strip_http_verb_prefix("createIncident", "post") == "createIncident"
     assert strip_http_verb_prefix("executePlaybook", "get") == "executePlaybook"
-    
+
     # Test edge case: verb as whole word (should not strip)
     assert strip_http_verb_prefix("getter", "get") == "getter"
     assert strip_http_verb_prefix("poster", "post") == "poster"
-    
+
     # Test without method parameter
     assert strip_http_verb_prefix("postStartXqlQuery", "") == "postStartXqlQuery"
     assert strip_http_verb_prefix("getIncidents", "") == "getIncidents"
@@ -61,14 +64,14 @@ def test_to_snake_case():
     assert to_snake_case("listIncidents") == "list_incidents"
     assert to_snake_case("createIncident") == "create_incident"
     assert to_snake_case("executePlaybook") == "execute_playbook"
-    
+
     # Test with HTTP method matching (should strip prefix)
     assert to_snake_case("postStartXqlQuery", "post") == "start_xql_query"
     assert to_snake_case("postGetQueryResults", "post") == "get_query_results"
     assert to_snake_case("getIncidents", "get") == "incidents"
     assert to_snake_case("postUpdateIncident", "post") == "update_incident"
     assert to_snake_case("deleteWidget", "delete") == "widget"
-    
+
     # Test with HTTP method not matching (should not strip)
     assert to_snake_case("getAutomationScripts", "post") == "get_automation_scripts"
     assert to_snake_case("getIncidentID", "post") == "get_incident_id"

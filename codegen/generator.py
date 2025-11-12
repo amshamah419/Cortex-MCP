@@ -15,25 +15,25 @@ import yaml
 def strip_http_verb_prefix(name: str, http_method: str = "") -> str:
     """
     Strip HTTP verb prefix from operation ID if it matches the actual HTTP method.
-    
+
     For example:
         postStartXqlQuery (POST) -> StartXqlQuery
         getIncidents (GET) -> Incidents
         getAutomationScripts (POST) -> getAutomationScripts (no change, doesn't match method)
-    
+
     Args:
         name: The operation ID to process
         http_method: The actual HTTP method for this operation (get, post, put, patch, delete)
-    
+
     Returns:
         The name with HTTP verb prefix stripped if it matches the method
     """
     if not http_method:
         return name
-    
+
     # Normalize the HTTP method to lowercase
     http_method = http_method.lower()
-    
+
     # Check if name starts with the HTTP method (case-insensitive)
     if name.lower().startswith(http_method):
         # Check if there's a character after the method
@@ -46,18 +46,18 @@ def strip_http_verb_prefix(name: str, http_method: str = "") -> str:
             if next_char.isupper() or next_char in ["_", "-"]:
                 # Return the name without the method prefix
                 return name[method_len:]
-    
+
     return name
 
 
 def to_snake_case(name: str, http_method: str = "") -> str:
     """
     Convert camelCase or PascalCase to snake_case and handle hyphens.
-    
+
     Args:
         name: The name to convert
         http_method: Optional HTTP method to strip as prefix if it matches
-    
+
     Returns:
         The name converted to snake_case
     """
@@ -304,6 +304,23 @@ def generate_tools_file(spec_path: Path, output_dir: Path) -> None:
     servers = spec.get("servers", [])
     base_url = servers[0]["url"] if servers else ""
 
+    # First pass: collect all tool names to detect collisions
+    tool_names: Dict[str, List[tuple[str, str, str]]] = {}  # name -> [(operation_id, method, path)]
+    paths = spec.get("paths", {})
+    for path, path_item in paths.items():
+        for method in ["get", "post", "put", "patch", "delete"]:
+            if method in path_item:
+                operation = path_item[method]
+                operation_id = operation.get("operationId")
+                if operation_id:
+                    tool_name = to_snake_case(operation_id, method)
+                    if tool_name not in tool_names:
+                        tool_names[tool_name] = []
+                    tool_names[tool_name].append((operation_id, method, path))
+
+    # Identify collisions - names that appear more than once
+    collisions = {name for name, ops in tool_names.items() if len(ops) > 1}
+
     # File header
     file_content = f'''"""
 Auto-generated MCP tools for {spec_name.upper()}.
@@ -330,15 +347,19 @@ def set_server(s: Server) -> None:
 '''
 
     # Generate tool functions
-    paths = spec.get("paths", {})
     for path, path_item in paths.items():
         for method in ["get", "post", "put", "patch", "delete"]:
             if method in path_item:
                 operation = path_item[method]
                 operation_id = operation.get("operationId")
                 if operation_id:
+                    # Check if this would be a collision
+                    tool_name = to_snake_case(operation_id, method)
+                    # For collisions, don't pass the method so the HTTP verb prefix is kept
+                    method_for_naming = "" if tool_name in collisions else method
+
                     tool_code = generate_tool_function(
-                        operation_id, method, path, operation, base_url
+                        operation_id, method_for_naming, path, operation, base_url
                     )
                     file_content += tool_code
 

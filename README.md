@@ -118,24 +118,24 @@ python -m server.main
 ### XSIAM Tools (129 tools)
 
 **XQL Queries & Analytics**:
-- `post_start_xql_query` - Execute XQL queries for threat hunting
-- `post_get_query_results` - Retrieve query results
-- `post_get_query_results_stream` - Stream large result sets
+- `start_xql_query` - Execute XQL queries for threat hunting
+- `get_query_results` - Retrieve query results
+- `get_query_results_stream` - Stream large result sets
 
 **Incident Management**:
-- `post_get_incidents` - Query and filter security incidents
-- `post_update_incident` - Update incident status and details
-- `post_get_incident_extra_data` - Get detailed incident information
+- `get_incidents` - Query and filter security incidents
+- `update_incident` - Update incident status and details
+- `get_incident_extra_data` - Get detailed incident information
 
 **Alert Operations**:
-- `post_public_api_v1_alerts_get_alerts` - Retrieve security alerts
-- `post_update_alerts` - Update alert status
-- `post_get_alerts_multi_events` - Get alerts with event correlation
+- `_public_api_v1_alerts_get_alerts` - Retrieve security alerts
+- `update_alerts` - Update alert status
+- `get_alerts_multi_events` - Get alerts with event correlation
 
 **Endpoint Management**:
-- `post_endpoints_get_endpoint` - Query endpoint information
-- `post_scan_endpoints` - Initiate endpoint scans
-- `post_isolate_endpoint` - Isolate compromised endpoints
+- `endpoints_get_endpoint` - Query endpoint information
+- `scan_endpoints` - Initiate endpoint scans
+- `isolate_endpoint` - Isolate compromised endpoints
 
 ### XSOAR Tools (82 tools)
 
@@ -166,7 +166,7 @@ For a complete list of all 211 tools, see the generated files in `server/generat
 **Developer**: "Show me all high-severity incidents from the last week where the source IP is from Russia"
 
 **AI Agent** uses:
-1. `post_get_incidents` with filters for severity and date range
+1. `get_incidents` with filters for severity and date range
 2. Parses results and filters by geography
 3. Presents findings in natural language
 
@@ -175,18 +175,18 @@ For a complete list of all 211 tools, see the generated files in `server/generat
 **Developer**: "Create a test incident to verify my new phishing playbook"
 
 **AI Agent** uses:
-1. `post_create_incident` to create a test incident
+1. `create_incident` to create a test incident
 2. `execute_playbook` to run the playbook
-3. `post_get_incidents` to verify the outcome
+3. `get_incidents` to verify the outcome
 
 ### Example 3: Automation Testing
 
 **Developer**: "Run an XQL query to find failed login attempts and create an incident if there are more than 10"
 
 **AI Agent** uses:
-1. `post_start_xql_query` with the appropriate XQL syntax
-2. `post_get_query_results` to retrieve results
-3. `post_create_incident` if threshold is exceeded
+1. `start_xql_query` with the appropriate XQL syntax
+2. `get_query_results` to retrieve results
+3. `create_incident` if threshold is exceeded
 
 ## Extending with Custom Tools
 
