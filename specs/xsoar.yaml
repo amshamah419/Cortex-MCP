@@ -1,0 +1,203 @@
+openapi: 3.0.0
+info:
+  title: XSOAR API
+  version: 1.0.0
+  description: XSOAR API for security orchestration and automation
+servers:
+  - url: https://api.xsoar.example.com/v1
+paths:
+  /playbooks:
+    get:
+      operationId: listPlaybooks
+      summary: List playbooks
+      description: Retrieve a list of available playbooks
+      parameters:
+        - name: category
+          in: query
+          description: Filter by playbook category
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  playbooks:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Playbook'
+  /playbooks/{playbook_id}/execute:
+    post:
+      operationId: executePlaybook
+      summary: Execute a playbook
+      description: Execute a specific playbook with parameters
+      parameters:
+        - name: playbook_id
+          in: path
+          required: true
+          description: The playbook ID
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                inputs:
+                  type: object
+                  additionalProperties: true
+                  description: Playbook input parameters
+      responses:
+        '200':
+          description: Playbook execution started
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  execution_id:
+                    type: string
+                  status:
+                    type: string
+  /investigations:
+    get:
+      operationId: listInvestigations
+      summary: List investigations
+      description: Retrieve a list of investigations
+      parameters:
+        - name: status
+          in: query
+          description: Filter by investigation status
+          required: false
+          schema:
+            type: string
+            enum: [active, closed, pending]
+        - name: limit
+          in: query
+          description: Maximum number of results
+          required: false
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  investigations:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Investigation'
+    post:
+      operationId: createInvestigation
+      summary: Create investigation
+      description: Create a new investigation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - type
+              properties:
+                name:
+                  type: string
+                type:
+                  type: string
+                severity:
+                  type: integer
+                  minimum: 0
+                  maximum: 4
+      responses:
+        '201':
+          description: Investigation created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Investigation'
+  /indicators:
+    get:
+      operationId: searchIndicators
+      summary: Search indicators of compromise
+      description: Search for indicators of compromise (IOCs)
+      parameters:
+        - name: query
+          in: query
+          description: Search query
+          required: false
+          schema:
+            type: string
+        - name: type
+          in: query
+          description: Indicator type
+          required: false
+          schema:
+            type: string
+            enum: [ip, domain, url, hash, email]
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  indicators:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Indicator'
+
+components:
+  schemas:
+    Playbook:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+    Investigation:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        status:
+          type: string
+        severity:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+    Indicator:
+      type: object
+      properties:
+        id:
+          type: string
+        value:
+          type: string
+        type:
+          type: string
+        score:
+          type: integer
+        last_seen:
+          type: string
+          format: date-time

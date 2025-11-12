@@ -1,0 +1,182 @@
+openapi: 3.0.0
+info:
+  title: XSIAM API
+  version: 1.0.0
+  description: XSIAM API for security operations
+servers:
+  - url: https://api.xsiam.example.com/v1
+paths:
+  /incidents:
+    get:
+      operationId: listIncidents
+      summary: List security incidents
+      description: Retrieve a list of security incidents from XSIAM
+      parameters:
+        - name: limit
+          in: query
+          description: Maximum number of incidents to return
+          required: false
+          schema:
+            type: integer
+            default: 100
+        - name: status
+          in: query
+          description: Filter by incident status
+          required: false
+          schema:
+            type: string
+            enum: [open, closed, investigating]
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  incidents:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Incident'
+    post:
+      operationId: createIncident
+      summary: Create a new incident
+      description: Create a new security incident in XSIAM
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - severity
+              properties:
+                name:
+                  type: string
+                  description: Incident name
+                severity:
+                  type: string
+                  enum: [low, medium, high, critical]
+                description:
+                  type: string
+      responses:
+        '201':
+          description: Incident created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Incident'
+  /incidents/{incident_id}:
+    get:
+      operationId: getIncident
+      summary: Get incident details
+      description: Retrieve details of a specific incident
+      parameters:
+        - name: incident_id
+          in: path
+          required: true
+          description: The incident ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Incident'
+    patch:
+      operationId: updateIncident
+      summary: Update an incident
+      description: Update incident status or details
+      parameters:
+        - name: incident_id
+          in: path
+          required: true
+          description: The incident ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [open, closed, investigating]
+                notes:
+                  type: string
+      responses:
+        '200':
+          description: Incident updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Incident'
+  /alerts:
+    get:
+      operationId: listAlerts
+      summary: List security alerts
+      description: Retrieve security alerts from XSIAM
+      parameters:
+        - name: severity
+          in: query
+          description: Filter by alert severity
+          required: false
+          schema:
+            type: string
+            enum: [low, medium, high, critical]
+        - name: time_range
+          in: query
+          description: Time range in hours
+          required: false
+          schema:
+            type: integer
+            default: 24
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  alerts:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Alert'
+
+components:
+  schemas:
+    Incident:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        severity:
+          type: string
+        status:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    Alert:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        severity:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
