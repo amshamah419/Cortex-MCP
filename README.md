@@ -118,44 +118,44 @@ python -m server.main
 ### XSIAM Tools (129 tools)
 
 **XQL Queries & Analytics**:
-- `post_start_xql_query` - Execute XQL queries for threat hunting
-- `post_get_query_results` - Retrieve query results
-- `post_get_query_results_stream` - Stream large result sets
+- `xsiam_start_xql_query` - Execute XQL queries for threat hunting
+- `xsiam_get_query_results` - Retrieve query results
+- `xsiam_get_query_results_stream` - Stream large result sets
 
 **Incident Management**:
-- `post_get_incidents` - Query and filter security incidents
-- `post_update_incident` - Update incident status and details
-- `post_get_incident_extra_data` - Get detailed incident information
+- `xsiam_get_incidents` - Query and filter security incidents
+- `xsiam_update_incident` - Update incident status and details
+- `xsiam_get_incident_extra_data` - Get detailed incident information
 
 **Alert Operations**:
-- `post_public_api_v1_alerts_get_alerts` - Retrieve security alerts
-- `post_update_alerts` - Update alert status
-- `post_get_alerts_multi_events` - Get alerts with event correlation
+- `xsiam_alerts_get_alerts_v1` - Retrieve security alerts
+- `xsiam_update_alerts` - Update alert status
+- `xsiam_get_alerts_multi_events` - Get alerts with event correlation
 
 **Endpoint Management**:
-- `post_endpoints_get_endpoint` - Query endpoint information
-- `post_scan_endpoints` - Initiate endpoint scans
-- `post_isolate_endpoint` - Isolate compromised endpoints
+- `xsiam_endpoints_get_endpoint` - Query endpoint information
+- `xsiam_scan_endpoints` - Initiate endpoint scans
+- `xsiam_isolate_endpoint` - Isolate compromised endpoints
 
 ### XSOAR Tools (82 tools)
 
 **Automation & Scripts**:
-- `save_or_update_script` - Create or update automation scripts
-- `get_automation_scripts` - List available automations
-- `import_script` - Import custom scripts
+- `xsoar_save_or_update_script` - Create or update automation scripts
+- `xsoar_get_automation_scripts` - List available automations
+- `xsoar_import_script` - Import custom scripts
 
 **Investigation Management**:
-- `investigation_add_entry_handler` - Add entries to investigations
-- `get_all_investigations` - Query investigations
-- `create_investigation` - Start new investigations
+- `xsoar_investigation_add_entry_handler` - Add entries to investigations
+- `xsoar_get_all_investigations` - Query investigations
+- `xsoar_create_investigation` - Start new investigations
 
 **Playbook Operations**:
-- `get_playbooks` - List available playbooks
-- `execute_playbook` - Run playbooks programmatically
+- `xsoar_get_playbooks` - List available playbooks
+- `xsoar_execute_playbook` - Run playbooks programmatically
 
 **Indicator Management**:
-- `save_or_update_indicators` - Manage threat indicators
-- `search_indicators` - Query IOC database
+- `xsoar_save_or_update_indicators` - Manage threat indicators
+- `xsoar_search_indicators` - Query IOC database
 
 For a complete list of all 211 tools, see the generated files in `server/generated_xsiam_tools.py` and `server/generated_xsoar_tools.py`.
 
@@ -166,7 +166,7 @@ For a complete list of all 211 tools, see the generated files in `server/generat
 **Developer**: "Show me all high-severity incidents from the last week where the source IP is from Russia"
 
 **AI Agent** uses:
-1. `post_get_incidents` with filters for severity and date range
+1. `xsiam_get_incidents` with filters for severity and date range
 2. Parses results and filters by geography
 3. Presents findings in natural language
 
@@ -175,18 +175,18 @@ For a complete list of all 211 tools, see the generated files in `server/generat
 **Developer**: "Create a test incident to verify my new phishing playbook"
 
 **AI Agent** uses:
-1. `post_create_incident` to create a test incident
-2. `execute_playbook` to run the playbook
-3. `post_get_incidents` to verify the outcome
+1. `xsiam_create_incident` to create a test incident
+2. `xsoar_execute_playbook` to run the playbook
+3. `xsiam_get_incidents` to verify the outcome
 
 ### Example 3: Automation Testing
 
 **Developer**: "Run an XQL query to find failed login attempts and create an incident if there are more than 10"
 
 **AI Agent** uses:
-1. `post_start_xql_query` with the appropriate XQL syntax
-2. `post_get_query_results` to retrieve results
-3. `post_create_incident` if threshold is exceeded
+1. `xsiam_start_xql_query` with the appropriate XQL syntax
+2. `xsiam_get_query_results` to retrieve results
+3. `xsiam_create_incident` if threshold is exceeded
 
 ## Extending with Custom Tools
 

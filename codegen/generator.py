@@ -12,8 +12,95 @@ from typing import Any, Dict, List
 import yaml
 
 
-def to_snake_case(name: str) -> str:
-    """Convert camelCase or PascalCase to snake_case and handle hyphens."""
+def strip_http_verb_prefix(name: str, http_method: str = "") -> str:
+    """
+    Strip HTTP verb prefix from operation ID if it matches the actual HTTP method.
+
+    For example:
+        postStartXqlQuery (POST) -> StartXqlQuery
+        getIncidents (GET) -> Incidents
+        getAutomationScripts (POST) -> getAutomationScripts (no change, doesn't match method)
+
+    Args:
+        name: The operation ID to process
+        http_method: The actual HTTP method for this operation (get, post, put, patch, delete)
+
+    Returns:
+        The name with HTTP verb prefix stripped if it matches the method
+    """
+    if not http_method:
+        return name
+
+    # Normalize the HTTP method to lowercase
+    http_method = http_method.lower()
+
+    # Check if name starts with the HTTP method (case-insensitive)
+    if name.lower().startswith(http_method):
+        # Check if there's a character after the method
+        method_len = len(http_method)
+        if len(name) > method_len:
+            # Get the character after the method
+            next_char = name[method_len]
+            # Strip the method if the next character is uppercase, underscore, or hyphen
+            # This ensures we don't strip "get" from "getter" but do strip from "getItems"
+            if next_char.isupper() or next_char in ["_", "-"]:
+                # Return the name without the method prefix
+                return name[method_len:]
+
+    return name
+
+
+def clean_public_api_name(name: str) -> str:
+    """
+    Clean up public_api names by removing the public_api prefix and moving version to end.
+
+    For example:
+        public_api-v1-alerts-get_alerts -> alerts-get_alerts-v1
+        -public_api-v1-alerts-get_alerts -> alerts-get_alerts-v1 (leading hyphen handled)
+        public_api-v2-alerts-get_alerts_multi_events -> alerts-get_alerts_multi_events-v2
+
+    Args:
+        name: The name to clean (with hyphens, before snake_case conversion)
+
+    Returns:
+        The cleaned name with version moved to end
+    """
+    # Remove leading hyphens or underscores
+    name = name.lstrip("-_")
+
+    # Check if this is a public_api name
+    if not name.startswith("public_api-"):
+        return name
+
+    # Remove public_api- prefix
+    name = name[len("public_api-") :]
+
+    # Extract version (v1, v2, etc.) if present
+    version_match = re.match(r"^(v\d+)-(.*)", name)
+    if version_match:
+        version = version_match.group(1)
+        rest = version_match.group(2)
+        # Move version to the end
+        return f"{rest}-{version}"
+
+    return name
+
+
+def to_snake_case(name: str, http_method: str = "") -> str:
+    """
+    Convert camelCase or PascalCase to snake_case and handle hyphens.
+
+    Args:
+        name: The name to convert
+        http_method: Optional HTTP method to strip as prefix if it matches
+
+    Returns:
+        The name converted to snake_case
+    """
+    # Strip HTTP verb prefix if it matches the method
+    name = strip_http_verb_prefix(name, http_method)
+    # Clean up public_api names before converting to snake_case
+    name = clean_public_api_name(name)
     # Replace hyphens with underscores first
     name = name.replace("-", "_")
     # Insert underscore before uppercase letters and convert to lowercase
@@ -118,9 +205,13 @@ def generate_tool_function(
     path: str,
     operation: Dict[str, Any],
     base_url: str,
+    service_prefix: str = "",
 ) -> str:
     """Generate a single tool function from an OpenAPI operation."""
-    tool_name = to_snake_case(operation_id)
+    tool_name = to_snake_case(operation_id, method)
+    # Prepend service prefix if provided
+    if service_prefix:
+        tool_name = f"{service_prefix}_{tool_name}"
     summary = operation.get("summary", "")
     description = operation.get("description", summary)
 
@@ -255,6 +346,23 @@ def generate_tools_file(spec_path: Path, output_dir: Path) -> None:
     servers = spec.get("servers", [])
     base_url = servers[0]["url"] if servers else ""
 
+    # First pass: collect all tool names to detect collisions
+    tool_names: Dict[str, List[tuple[str, str, str]]] = {}  # name -> [(operation_id, method, path)]
+    paths = spec.get("paths", {})
+    for path, path_item in paths.items():
+        for method in ["get", "post", "put", "patch", "delete"]:
+            if method in path_item:
+                operation = path_item[method]
+                operation_id = operation.get("operationId")
+                if operation_id:
+                    tool_name = to_snake_case(operation_id, method)
+                    if tool_name not in tool_names:
+                        tool_names[tool_name] = []
+                    tool_names[tool_name].append((operation_id, method, path))
+
+    # Identify collisions - names that appear more than once
+    collisions = {name for name, ops in tool_names.items() if len(ops) > 1}
+
     # File header
     file_content = f'''"""
 Auto-generated MCP tools for {spec_name.upper()}.
@@ -281,15 +389,24 @@ def set_server(s: Server) -> None:
 '''
 
     # Generate tool functions
-    paths = spec.get("paths", {})
     for path, path_item in paths.items():
         for method in ["get", "post", "put", "patch", "delete"]:
             if method in path_item:
                 operation = path_item[method]
                 operation_id = operation.get("operationId")
                 if operation_id:
+                    # Check if this would be a collision
+                    tool_name = to_snake_case(operation_id, method)
+                    # For collisions, don't pass the method so the HTTP verb prefix is kept
+                    method_for_naming = "" if tool_name in collisions else method
+
                     tool_code = generate_tool_function(
-                        operation_id, method, path, operation, base_url
+                        operation_id,
+                        method_for_naming,
+                        path,
+                        operation,
+                        base_url,
+                        spec_name,  # Pass the service name as prefix
                     )
                     file_content += tool_code
 
