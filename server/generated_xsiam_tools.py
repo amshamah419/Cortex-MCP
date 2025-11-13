@@ -6333,6 +6333,7 @@ Required license: **Cortex XSIAM Premium** or
     
     Returns:
         List[types.TextContent]: OK
+
     """
     # Input validation
     validate_inputs(locals())
