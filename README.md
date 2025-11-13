@@ -1,5 +1,10 @@
 # Cortex-MCP
 
+[![CI/CD Pipeline](https://github.com/amshamah419/Cortex-MCP/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/amshamah419/Cortex-MCP/actions/workflows/ci-cd.yml)
+[![CodeQL](https://github.com/amshamah419/Cortex-MCP/actions/workflows/ci-cd.yml/badge.svg?job=codeql-analysis)](https://github.com/amshamah419/Cortex-MCP/security/code-scanning)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Docker](https://img.shields.io/badge/docker-ghcr.io-blue.svg)](https://github.com/amshamah419/Cortex-MCP/pkgs/container/cortex-mcp)
+
 A robust MCP (Model Context Protocol) server that enables AI-powered IDEs and agents to interact with live XSOAR/XSIAM instances for development, testing, and automation tasks.
 
 ## Overview
