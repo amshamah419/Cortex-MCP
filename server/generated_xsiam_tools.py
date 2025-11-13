@@ -83,8 +83,8 @@ async def xsiam_start_xql_query(
     x_xdr_auth_id: str,
     query: str,
     tenants: List[Any] | None = None,
-    from: int | None = None,
-    to: int | None = None,
+    from_time: int | None = None,
+    to_time: int | None = None,
     relative_time: int | None = None,
 ) -> List[types.TextContent]:
     """
@@ -133,10 +133,10 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
         request_data_obj["tenants"] = tenants
     # Build timeframe nested object
     timeframe_obj = {}
-    if from is not None:
-        timeframe_obj["from"] = from
-    if to is not None:
-        timeframe_obj["to"] = to
+    if from_time is not None:
+        timeframe_obj["from"] = from_time
+    if to_time is not None:
+        timeframe_obj["to"] = to_time
     if relative_time is not None:
         timeframe_obj["relativeTime"] = relative_time
     if timeframe_obj:
