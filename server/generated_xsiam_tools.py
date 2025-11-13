@@ -43,7 +43,7 @@ def sanitize_input(value: Any) -> Any:
     if isinstance(value, str):
         # Remove potentially dangerous characters
         # Allow alphanumeric, spaces, hyphens, underscores, and common punctuation
-        sanitized = re.sub(r'[^\w\s\-_.@,:/]', '', value)
+        sanitized = re.sub(r"[^\w\s\-_.@,:/]", "", value)
         # Limit length to prevent DoS
         return sanitized[:1000]
     return value
@@ -63,12 +63,15 @@ def validate_inputs(params: Dict[str, Any]) -> None:
 def sanitize_error_message(error: str) -> str:
     """Sanitize error messages to prevent information leakage."""
     # Remove sensitive information patterns
-    sanitized = re.sub(r'api[_-]?key[=:]?[\s]?[\w-]+', 'API_KEY_REDACTED', error, flags=re.IGNORECASE)
-    sanitized = re.sub(r'token[=:]?[\s]?[\w-]+', 'TOKEN_REDACTED', sanitized, flags=re.IGNORECASE)
-    sanitized = re.sub(r'password[=:]?[\s]?[\w-]+', 'PASSWORD_REDACTED', sanitized, flags=re.IGNORECASE)
+    sanitized = re.sub(
+        r"api[_-]?key[=:]?[\s]?[\w-]+", "API_KEY_REDACTED", error, flags=re.IGNORECASE
+    )
+    sanitized = re.sub(r"token[=:]?[\s]?[\w-]+", "TOKEN_REDACTED", sanitized, flags=re.IGNORECASE)
+    sanitized = re.sub(
+        r"password[=:]?[\s]?[\w-]+", "PASSWORD_REDACTED", sanitized, flags=re.IGNORECASE
+    )
     # Limit error message length
     return sanitized[:500]
-
 
 
 def set_server(s: Server) -> None:
@@ -88,39 +91,39 @@ async def xsiam_start_xql_query(
     relative_time: int | None = None,
 ) -> List[types.TextContent]:
     """
-    Execute an XQL query.
+        Execute an XQL query.
 
-For more information on how to run XQL queries, see [*Running XQL query APIs*](https://cortex-panw.stoplight.io/docs/cortex-xsiam-1/90ay3tlx6l9dh-running-xql-query-ap-is).
+    For more information on how to run XQL queries, see [*Running XQL query APIs*](https://cortex-panw.stoplight.io/docs/cortex-xsiam-1/90ay3tlx6l9dh-running-xql-query-ap-is).
 
-<!-- theme: info -->
+    <!-- theme: info -->
 
-> #### Note
->
-> To ensure you don't surpass your quota, Cortex XSIAM allows you to run up to four API queries in parallel.
+    > #### Note
+    >
+    > To ensure you don't surpass your quota, Cortex XSIAM allows you to run up to four API queries in parallel.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        query (str): String of the XQL query. (required)
-        tenants (List[Any]): Note: This is only used when querying tenants managed by Managed Security Services Providers (MSSP). List of strings used for running APIs on local and Managed Security tenants. Valid values: - For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default). - For multi-tenant investigations (Managed Security parent who investigate children and/or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. (optional)
-        from_time (int): Use for an absolute timeframe in Unix timestamp. (optional)
-        to_time (int): Use for an absolute timeframe in Unix timestamp. (optional)
-        relative_time (int): Use for a relative Unix timestamp. (optional)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            query (str): String of the XQL query. (required)
+            tenants (List[Any]): Note: This is only used when querying tenants managed by Managed Security Services Providers (MSSP). List of strings used for running APIs on local and Managed Security tenants. Valid values: - For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default). - For multi-tenant investigations (Managed Security parent who investigate children and/or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. (optional)
+            from_time (int): Use for an absolute timeframe in Unix timestamp. (optional)
+            to_time (int): Use for an absolute timeframe in Unix timestamp. (optional)
+            relative_time (int): Use for a relative Unix timestamp. (optional)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -149,7 +152,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/xql/start_xql_query"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -177,7 +180,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -193,12 +196,22 @@ xsiam_start_xql_query_schema = {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
         "query": {"type": "str", "description": "String of the XQL query."},
-        "tenants": {"type": "List[Any]", "description": "Note: This is only used when querying tenants managed by Managed Security Services Providers (MSSP). List of strings used for running APIs on local and Managed Security tenants. Valid values: - For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default). - For multi-tenant investigations (Managed Security parent who investigate children and/or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children."},
-        "from_time": {"type": "int", "description": "Use for an absolute timeframe in Unix timestamp."},
-        "to_time": {"type": "int", "description": "Use for an absolute timeframe in Unix timestamp."},
+        "tenants": {
+            "type": "List[Any]",
+            "description": "Note: This is only used when querying tenants managed by Managed Security Services Providers (MSSP). List of strings used for running APIs on local and Managed Security tenants. Valid values: - For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default). - For multi-tenant investigations (Managed Security parent who investigate children and/or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.",
+        },
+        "from_time": {
+            "type": "int",
+            "description": "Use for an absolute timeframe in Unix timestamp.",
+        },
+        "to_time": {
+            "type": "int",
+            "description": "Use for an absolute timeframe in Unix timestamp.",
+        },
         "relative_time": {"type": "int", "description": "Use for a relative Unix timestamp."},
     },
 }
+
 
 @server.call_tool()
 async def xsiam_get_query_results(
@@ -210,42 +223,42 @@ async def xsiam_get_query_results(
     format: str | None = None,
 ) -> List[types.TextContent]:
     """
-    Retrieve results of an executed XQL query API. 
+        Retrieve results of an executed XQL query API.
 
-Note: This endpoint only works on XQL queries initiated by `/public_api/v1/xql/start_xql_query/`.
+    Note: This endpoint only works on XQL queries initiated by `/public_api/v1/xql/start_xql_query/`.
 
-Maximum result set size is 1000. The API does not support pagination, therefore, you can set values to determine the result size limitation and how to wait for the results. To view response with greater than 1000 results you must call **Get XQL query results Stream**.
+    Maximum result set size is 1000. The API does not support pagination, therefore, you can set values to determine the result size limitation and how to wait for the results. To view response with greater than 1000 results you must call **Get XQL query results Stream**.
 
-For more information on how to run XQL queries, see [*Running XQL query APIs*](https://cortex-panw.stoplight.io/docs/cortex-xsiam-1/90ay3tlx6l9dh-running-xql-query-ap-is).
+    For more information on how to run XQL queries, see [*Running XQL query APIs*](https://cortex-panw.stoplight.io/docs/cortex-xsiam-1/90ay3tlx6l9dh-running-xql-query-ap-is).
 
-<!-- theme: info -->
+    <!-- theme: info -->
 
-> #### Note
->
-> To ensure you don't surpass your quota, Cortex XSIAM allows you to run up to four API queries in parallel.
+    > #### Note
+    >
+    > To ensure you don't surpass your quota, Cortex XSIAM allows you to run up to four API queries in parallel.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        query_id (str): String representing the unique execution ID generated by the response to **Start an XQL query** API. You can also enter the execution ID of a query generated in Cortex XDR and listed in the Query Center table. (required)
-        pending_flag (bool): Boolean flag indicating whether the API call should operate in synchronous/blocking mode, or in asynchronous/non-blocking mode. Valid Values: - True (default): The call returns immediately with one of the following options: 1) PENDING status indicating query hasn't yet completed or results are not yet ready to be returned. Need to execute the API call again. 2) SUCCESS/FAIL status - False: The API will block until query completes and results are ready to be returned. (optional)
-        limit (int): Integer representing the maximum number of results to return. If the 'limit' is not specified or if 'limit' is greater than 1000 and the query yields more than 1000 valid results, a `stream id` will be generated for use in the *Get XQL query results Stream** API. In the context of multi-tenant investigations, when you specify the parameter value (x), it will return x results across all tenants combined, rather than x results for each individual tenant. For example, if there are y tenants participating in the investigation, the maximum number of results returned can be x*y (up to the limit of 1,000,000). (optional)
-        format (str): The type of response output. (optional)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            query_id (str): String representing the unique execution ID generated by the response to **Start an XQL query** API. You can also enter the execution ID of a query generated in Cortex XDR and listed in the Query Center table. (required)
+            pending_flag (bool): Boolean flag indicating whether the API call should operate in synchronous/blocking mode, or in asynchronous/non-blocking mode. Valid Values: - True (default): The call returns immediately with one of the following options: 1) PENDING status indicating query hasn't yet completed or results are not yet ready to be returned. Need to execute the API call again. 2) SUCCESS/FAIL status - False: The API will block until query completes and results are ready to be returned. (optional)
+            limit (int): Integer representing the maximum number of results to return. If the 'limit' is not specified or if 'limit' is greater than 1000 and the query yields more than 1000 valid results, a `stream id` will be generated for use in the *Get XQL query results Stream** API. In the context of multi-tenant investigations, when you specify the parameter value (x), it will return x results across all tenants combined, rather than x results for each individual tenant. For example, if there are y tenants participating in the investigation, the maximum number of results returned can be x*y (up to the limit of 1,000,000). (optional)
+            format (str): The type of response output. (optional)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -268,7 +281,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/xql/get_query_results"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -296,7 +309,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -311,54 +324,61 @@ xsiam_get_query_results_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "query_id": {"type": "str", "description": "String representing the unique execution ID generated by the response to **Start an XQL query** API. You can also enter the execution ID of a query generated in Cortex XDR and listed in the Query Center table."},
-        "pending_flag": {"type": "bool", "description": "Boolean flag indicating whether the API call should operate in synchronous/blocking mode, or in asynchronous/non-blocking mode. Valid Values: - True (default): The call returns immediately with one of the following options: 1) PENDING status indicating query hasn't yet completed or results are not yet ready to be returned. Need to execute the API call again. 2) SUCCESS/FAIL status - False: The API will block until query completes and results are ready to be returned."},
-        "limit": {"type": "int", "description": "Integer representing the maximum number of results to return. If the 'limit' is not specified or if 'limit' is greater than 1000 and the query yields more than 1000 valid results, a `stream id` will be generated for use in the *Get XQL query results Stream** API. In the context of multi-tenant investigations, when you specify the parameter value (x), it will return x results across all tenants combined, rather than x results for each individual tenant. For example, if there are y tenants participating in the investigation, the maximum number of results returned can be x*y (up to the limit of 1,000,000)."},
+        "query_id": {
+            "type": "str",
+            "description": "String representing the unique execution ID generated by the response to **Start an XQL query** API. You can also enter the execution ID of a query generated in Cortex XDR and listed in the Query Center table.",
+        },
+        "pending_flag": {
+            "type": "bool",
+            "description": "Boolean flag indicating whether the API call should operate in synchronous/blocking mode, or in asynchronous/non-blocking mode. Valid Values: - True (default): The call returns immediately with one of the following options: 1) PENDING status indicating query hasn't yet completed or results are not yet ready to be returned. Need to execute the API call again. 2) SUCCESS/FAIL status - False: The API will block until query completes and results are ready to be returned.",
+        },
+        "limit": {
+            "type": "int",
+            "description": "Integer representing the maximum number of results to return. If the 'limit' is not specified or if 'limit' is greater than 1000 and the query yields more than 1000 valid results, a `stream id` will be generated for use in the *Get XQL query results Stream** API. In the context of multi-tenant investigations, when you specify the parameter value (x), it will return x results across all tenants combined, rather than x results for each individual tenant. For example, if there are y tenants participating in the investigation, the maximum number of results returned can be x*y (up to the limit of 1,000,000).",
+        },
         "format": {"type": "str", "description": "The type of response output."},
     },
 }
 
+
 @server.call_tool()
-async def xsiam_get_quota(
-
-) -> List[types.TextContent]:
+async def xsiam_get_quota() -> List[types.TextContent]:
     """
-    Retrieve the amount of query quota available and used. 
+        Retrieve the amount of query quota available and used.
 
-Note: This endpoint only works on XQL queries initiated by `/public_api/v1/xql/start_xql_query/`.
+    Note: This endpoint only works on XQL queries initiated by `/public_api/v1/xql/start_xql_query/`.
 
-For more information on how to run XQL queries, see [*Running XQL query APIs*](https://cortex-panw.stoplight.io/docs/cortex-xsiam-1/90ay3tlx6l9dh-running-xql-query-ap-is).
+    For more information on how to run XQL queries, see [*Running XQL query APIs*](https://cortex-panw.stoplight.io/docs/cortex-xsiam-1/90ay3tlx6l9dh-running-xql-query-ap-is).
 
-<!-- theme: info -->
+    <!-- theme: info -->
 
-> #### Note
->
-> To ensure you don't surpass your quota, Cortex XSIAM allows you to run up to four API queries in parallel.
+    > #### Note
+    >
+    > To ensure you don't surpass your quota, Cortex XSIAM allows you to run up to four API queries in parallel.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        No parameters required
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            No parameters required
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsiam_api_url", "https://api-yourfqdn")
     url = base_url + "/public_api/v1/xql/get_quota"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -386,7 +406,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -398,10 +418,9 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
 # Schema for xsiam_get_quota
 xsiam_get_quota_schema = {
     "type": "object",
-    "properties": {
-
-    },
+    "properties": {},
 }
+
 
 @server.call_tool()
 async def xsiam_get_query_results_stream(
@@ -412,41 +431,41 @@ async def xsiam_get_query_results_stream(
     is_gzip_compressed: bool | None = None,
 ) -> List[types.TextContent]:
     """
-    Retrieve XQL query results with more than 1000 results. 
+        Retrieve XQL query results with more than 1000 results.
 
-Note: This endpoint only works on XQL queries initiated by `/public_api/v1/xql/start_xql_query/`.
+    Note: This endpoint only works on XQL queries initiated by `/public_api/v1/xql/start_xql_query/`.
 
-Response is returned as chunked (Transfer-Encoding: chunked). To retrieve a compressed gzipped response (Content-Encoding: gzip), in your header add Accept-Encoding: gzip.
+    Response is returned as chunked (Transfer-Encoding: chunked). To retrieve a compressed gzipped response (Content-Encoding: gzip), in your header add Accept-Encoding: gzip.
 
-For more information on how to run XQL queries, see [*Running XQL query APIs*](https://cortex-panw.stoplight.io/docs/cortex-xsiam-1/90ay3tlx6l9dh-running-xql-query-ap-is).
+    For more information on how to run XQL queries, see [*Running XQL query APIs*](https://cortex-panw.stoplight.io/docs/cortex-xsiam-1/90ay3tlx6l9dh-running-xql-query-ap-is).
 
-<!-- theme: info -->
+    <!-- theme: info -->
 
-> #### Note
->
-> To ensure you don't surpass your quota, Cortex XSIAM allows you to run up to four API queries in parallel.
+    > #### Note
+    >
+    > To ensure you don't surpass your quota, Cortex XSIAM allows you to run up to four API queries in parallel.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        accept__encoding (str): For retrieving a compressed gzipped response (optional)
-        stream_id (str): String representing the unique ID generate by the response to **Get XQL query results** API. (required)
-        is_gzip_compressed (bool): A boolean flag. (optional)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            accept__encoding (str): For retrieving a compressed gzipped response (optional)
+            stream_id (str): String representing the unique ID generate by the response to **Get XQL query results** API. (required)
+            is_gzip_compressed (bool): A boolean flag. (optional)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -467,7 +486,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/xql/get_query_results_stream"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -495,7 +514,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -510,11 +529,18 @@ xsiam_get_query_results_stream_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "accept__encoding": {"type": "str", "description": "For retrieving a compressed gzipped response"},
-        "stream_id": {"type": "str", "description": "String representing the unique ID generate by the response to **Get XQL query results** API."},
+        "accept__encoding": {
+            "type": "str",
+            "description": "For retrieving a compressed gzipped response",
+        },
+        "stream_id": {
+            "type": "str",
+            "description": "String representing the unique ID generate by the response to **Get XQL query results** API.",
+        },
         "is_gzip_compressed": {"type": "bool", "description": "A boolean flag."},
     },
 }
+
 
 @server.call_tool()
 async def xsiam_get_incidents(
@@ -527,36 +553,36 @@ async def xsiam_get_incidents(
     search_to: int | None = None,
 ) -> List[types.TextContent]:
     """
-    Get a list of incidents filtered by a list of incident IDs, modification time, or creation time.  This includes all incident types and severities, including correlation-generated incidents.
-- The response is concatenated using AND condition (OR is not supported).
-- The maximum result set size is >100.
-- Offset is the zero-based number of incidents from the start of the result set.
+        Get a list of incidents filtered by a list of incident IDs, modification time, or creation time.  This includes all incident types and severities, including correlation-generated incidents.
+    - The response is concatenated using AND condition (OR is not supported).
+    - The maximum result set size is >100.
+    - Offset is the zero-based number of incidents from the start of the result set.
 
-Note: You can send a request to retrieve either **all** or **filtered** results.
+    Note: You can send a request to retrieve either **all** or **filtered** results.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        filters (List[Any]): Array of filter fields. (optional)
-        search_from (int): Integer representing the starting offset within the query result set from which you want incidents returned. Incidents are returned as a zero-based list. Any incident indexed less than this value is not returned in the final result set and defaults to zero. (optional)
-        search_to (int): Integer representing the end offset within the result set after which you do not want incidents returned. Incidents in the incident list that are indexed higher than this value are not returned in the final results set. Defaults to >100, which returns all incidents to the end of the list. (optional)
-        field (str): Sort according to this field. Valid options are: - `creation_time` - `incident_id` - `modification_time` (required)
-        keyword (str): Sort in ascending or descending order. (required)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            filters (List[Any]): Array of filter fields. (optional)
+            search_from (int): Integer representing the starting offset within the query result set from which you want incidents returned. Incidents are returned as a zero-based list. Any incident indexed less than this value is not returned in the final result set and defaults to zero. (optional)
+            search_to (int): Integer representing the end offset within the result set after which you do not want incidents returned. Incidents in the incident list that are indexed higher than this value are not returned in the final results set. Defaults to >100, which returns all incidents to the end of the list. (optional)
+            field (str): Sort according to this field. Valid options are: - `creation_time` - `incident_id` - `modification_time` (required)
+            keyword (str): Sort in ascending or descending order. (required)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -585,7 +611,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/incidents/get_incidents"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -613,7 +639,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -629,12 +655,22 @@ xsiam_get_incidents_schema = {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
         "filters": {"type": "List[Any]", "description": "Array of filter fields."},
-        "search_from": {"type": "int", "description": "Integer representing the starting offset within the query result set from which you want incidents returned. Incidents are returned as a zero-based list. Any incident indexed less than this value is not returned in the final result set and defaults to zero."},
-        "search_to": {"type": "int", "description": "Integer representing the end offset within the result set after which you do not want incidents returned. Incidents in the incident list that are indexed higher than this value are not returned in the final results set. Defaults to >100, which returns all incidents to the end of the list."},
-        "field": {"type": "str", "description": "Sort according to this field. Valid options are: - `creation_time` - `incident_id` - `modification_time`"},
+        "search_from": {
+            "type": "int",
+            "description": "Integer representing the starting offset within the query result set from which you want incidents returned. Incidents are returned as a zero-based list. Any incident indexed less than this value is not returned in the final result set and defaults to zero.",
+        },
+        "search_to": {
+            "type": "int",
+            "description": "Integer representing the end offset within the result set after which you do not want incidents returned. Incidents in the incident list that are indexed higher than this value are not returned in the final results set. Defaults to >100, which returns all incidents to the end of the list.",
+        },
+        "field": {
+            "type": "str",
+            "description": "Sort according to this field. Valid options are: - `creation_time` - `incident_id` - `modification_time`",
+        },
         "keyword": {"type": "str", "description": "Sort in ascending or descending order."},
     },
 }
+
 
 @server.call_tool()
 async def xsiam_alerts_get_alerts_v1(
@@ -647,36 +683,36 @@ async def xsiam_alerts_get_alerts_v1(
     field: str | None = None,
 ) -> List[types.TextContent]:
     """
-    Get a list of all or filtered alerts.  The alerts listed are what remains after alert exclusions are applied by Cortex XSIAM.
+        Get a list of all or filtered alerts.  The alerts listed are what remains after alert exclusions are applied by Cortex XSIAM.
 
-- Response is concatenated using AND condition (OR is not supported).
-- Maximum result set size is 100.
-- Offset is the zero-based number of alerts from the start of the result set.
-The response indicates whether an PAN NGFW type alert contains a PCAP triggering packet. Use the Retrieve PCAP Packet API to retrieve a list of alert IDs and their associated PCAP data.
+    - Response is concatenated using AND condition (OR is not supported).
+    - Maximum result set size is 100.
+    - Offset is the zero-based number of alerts from the start of the result set.
+    The response indicates whether an PAN NGFW type alert contains a PCAP triggering packet. Use the Retrieve PCAP Packet API to retrieve a list of alert IDs and their associated PCAP data.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        filters (List[Any]): An array of filter fields. (optional)
-        search_from (int): An integer representing the starting offset within the query result set from which you want alerts returned. Alerts are returned as a zero-based list. Any alert indexed less than this value is not returned in the final result set and defaults to zero. (optional)
-        search_to (int): An integer representing the end offset within the result set after which you do not want alerts returned. Alerts in the alerts list that are indexed higher than this value are not returned in the final results set. Defaults to 100, which returns all alerts to the end of the list. (optional)
-        field (str): Identifies how to sort the result set, either according to severity or creation time. (optional)
-        keyword (str): Defines whether to sort the results in ascending (asc) or descending (desc) order. (required)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            filters (List[Any]): An array of filter fields. (optional)
+            search_from (int): An integer representing the starting offset within the query result set from which you want alerts returned. Alerts are returned as a zero-based list. Any alert indexed less than this value is not returned in the final result set and defaults to zero. (optional)
+            search_to (int): An integer representing the end offset within the result set after which you do not want alerts returned. Alerts in the alerts list that are indexed higher than this value are not returned in the final results set. Defaults to 100, which returns all alerts to the end of the list. (optional)
+            field (str): Identifies how to sort the result set, either according to severity or creation time. (optional)
+            keyword (str): Defines whether to sort the results in ascending (asc) or descending (desc) order. (required)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -705,7 +741,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/alerts/get_alerts"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -733,7 +769,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -749,12 +785,25 @@ xsiam_alerts_get_alerts_v1_schema = {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
         "filters": {"type": "List[Any]", "description": "An array of filter fields."},
-        "search_from": {"type": "int", "description": "An integer representing the starting offset within the query result set from which you want alerts returned. Alerts are returned as a zero-based list. Any alert indexed less than this value is not returned in the final result set and defaults to zero."},
-        "search_to": {"type": "int", "description": "An integer representing the end offset within the result set after which you do not want alerts returned. Alerts in the alerts list that are indexed higher than this value are not returned in the final results set. Defaults to 100, which returns all alerts to the end of the list."},
-        "field": {"type": "str", "description": "Identifies how to sort the result set, either according to severity or creation time."},
-        "keyword": {"type": "str", "description": "Defines whether to sort the results in ascending (asc) or descending (desc) order."},
+        "search_from": {
+            "type": "int",
+            "description": "An integer representing the starting offset within the query result set from which you want alerts returned. Alerts are returned as a zero-based list. Any alert indexed less than this value is not returned in the final result set and defaults to zero.",
+        },
+        "search_to": {
+            "type": "int",
+            "description": "An integer representing the end offset within the result set after which you do not want alerts returned. Alerts in the alerts list that are indexed higher than this value are not returned in the final results set. Defaults to 100, which returns all alerts to the end of the list.",
+        },
+        "field": {
+            "type": "str",
+            "description": "Identifies how to sort the result set, either according to severity or creation time.",
+        },
+        "keyword": {
+            "type": "str",
+            "description": "Defines whether to sort the results in ascending (asc) or descending (desc) order.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_alerts_get_alerts_multi_events_v2(
@@ -763,34 +812,34 @@ async def xsiam_alerts_get_alerts_multi_events_v2(
     filters: List[Any] | None = None,
 ) -> List[types.TextContent]:
     """
-    Get a list of alerts with multiple events.
-- The response is concatenated using AND condition (OR is not supported).
-- The maximum result set size is 100.
-- Offset is the zero-based number of alerts from the start of the result set.
+        Get a list of alerts with multiple events.
+    - The response is concatenated using AND condition (OR is not supported).
+    - The maximum result set size is 100.
+    - Offset is the zero-based number of alerts from the start of the result set.
 
-Cortex XDR displays in the API response whether a PAN NGFW type alert contains a PCAP triggering packet. Use the **Retrieve PCAP Packet** API to retrieve a list of alert IDs and their associated PCAP data.
+    Cortex XDR displays in the API response whether a PAN NGFW type alert contains a PCAP triggering packet. Use the **Retrieve PCAP Packet** API to retrieve a list of alert IDs and their associated PCAP data.
 
-Note: You can send a request to retrieve either all or filtered results.
+    Note: You can send a request to retrieve either all or filtered results.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        filters (List[Any]): Array of filter fields. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            filters (List[Any]): Array of filter fields. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -807,7 +856,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v2/alerts/get_alerts_multi_events"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -835,7 +884,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -854,6 +903,7 @@ xsiam_alerts_get_alerts_multi_events_v2_schema = {
     },
 }
 
+
 @server.call_tool()
 async def xsiam_get_alerts_multi_events(
     authorization: str,
@@ -865,39 +915,39 @@ async def xsiam_get_alerts_multi_events(
     field: str | None = None,
 ) -> List[types.TextContent]:
     """
-    **Note: ** This endpoint is legacy. Use the [Get Alerts Multi-Events v2](https://cortex-panw.stoplight.io/docs/cortex-xsiam-1/guxcmlw6h3y8v-get-alerts-multi-events-v2) endpoint.
+        **Note: ** This endpoint is legacy. Use the [Get Alerts Multi-Events v2](https://cortex-panw.stoplight.io/docs/cortex-xsiam-1/guxcmlw6h3y8v-get-alerts-multi-events-v2) endpoint.
 
-Get a list of alerts with multiple events.
-- Response is concatenated using AND condition (OR is not supported).
-- Maximum result set size is 100.
-- Offset is the zero-based number of alerts from the start of the result set.
-Cortex XDR displays in the APIs response whether an PAN NGFW type alert contains a PCAP triggering packet. Use the Retrieve PCAP Packet API to retrieve a list of alert IDs and their associated PCAP data.
+    Get a list of alerts with multiple events.
+    - Response is concatenated using AND condition (OR is not supported).
+    - Maximum result set size is 100.
+    - Offset is the zero-based number of alerts from the start of the result set.
+    Cortex XDR displays in the APIs response whether an PAN NGFW type alert contains a PCAP triggering packet. Use the Retrieve PCAP Packet API to retrieve a list of alert IDs and their associated PCAP data.
 
-Note: You can send a request to retrieve either all or filtered results.
+    Note: You can send a request to retrieve either all or filtered results.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        filters (List[Any]): List of filter fields. (optional)
-        search_from (int): An integer representing the starting offset within the query result set from which you want alerts returned. Alerts are returned as a zero-based list. Any alert indexed less than this value is not returned in the final result set and defaults to zero. (optional)
-        search_to (int): An integer representing the end offset within the result set after which you do not want alerts returned. Alerts in the alerts list that are indexed higher than this value are not returned in the final results set. Defaults to 100, which returns all alerts to the end of the list. (optional)
-        field (str): Identifies how to sort the result set, either according to severity or creation time. (optional)
-        keyword (str): Defines whether to sort the results in ascending (asc) or descending (desc) order. (required)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            filters (List[Any]): List of filter fields. (optional)
+            search_from (int): An integer representing the starting offset within the query result set from which you want alerts returned. Alerts are returned as a zero-based list. Any alert indexed less than this value is not returned in the final result set and defaults to zero. (optional)
+            search_to (int): An integer representing the end offset within the result set after which you do not want alerts returned. Alerts in the alerts list that are indexed higher than this value are not returned in the final results set. Defaults to 100, which returns all alerts to the end of the list. (optional)
+            field (str): Identifies how to sort the result set, either according to severity or creation time. (optional)
+            keyword (str): Defines whether to sort the results in ascending (asc) or descending (desc) order. (required)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -926,7 +976,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/alerts/get_alerts_multi_events"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -954,7 +1004,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -970,12 +1020,25 @@ xsiam_get_alerts_multi_events_schema = {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
         "filters": {"type": "List[Any]", "description": "List of filter fields."},
-        "search_from": {"type": "int", "description": "An integer representing the starting offset within the query result set from which you want alerts returned. Alerts are returned as a zero-based list. Any alert indexed less than this value is not returned in the final result set and defaults to zero."},
-        "search_to": {"type": "int", "description": "An integer representing the end offset within the result set after which you do not want alerts returned. Alerts in the alerts list that are indexed higher than this value are not returned in the final results set. Defaults to 100, which returns all alerts to the end of the list."},
-        "field": {"type": "str", "description": "Identifies how to sort the result set, either according to severity or creation time."},
-        "keyword": {"type": "str", "description": "Defines whether to sort the results in ascending (asc) or descending (desc) order."},
+        "search_from": {
+            "type": "int",
+            "description": "An integer representing the starting offset within the query result set from which you want alerts returned. Alerts are returned as a zero-based list. Any alert indexed less than this value is not returned in the final result set and defaults to zero.",
+        },
+        "search_to": {
+            "type": "int",
+            "description": "An integer representing the end offset within the result set after which you do not want alerts returned. Alerts in the alerts list that are indexed higher than this value are not returned in the final results set. Defaults to 100, which returns all alerts to the end of the list.",
+        },
+        "field": {
+            "type": "str",
+            "description": "Identifies how to sort the result set, either according to severity or creation time.",
+        },
+        "keyword": {
+            "type": "str",
+            "description": "Defines whether to sort the results in ascending (asc) or descending (desc) order.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_update_incident(
@@ -992,37 +1055,37 @@ async def xsiam_update_incident(
     notes: str | None = None,
 ) -> List[types.TextContent]:
     """
-    Update one or more fields of a specific incident. Missing fields are ignored.
-**Note**:
-- `assigned_user_mail` field is validated by Cortex XSIAM to confirm the provided assignee email address belongs to a user that exists in the same Cortex XSIAM tenant.
-- To unassign an incident pass `none` or `"assigned_user_mail": ""`.
-- To remove a manually set severity pass `none` or `"manual_severity": ""`.
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        incident_id (str): A string representing the incident ID you want to update. (required)
-        assigned_user_mail (str): Updated email address of the incident assignee. (optional)
-        manual_severity (str): Administrator-defined severity. (optional)
-        status (str): Updated incident status. (optional)
-        resolve_comment (str): Descriptive comment explaining the incident change. This can be set only for resolved incidents. (optional)
-        comment_action (str): The comment action must be 'add'. (required)
-        value (str): The comment text. (required)
-        custom_fields (str): You can include custom incident fields in the request. The names of the custom fields are standardized into lowercase with no white spaces. or example, `Single Select` would be included as `singleselect`. (optional)
-        notes (str): Notes for the incident. If there are already notes, these notes will replace existing notes. (optional)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+        Update one or more fields of a specific incident. Missing fields are ignored.
+    **Note**:
+    - `assigned_user_mail` field is validated by Cortex XSIAM to confirm the provided assignee email address belongs to a user that exists in the same Cortex XSIAM tenant.
+    - To unassign an incident pass `none` or `"assigned_user_mail": ""`.
+    - To remove a manually set severity pass `none` or `"manual_severity": ""`.
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            incident_id (str): A string representing the incident ID you want to update. (required)
+            assigned_user_mail (str): Updated email address of the incident assignee. (optional)
+            manual_severity (str): Administrator-defined severity. (optional)
+            status (str): Updated incident status. (optional)
+            resolve_comment (str): Descriptive comment explaining the incident change. This can be set only for resolved incidents. (optional)
+            comment_action (str): The comment action must be 'add'. (required)
+            value (str): The comment text. (required)
+            custom_fields (str): You can include custom incident fields in the request. The names of the custom fields are standardized into lowercase with no white spaces. or example, `Single Select` would be included as `singleselect`. (optional)
+            notes (str): Notes for the incident. If there are already notes, these notes will replace existing notes. (optional)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -1063,7 +1126,7 @@ async def xsiam_update_incident(
     url = base_url + "/public_api/v1/incidents/update_incident"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -1091,7 +1154,7 @@ async def xsiam_update_incident(
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -1106,17 +1169,33 @@ xsiam_update_incident_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "incident_id": {"type": "str", "description": "A string representing the incident ID you want to update."},
-        "assigned_user_mail": {"type": "str", "description": "Updated email address of the incident assignee."},
+        "incident_id": {
+            "type": "str",
+            "description": "A string representing the incident ID you want to update.",
+        },
+        "assigned_user_mail": {
+            "type": "str",
+            "description": "Updated email address of the incident assignee.",
+        },
         "manual_severity": {"type": "str", "description": "Administrator-defined severity."},
         "status": {"type": "str", "description": "Updated incident status."},
-        "resolve_comment": {"type": "str", "description": "Descriptive comment explaining the incident change. This can be set only for resolved incidents."},
+        "resolve_comment": {
+            "type": "str",
+            "description": "Descriptive comment explaining the incident change. This can be set only for resolved incidents.",
+        },
         "comment_action": {"type": "str", "description": "The comment action must be 'add'."},
         "value": {"type": "str", "description": "The comment text."},
-        "custom_fields": {"type": "str", "description": "You can include custom incident fields in the request. The names of the custom fields are standardized into lowercase with no white spaces. or example, `Single Select` would be included as `singleselect`."},
-        "notes": {"type": "str", "description": "Notes for the incident. If there are already notes, these notes will replace existing notes."},
+        "custom_fields": {
+            "type": "str",
+            "description": "You can include custom incident fields in the request. The names of the custom fields are standardized into lowercase with no white spaces. or example, `Single Select` would be included as `singleselect`.",
+        },
+        "notes": {
+            "type": "str",
+            "description": "Notes for the incident. If there are already notes, these notes will replace existing notes.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_update_alerts(
@@ -1128,30 +1207,30 @@ async def xsiam_update_alerts(
     comment: str | None = None,
 ) -> List[types.TextContent]:
     """
-    Update one or more alerts. You can update up to 100 alerts per request. Missing fields are ignored.
+        Update one or more alerts. You can update up to 100 alerts per request. Missing fields are ignored.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        alert_id_list (List[Any]): A list representing the alert IDs you want to update. (optional)
-        severity (str): Administrator-defined severity. (optional)
-        status (str): Valid values are: - `new` - `resolved_threat_handled` - `under_investigation` - `resolved_security_testing` - `resolved_auto` - `resolved_known_issue` - `resolved_duplicate` - `resolved_other` - `resolved_false_positive` - `resolved_true_positive` (optional)
-        comment (str): Updated text that appears in the Resolution Comment field of the Alerts table. (optional)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            alert_id_list (List[Any]): A list representing the alert IDs you want to update. (optional)
+            severity (str): Administrator-defined severity. (optional)
+            status (str): Valid values are: - `new` - `resolved_threat_handled` - `under_investigation` - `resolved_security_testing` - `resolved_auto` - `resolved_known_issue` - `resolved_duplicate` - `resolved_other` - `resolved_false_positive` - `resolved_true_positive` (optional)
+            comment (str): Updated text that appears in the Resolution Comment field of the Alerts table. (optional)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -1178,7 +1257,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/alerts/update_alerts"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -1206,7 +1285,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -1221,12 +1300,22 @@ xsiam_update_alerts_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "alert_id_list": {"type": "List[Any]", "description": "A list representing the alert IDs you want to update."},
+        "alert_id_list": {
+            "type": "List[Any]",
+            "description": "A list representing the alert IDs you want to update.",
+        },
         "severity": {"type": "str", "description": "Administrator-defined severity."},
-        "status": {"type": "str", "description": "Valid values are: - `new` - `resolved_threat_handled` - `under_investigation` - `resolved_security_testing` - `resolved_auto` - `resolved_known_issue` - `resolved_duplicate` - `resolved_other` - `resolved_false_positive` - `resolved_true_positive`"},
-        "comment": {"type": "str", "description": "Updated text that appears in the Resolution Comment field of the Alerts table."},
+        "status": {
+            "type": "str",
+            "description": "Valid values are: - `new` - `resolved_threat_handled` - `under_investigation` - `resolved_security_testing` - `resolved_auto` - `resolved_known_issue` - `resolved_duplicate` - `resolved_other` - `resolved_false_positive` - `resolved_true_positive`",
+        },
+        "comment": {
+            "type": "str",
+            "description": "Updated text that appears in the Resolution Comment field of the Alerts table.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_insert_cef_alerts(
@@ -1235,28 +1324,28 @@ async def xsiam_insert_cef_alerts(
     alerts: List[Any] | None = None,
 ) -> List[types.TextContent]:
     """
-    Upload alerts in CEF format from external alert sources. After you map CEF alert fields to Cortex XDR fields, Cortex XDR displays the alerts in related incidents and views.
-You can send 600 alerts per minute.
+        Upload alerts in CEF format from external alert sources. After you map CEF alert fields to Cortex XDR fields, Cortex XDR displays the alerts in related incidents and views.
+    You can send 600 alerts per minute.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        alerts (List[Any]): A list of alerts in CEF format. (optional)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            alerts (List[Any]): A list of alerts in CEF format. (optional)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -1273,7 +1362,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise Plus**
     url = base_url + "/public_api/v1/alerts/insert_cef_alerts"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -1301,7 +1390,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise Plus**
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -1320,6 +1409,7 @@ xsiam_insert_cef_alerts_schema = {
     },
 }
 
+
 @server.call_tool()
 async def xsiam_insert_parsed_alerts(
     authorization: str,
@@ -1327,28 +1417,28 @@ async def xsiam_insert_parsed_alerts(
     alerts: List[Any] | None = None,
 ) -> List[types.TextContent]:
     """
-    Upload alerts from external alert sources in Cortex XSIAM format. Cortex XSIAM displays alerts that are parsed successfully in related incidents and views.
-You can send 600 alerts per minute. Each request can contain a maximum of 60 alerts.
+        Upload alerts from external alert sources in Cortex XSIAM format. Cortex XSIAM displays alerts that are parsed successfully in related incidents and views.
+    You can send 600 alerts per minute. Each request can contain a maximum of 60 alerts.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        alerts (List[Any]): The external alerts you want to upload to Cortex XSIAM. (optional)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            alerts (List[Any]): The external alerts you want to upload to Cortex XSIAM. (optional)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -1365,7 +1455,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/alerts/insert_parsed_alerts"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -1393,7 +1483,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -1408,9 +1498,13 @@ xsiam_insert_parsed_alerts_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "alerts": {"type": "List[Any]", "description": "The external alerts you want to upload to Cortex XSIAM."},
+        "alerts": {
+            "type": "List[Any]",
+            "description": "The external alerts you want to upload to Cortex XSIAM.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_get_alerts_pcap(
@@ -1423,32 +1517,32 @@ async def xsiam_get_alerts_pcap(
     search_to: int | None = None,
 ) -> List[types.TextContent]:
     """
-    Retrieve a list of alert IDs and the associated PCAP triggering packets of PAN NGFW type alerts returned when running the **Get Alerts** and **Get Extra Incident Data** APIs. Maximum result set size is 100.
+        Retrieve a list of alert IDs and the associated PCAP triggering packets of PAN NGFW type alerts returned when running the **Get Alerts** and **Get Extra Incident Data** APIs. Maximum result set size is 100.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
 
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        filters (List[Any]): An array of filter fields. (optional)
-        search_from (int): An integer representing the starting offset within the query result set from which you want alerts returned. Alerts are returned as a zero-based list. Any alert indexed less than this value is not returned in the final result set and defaults to zero. (optional)
-        search_to (int): An integer representing the end offset within the result set after which you do not want alerts returned. Alerts in the alerts list that are indexed higher than this value are not returned in the final results set. Defaults to 100, which returns all alerts to the end of the list. (optional)
-        field (str): The field you want to sort by. (required)
-        keyword (str): Whether to sort in ascending or descending order. (required)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            filters (List[Any]): An array of filter fields. (optional)
+            search_from (int): An integer representing the starting offset within the query result set from which you want alerts returned. Alerts are returned as a zero-based list. Any alert indexed less than this value is not returned in the final result set and defaults to zero. (optional)
+            search_to (int): An integer representing the end offset within the result set after which you do not want alerts returned. Alerts in the alerts list that are indexed higher than this value are not returned in the final results set. Defaults to 100, which returns all alerts to the end of the list. (optional)
+            field (str): The field you want to sort by. (required)
+            keyword (str): Whether to sort in ascending or descending order. (required)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -1477,7 +1571,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/alerts/get_alerts_pcap"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -1505,7 +1599,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -1521,12 +1615,22 @@ xsiam_get_alerts_pcap_schema = {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
         "filters": {"type": "List[Any]", "description": "An array of filter fields."},
-        "search_from": {"type": "int", "description": "An integer representing the starting offset within the query result set from which you want alerts returned. Alerts are returned as a zero-based list. Any alert indexed less than this value is not returned in the final result set and defaults to zero."},
-        "search_to": {"type": "int", "description": "An integer representing the end offset within the result set after which you do not want alerts returned. Alerts in the alerts list that are indexed higher than this value are not returned in the final results set. Defaults to 100, which returns all alerts to the end of the list."},
+        "search_from": {
+            "type": "int",
+            "description": "An integer representing the starting offset within the query result set from which you want alerts returned. Alerts are returned as a zero-based list. Any alert indexed less than this value is not returned in the final result set and defaults to zero.",
+        },
+        "search_to": {
+            "type": "int",
+            "description": "An integer representing the end offset within the result set after which you do not want alerts returned. Alerts in the alerts list that are indexed higher than this value are not returned in the final results set. Defaults to 100, which returns all alerts to the end of the list.",
+        },
         "field": {"type": "str", "description": "The field you want to sort by."},
-        "keyword": {"type": "str", "description": "Whether to sort in ascending or descending order."},
+        "keyword": {
+            "type": "str",
+            "description": "Whether to sort in ascending or descending order.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_create_alert(
@@ -1539,50 +1643,50 @@ async def xsiam_create_alert(
     mitre_defs: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-    Create a custom alert.
+        Create a custom alert.
 
-In addition to the mandatory fields (`vendor`, `product`, `severity`, `category`), any field that appears in the alert table can be used. In order to use a field from the alert table, use its lower camel case representation. For example: `Container ID` -> `container_id`. If the field in the alert table contains a hyphen, replace it with underscore, for example: `App - ID` -> `app_id`.
+    In addition to the mandatory fields (`vendor`, `product`, `severity`, `category`), any field that appears in the alert table can be used. In order to use a field from the alert table, use its lower camel case representation. For example: `Container ID` -> `container_id`. If the field in the alert table contains a hyphen, replace it with underscore, for example: `App - ID` -> `app_id`.
 
-The following fields are recommended for creating an alert:
-	- `remote_ip`
-	- `remote_host`
-	- `host_name`
-	- `group_id`
-	- `initiated_by`
-	- `initiator_sha256`
-	- `target_process_sha256`
-	- `cgo_sha256`
-	- `file_sha256`
-	- `os_parent_cmd`
-	- `os_parent_user_name`
+    The following fields are recommended for creating an alert:
+            - `remote_ip`
+            - `remote_host`
+            - `host_name`
+            - `group_id`
+            - `initiated_by`
+            - `initiator_sha256`
+            - `target_process_sha256`
+            - `cgo_sha256`
+            - `file_sha256`
+            - `os_parent_cmd`
+            - `os_parent_user_name`
 
-By using multiple calls of `create_alert`, you can send up to 600 alerts per minute.
+    By using multiple calls of `create_alert`, you can send up to 600 alerts per minute.
 
-Required role: **App Service Account**
+    Required role: **App Service Account**
 
-Required licenses: **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**.
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        vendor (str): The vendor name. (required)
-        product (str): The product name. (required)
-        severity (str): The severity level of the alert. (required)
-        category (str): Can be one of the predefined options: `Collection`, `Credential Access`, `Discovery`, `Dropper`, `Evasion`, `Execution`, `Exfiltration`, `File Privilege Manipulation`, `File Type Obfuscation`, `Infiltration`, `Lateral Movement`, `Other`, `Persistence`, `Privilege Escalation`, `Reconnaissance`, `Tampering`, or any string value. (required)
-        mitre_defs (Dict[str, Any]): This dictionary represents the relationship between MITRE attack tactics and techniques. Each tactic is as a key and the value is a list of associated techniques or sub-techniques. For example: \"mitre_defs\": {\"TA0007\": [\"T1007\", \"T1033\"], \"TA0002\": [\"T1037.001\"]} (optional)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required licenses: **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**.
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            vendor (str): The vendor name. (required)
+            product (str): The product name. (required)
+            severity (str): The severity level of the alert. (required)
+            category (str): Can be one of the predefined options: `Collection`, `Credential Access`, `Discovery`, `Dropper`, `Evasion`, `Execution`, `Exfiltration`, `File Privilege Manipulation`, `File Type Obfuscation`, `Infiltration`, `Lateral Movement`, `Other`, `Persistence`, `Privilege Escalation`, `Reconnaissance`, `Tampering`, or any string value. (required)
+            mitre_defs (Dict[str, Any]): This dictionary represents the relationship between MITRE attack tactics and techniques. Each tactic is as a key and the value is a list of associated techniques or sub-techniques. For example: \"mitre_defs\": {\"TA0007\": [\"T1007\", \"T1033\"], \"TA0002\": [\"T1037.001\"]} (optional)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -1611,7 +1715,7 @@ Required licenses: **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus
     url = base_url + "/public_api/v1/alerts/create_alert"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -1639,7 +1743,7 @@ Required licenses: **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -1657,10 +1761,17 @@ xsiam_create_alert_schema = {
         "vendor": {"type": "str", "description": "The vendor name."},
         "product": {"type": "str", "description": "The product name."},
         "severity": {"type": "str", "description": "The severity level of the alert."},
-        "category": {"type": "str", "description": "Can be one of the predefined options: `Collection`, `Credential Access`, `Discovery`, `Dropper`, `Evasion`, `Execution`, `Exfiltration`, `File Privilege Manipulation`, `File Type Obfuscation`, `Infiltration`, `Lateral Movement`, `Other`, `Persistence`, `Privilege Escalation`, `Reconnaissance`, `Tampering`, or any string value."},
-        "mitre_defs": {"type": "Dict[str, Any]", "description": "This dictionary represents the relationship between MITRE attack tactics and techniques. Each tactic is as a key and the value is a list of associated techniques or sub-techniques. For example: \"mitre_defs\": {\"TA0007\": [\"T1007\", \"T1033\"], \"TA0002\": [\"T1037.001\"]}"},
+        "category": {
+            "type": "str",
+            "description": "Can be one of the predefined options: `Collection`, `Credential Access`, `Discovery`, `Dropper`, `Evasion`, `Execution`, `Exfiltration`, `File Privilege Manipulation`, `File Type Obfuscation`, `Infiltration`, `Lateral Movement`, `Other`, `Persistence`, `Privilege Escalation`, `Reconnaissance`, `Tampering`, or any string value.",
+        },
+        "mitre_defs": {
+            "type": "Dict[str, Any]",
+            "description": 'This dictionary represents the relationship between MITRE attack tactics and techniques. Each tactic is as a key and the value is a list of associated techniques or sub-techniques. For example: "mitre_defs": {"TA0007": ["T1007", "T1033"], "TA0002": ["T1037.001"]}',
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_replace_hosts(
@@ -1669,29 +1780,29 @@ async def xsiam_replace_hosts(
     fields: List[Any] | None = None,
 ) -> List[types.TextContent]:
     """
-    Replace the featured hosts listed in your environment.
+        Replace the featured hosts listed in your environment.
 
-Note: Running this API will delete all existing host names.
+    Note: Running this API will delete all existing host names.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        fields (List[Any]): An array of host names and comments. (optional)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            fields (List[Any]): An array of host names and comments. (optional)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -1708,7 +1819,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/featured_fields/replace_hosts"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -1736,7 +1847,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -1755,6 +1866,7 @@ xsiam_replace_hosts_schema = {
     },
 }
 
+
 @server.call_tool()
 async def xsiam_replace_users(
     authorization: str,
@@ -1762,29 +1874,29 @@ async def xsiam_replace_users(
     fields: List[Any] | None = None,
 ) -> List[types.TextContent]:
     """
-    Replace the featured users listed in your environment.
+        Replace the featured users listed in your environment.
 
-Note: Running this API will delete all existing user names.
+    Note: Running this API will delete all existing user names.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        fields (List[Any]): An array of users and comments. (optional)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            fields (List[Any]): An array of users and comments. (optional)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -1801,7 +1913,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/featured_fields/replace_users"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -1829,7 +1941,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -1848,6 +1960,7 @@ xsiam_replace_users_schema = {
     },
 }
 
+
 @server.call_tool()
 async def xsiam_replace_ip_addresses(
     authorization: str,
@@ -1855,29 +1968,29 @@ async def xsiam_replace_ip_addresses(
     fields: List[Any] | None = None,
 ) -> List[types.TextContent]:
     """
-    Replace the featured IP addresses listed in your environment.
+        Replace the featured IP addresses listed in your environment.
 
-Note: Running this API will delete all existing IP addresses.
+    Note: Running this API will delete all existing IP addresses.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        fields (List[Any]): An array of IP addresses and comments. (optional)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            fields (List[Any]): An array of IP addresses and comments. (optional)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -1894,7 +2007,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/featured_fields/replace_ip_addresses"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -1922,7 +2035,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -1941,6 +2054,7 @@ xsiam_replace_ip_addresses_schema = {
     },
 }
 
+
 @server.call_tool()
 async def xsiam_replace_ad_groups(
     authorization: str,
@@ -1948,29 +2062,29 @@ async def xsiam_replace_ad_groups(
     fields: List[Any] | None = None,
 ) -> List[types.TextContent]:
     """
-    Replace the featured active directory groups and organizational units listed in your environment.
+        Replace the featured active directory groups and organizational units listed in your environment.
 
-Note: Running this API will delete all existing active directory groups.
+    Note: Running this API will delete all existing active directory groups.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        fields (List[Any]): An array of active directory groups and organizational units and comments. (optional)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            fields (List[Any]): An array of active directory groups and organizational units and comments. (optional)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -1987,7 +2101,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/featured_fields/replace_ad_groups"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -2015,7 +2129,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -2030,9 +2144,13 @@ xsiam_replace_ad_groups_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "fields": {"type": "List[Any]", "description": "An array of active directory groups and organizational units and comments."},
+        "fields": {
+            "type": "List[Any]",
+            "description": "An array of active directory groups and organizational units and comments.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_get_versions(
@@ -2040,26 +2158,26 @@ async def xsiam_get_versions(
     x_xdr_auth_id: str,
 ) -> List[types.TextContent]:
     """
-    Get a list of all the agent versions to use for creating a distribution list.
+        Get a list of all the agent versions to use for creating a distribution list.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -2070,7 +2188,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/distributions/get_versions"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -2098,7 +2216,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -2116,32 +2234,33 @@ xsiam_get_versions_schema = {
     },
 }
 
+
 @server.call_tool()
 async def xsiam_get_endpoints(
     authorization: str,
     x_xdr_auth_id: str,
 ) -> List[types.TextContent]:
     """
-    Gets a list of all of your endpoints. The response is concatenated using AND condition (OR is not supported).
+        Gets a list of all of your endpoints. The response is concatenated using AND condition (OR is not supported).
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -2152,7 +2271,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/endpoints/get_endpoints"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -2180,7 +2299,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -2198,6 +2317,7 @@ xsiam_get_endpoints_schema = {
     },
 }
 
+
 @server.call_tool()
 async def xsiam_get_policy(
     authorization: str,
@@ -2205,27 +2325,27 @@ async def xsiam_get_policy(
     endpoint_id: str,
 ) -> List[types.TextContent]:
     """
-    Get the policy name for a specific endpoint.
+        Get the policy name for a specific endpoint.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        endpoint_id (str): Endpoint ID. (required)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            endpoint_id (str): Endpoint ID. (required)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -2242,7 +2362,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/endpoints/get_policy"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -2270,7 +2390,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -2289,6 +2409,7 @@ xsiam_get_policy_schema = {
     },
 }
 
+
 @server.call_tool()
 async def xsiam_delete(
     authorization: str,
@@ -2296,34 +2417,34 @@ async def xsiam_delete(
     filters: List[Any] | None = None,
 ) -> List[types.TextContent]:
     """
-    Delete selected endpoints in the Cortex XDR app. You can delete up to 1000 endpoints.
+        Delete selected endpoints in the Cortex XDR app. You can delete up to 1000 endpoints.
 
-Note: Endpoints are deleted from the Cortex XDR app web interface, however they still exist in the database.
+    Note: Endpoints are deleted from the Cortex XDR app web interface, however they still exist in the database.
 
-When filtering by multiple fields:
-- Response is concatenated using AND condition (OR is not supported).
-- Maximum result set size is 1000.
-- Offset is the zero-based number of incidents from the start of the result set.
+    When filtering by multiple fields:
+    - Response is concatenated using AND condition (OR is not supported).
+    - Maximum result set size is 1000.
+    - Offset is the zero-based number of incidents from the start of the result set.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        filters (List[Any]): Array of filter fields. (optional)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            filters (List[Any]): Array of filter fields. (optional)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -2340,7 +2461,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/endpoints/delete"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -2368,7 +2489,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -2386,6 +2507,7 @@ xsiam_delete_schema = {
         "filters": {"type": "List[Any]", "description": "Array of filter fields."},
     },
 }
+
 
 @server.call_tool()
 async def xsiam_create(
@@ -2407,40 +2529,40 @@ async def xsiam_create(
     cluster_name: str | None = None,
 ) -> List[types.TextContent]:
     """
-    Create an installation package. This is an async call that returns the distribution ID; it does not mean that the creation succeeded. To confirm the package has been created, check the status of the distribution by running the **Get Distribution Status** API.
+        Create an installation package. This is an async call that returns the distribution ID; it does not mean that the creation succeeded. To confirm the package has been created, check the status of the distribution by running the **Get Distribution Status** API.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        name (str): The name of the installation package. (required)
-        platform (str): The installation platform. (optional)
-        package_type (str): A string representing the type of package to create. Each JSON object must contain *one* of the following keywords: - `standalone`: Installation for a new agent. When using this, you must include the `platform` field with one of the following values: `windows`, `linux`, `macos`, `android`, `kubernetes`, `helm`. - `upgrade`: Upgrade of an agent from ESM. When using this, you must include the `agent_version` field with one of the following values: `windows_version`, `linux_version`, or `macos_version`. (required)
-        agent_version (str): Use `agent_version` when creating a standalone installer. The value should be the agent version number. (required)
-        windows_version (str): Use `windows_version` when creating an upgrade package. The value is the relevant version number. (optional)
-        linux_version (str): Use `linux_version` when creating an upgrade package. The value is the relevant version number. (optional)
-        macos_version (str): Use `macos_version` when creating an upgrade package. The value is the relevant version number. (optional)
-        deployment_platform (str): When the `package_type` is `kubernetes` or `helm`, use the `deployment_platform` to indicate the type of platform. Valid values include: - `standard` - `openshift` - `gcos` - `bottlerocket` - `gke_autopilot` (required)
-        default_namespace (str): The default namespace (required)
-        node_selector (Dict[str, Any]): The node selector in the following format: `\"node_selector\": {\"key\": \"val\"}' (optional)
-        proxy (List[Any]): No description provided (optional)
-        cluster_name (str): Cluster name (optional)
-        run_on_master_node (bool): Whether or not to run on the master node. (required)
-        run_on_all_nodes (bool): Whether or not to run on all nodes. (required)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            name (str): The name of the installation package. (required)
+            platform (str): The installation platform. (optional)
+            package_type (str): A string representing the type of package to create. Each JSON object must contain *one* of the following keywords: - `standalone`: Installation for a new agent. When using this, you must include the `platform` field with one of the following values: `windows`, `linux`, `macos`, `android`, `kubernetes`, `helm`. - `upgrade`: Upgrade of an agent from ESM. When using this, you must include the `agent_version` field with one of the following values: `windows_version`, `linux_version`, or `macos_version`. (required)
+            agent_version (str): Use `agent_version` when creating a standalone installer. The value should be the agent version number. (required)
+            windows_version (str): Use `windows_version` when creating an upgrade package. The value is the relevant version number. (optional)
+            linux_version (str): Use `linux_version` when creating an upgrade package. The value is the relevant version number. (optional)
+            macos_version (str): Use `macos_version` when creating an upgrade package. The value is the relevant version number. (optional)
+            deployment_platform (str): When the `package_type` is `kubernetes` or `helm`, use the `deployment_platform` to indicate the type of platform. Valid values include: - `standard` - `openshift` - `gcos` - `bottlerocket` - `gke_autopilot` (required)
+            default_namespace (str): The default namespace (required)
+            node_selector (Dict[str, Any]): The node selector in the following format: `\"node_selector\": {\"key\": \"val\"}' (optional)
+            proxy (List[Any]): No description provided (optional)
+            cluster_name (str): Cluster name (optional)
+            run_on_master_node (bool): Whether or not to run on the master node. (required)
+            run_on_all_nodes (bool): Whether or not to run on all nodes. (required)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -2483,7 +2605,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/distributions/create"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -2511,7 +2633,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -2528,20 +2650,45 @@ xsiam_create_schema = {
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
         "name": {"type": "str", "description": "The name of the installation package."},
         "platform": {"type": "str", "description": "The installation platform."},
-        "package_type": {"type": "str", "description": "A string representing the type of package to create. Each JSON object must contain *one* of the following keywords: - `standalone`: Installation for a new agent. When using this, you must include the `platform` field with one of the following values: `windows`, `linux`, `macos`, `android`, `kubernetes`, `helm`. - `upgrade`: Upgrade of an agent from ESM. When using this, you must include the `agent_version` field with one of the following values: `windows_version`, `linux_version`, or `macos_version`."},
-        "agent_version": {"type": "str", "description": "Use `agent_version` when creating a standalone installer. The value should be the agent version number."},
-        "windows_version": {"type": "str", "description": "Use `windows_version` when creating an upgrade package. The value is the relevant version number."},
-        "linux_version": {"type": "str", "description": "Use `linux_version` when creating an upgrade package. The value is the relevant version number."},
-        "macos_version": {"type": "str", "description": "Use `macos_version` when creating an upgrade package. The value is the relevant version number."},
-        "deployment_platform": {"type": "str", "description": "When the `package_type` is `kubernetes` or `helm`, use the `deployment_platform` to indicate the type of platform. Valid values include: - `standard` - `openshift` - `gcos` - `bottlerocket` - `gke_autopilot`"},
+        "package_type": {
+            "type": "str",
+            "description": "A string representing the type of package to create. Each JSON object must contain *one* of the following keywords: - `standalone`: Installation for a new agent. When using this, you must include the `platform` field with one of the following values: `windows`, `linux`, `macos`, `android`, `kubernetes`, `helm`. - `upgrade`: Upgrade of an agent from ESM. When using this, you must include the `agent_version` field with one of the following values: `windows_version`, `linux_version`, or `macos_version`.",
+        },
+        "agent_version": {
+            "type": "str",
+            "description": "Use `agent_version` when creating a standalone installer. The value should be the agent version number.",
+        },
+        "windows_version": {
+            "type": "str",
+            "description": "Use `windows_version` when creating an upgrade package. The value is the relevant version number.",
+        },
+        "linux_version": {
+            "type": "str",
+            "description": "Use `linux_version` when creating an upgrade package. The value is the relevant version number.",
+        },
+        "macos_version": {
+            "type": "str",
+            "description": "Use `macos_version` when creating an upgrade package. The value is the relevant version number.",
+        },
+        "deployment_platform": {
+            "type": "str",
+            "description": "When the `package_type` is `kubernetes` or `helm`, use the `deployment_platform` to indicate the type of platform. Valid values include: - `standard` - `openshift` - `gcos` - `bottlerocket` - `gke_autopilot`",
+        },
         "default_namespace": {"type": "str", "description": "The default namespace"},
-        "node_selector": {"type": "Dict[str, Any]", "description": "The node selector in the following format: `\"node_selector\": {\"key\": \"val\"}'"},
+        "node_selector": {
+            "type": "Dict[str, Any]",
+            "description": 'The node selector in the following format: `"node_selector": {"key": "val"}\'',
+        },
         "proxy": {"type": "List[Any]", "description": ""},
         "cluster_name": {"type": "str", "description": "Cluster name"},
-        "run_on_master_node": {"type": "bool", "description": "Whether or not to run on the master node."},
+        "run_on_master_node": {
+            "type": "bool",
+            "description": "Whether or not to run on the master node.",
+        },
         "run_on_all_nodes": {"type": "bool", "description": "Whether or not to run on all nodes."},
     },
 }
+
 
 @server.call_tool()
 async def xsiam_get_violations(
@@ -2554,36 +2701,36 @@ async def xsiam_get_violations(
     search_to: int | None = None,
 ) -> List[types.TextContent]:
     """
-    Gets a list of device control violations filtered by selected fields. You can retrieve up to 100 violations.
+        Gets a list of device control violations filtered by selected fields. You can retrieve up to 100 violations.
 
-When filtering by multiple fields:
-- Response is concatenated using AND condition (OR is not supported).
-- Maximum result set size is 100.
-- Offset is the zero-based number of incidents from the start of the result set.
+    When filtering by multiple fields:
+    - Response is concatenated using AND condition (OR is not supported).
+    - Maximum result set size is 100.
+    - Offset is the zero-based number of incidents from the start of the result set.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        filters (List[Any]): Provides an array of filter fields. (optional)
-        search_from (int): Integer representing the starting offset within the query result set from which you want violations returned. Violations are returned as a zero-based list. Any violation indexed less than this value is not returned in the final result set and defaults to zero. (optional)
-        search_to (int): An integer representing the end of offset within the result set after which you do not want violations returned. Violations in the violation list that are indexed higher than this value are not returned in the final results set. Defaults to zero, which returns all alerts to the end of the list. (optional)
-        field (str): The field you want to sort by. (required)
-        value (str): Can be either `asc` (ascending) or `desc` (descending). (required)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            filters (List[Any]): Provides an array of filter fields. (optional)
+            search_from (int): Integer representing the starting offset within the query result set from which you want violations returned. Violations are returned as a zero-based list. Any violation indexed less than this value is not returned in the final result set and defaults to zero. (optional)
+            search_to (int): An integer representing the end of offset within the result set after which you do not want violations returned. Violations in the violation list that are indexed higher than this value are not returned in the final results set. Defaults to zero, which returns all alerts to the end of the list. (optional)
+            field (str): The field you want to sort by. (required)
+            value (str): Can be either `asc` (ascending) or `desc` (descending). (required)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -2612,7 +2759,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/device_control/get_violations"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -2640,7 +2787,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -2656,12 +2803,22 @@ xsiam_get_violations_schema = {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
         "filters": {"type": "List[Any]", "description": "Provides an array of filter fields."},
-        "search_from": {"type": "int", "description": "Integer representing the starting offset within the query result set from which you want violations returned. Violations are returned as a zero-based list. Any violation indexed less than this value is not returned in the final result set and defaults to zero."},
-        "search_to": {"type": "int", "description": "An integer representing the end of offset within the result set after which you do not want violations returned. Violations in the violation list that are indexed higher than this value are not returned in the final results set. Defaults to zero, which returns all alerts to the end of the list."},
+        "search_from": {
+            "type": "int",
+            "description": "Integer representing the starting offset within the query result set from which you want violations returned. Violations are returned as a zero-based list. Any violation indexed less than this value is not returned in the final result set and defaults to zero.",
+        },
+        "search_to": {
+            "type": "int",
+            "description": "An integer representing the end of offset within the result set after which you do not want violations returned. Violations in the violation list that are indexed higher than this value are not returned in the final results set. Defaults to zero, which returns all alerts to the end of the list.",
+        },
         "field": {"type": "str", "description": "The field you want to sort by."},
-        "value": {"type": "str", "description": "Can be either `asc` (ascending) or `desc` (descending)."},
+        "value": {
+            "type": "str",
+            "description": "Can be either `asc` (ascending) or `desc` (descending).",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_get_status(
@@ -2670,27 +2827,27 @@ async def xsiam_get_status(
     distribution_id: str,
 ) -> List[types.TextContent]:
     """
-    Check the status of the installation package.
+        Check the status of the installation package.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        distribution_id (str): The installation package ID. (required)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            distribution_id (str): The installation package ID. (required)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -2707,7 +2864,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/distributions/get_status"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -2735,7 +2892,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -2754,6 +2911,7 @@ xsiam_get_status_schema = {
     },
 }
 
+
 @server.call_tool()
 async def xsiam_get_dist_url(
     authorization: str,
@@ -2762,28 +2920,28 @@ async def xsiam_get_dist_url(
     package_type: str,
 ) -> List[types.TextContent]:
     """
-    Get the distribution URL for downloading the installation package.
+        Get the distribution URL for downloading the installation package.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        distribution_id (str): Installation package ID. (required)
-        package_type (str): A string representing the type of installation package. Select *one* of the following valid keywords and values: - `upgrade` Package type should match the distribution type or platform: - `sh`: x86_64 Linux SH installer - `rpm`: x86_64 Linux RPM installer - `deb`: x86_64 Linux DEB installer - `aarch64_sh`: aarch64 Linux SH installer - `aarch64_rpm`: aarch64 Linux RPM installer - `aarch64_deb`: aarch64 Linux DEB installer - `pkg`: Mac - `x86`: Windows - `x64`: Windows - `arm`: Windows ARM64 (required)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            distribution_id (str): Installation package ID. (required)
+            package_type (str): A string representing the type of installation package. Select *one* of the following valid keywords and values: - `upgrade` Package type should match the distribution type or platform: - `sh`: x86_64 Linux SH installer - `rpm`: x86_64 Linux RPM installer - `deb`: x86_64 Linux DEB installer - `aarch64_sh`: aarch64 Linux SH installer - `aarch64_rpm`: aarch64 Linux RPM installer - `aarch64_deb`: aarch64 Linux DEB installer - `pkg`: Mac - `x86`: Windows - `x64`: Windows - `arm`: Windows ARM64 (required)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -2802,7 +2960,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/distributions/get_dist_url"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -2830,7 +2988,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -2846,9 +3004,13 @@ xsiam_get_dist_url_schema = {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
         "distribution_id": {"type": "str", "description": "Installation package ID."},
-        "package_type": {"type": "str", "description": "A string representing the type of installation package. Select *one* of the following valid keywords and values: - `upgrade` Package type should match the distribution type or platform: - `sh`: x86_64 Linux SH installer - `rpm`: x86_64 Linux RPM installer - `deb`: x86_64 Linux DEB installer - `aarch64_sh`: aarch64 Linux SH installer - `aarch64_rpm`: aarch64 Linux RPM installer - `aarch64_deb`: aarch64 Linux DEB installer - `pkg`: Mac - `x86`: Windows - `x64`: Windows - `arm`: Windows ARM64"},
+        "package_type": {
+            "type": "str",
+            "description": "A string representing the type of installation package. Select *one* of the following valid keywords and values: - `upgrade` Package type should match the distribution type or platform: - `sh`: x86_64 Linux SH installer - `rpm`: x86_64 Linux RPM installer - `deb`: x86_64 Linux DEB installer - `aarch64_sh`: aarch64 Linux SH installer - `aarch64_rpm`: aarch64 Linux RPM installer - `aarch64_deb`: aarch64 Linux DEB installer - `pkg`: Mac - `x86`: Windows - `x64`: Windows - `arm`: Windows ARM64",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_update_agent_name(
@@ -2858,28 +3020,28 @@ async def xsiam_update_agent_name(
     alias: str | None = None,
 ) -> List[types.TextContent]:
     """
-    Set or modify an Alias field for your endpoints.
+        Set or modify an Alias field for your endpoints.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        filters (List[Any]): An array of filter fields. (optional)
-        alias (str): The alias name you want to set or modify. Note: If you send an empty field, the current alias name is deleted. (optional)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            filters (List[Any]): An array of filter fields. (optional)
+            alias (str): The alias name you want to set or modify. Note: If you send an empty field, the current alias name is deleted. (optional)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -2898,7 +3060,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/endpoints/update_agent_name"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -2926,7 +3088,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -2942,9 +3104,13 @@ xsiam_update_agent_name_schema = {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
         "filters": {"type": "List[Any]", "description": "An array of filter fields."},
-        "alias": {"type": "str", "description": "The alias name you want to set or modify. Note: If you send an empty field, the current alias name is deleted."},
+        "alias": {
+            "type": "str",
+            "description": "The alias name you want to set or modify. Note: If you send an empty field, the current alias name is deleted.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_assign(
@@ -2954,28 +3120,28 @@ async def xsiam_assign(
     tag: str | None = None,
 ) -> List[types.TextContent]:
     """
-    Assign one or more tags to one or more endpoints.
+        Assign one or more tags to one or more endpoints.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        filters (List[Any]): An array of filter fields. (optional)
-        tag (str): The tag you want to assign. (optional)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            filters (List[Any]): An array of filter fields. (optional)
+            tag (str): The tag you want to assign. (optional)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -2994,7 +3160,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/tags/agents/assign"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -3022,7 +3188,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -3042,6 +3208,7 @@ xsiam_assign_schema = {
     },
 }
 
+
 @server.call_tool()
 async def xsiam_remove(
     authorization: str,
@@ -3050,28 +3217,28 @@ async def xsiam_remove(
     tag: str | None = None,
 ) -> List[types.TextContent]:
     """
-    Remove one or more tags from one or more endpoints.
+        Remove one or more tags from one or more endpoints.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        filters (List[Any]): Array of filter fields. (optional)
-        tag (str): The tag you want to remove. (optional)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            filters (List[Any]): Array of filter fields. (optional)
+            tag (str): The tag you want to remove. (optional)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -3090,7 +3257,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/tags/agents/remove"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -3118,7 +3285,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -3138,6 +3305,7 @@ xsiam_remove_schema = {
     },
 }
 
+
 @server.call_tool()
 async def xsiam_restore(
     authorization: str,
@@ -3147,33 +3315,33 @@ async def xsiam_restore(
     incident_id: int | None = None,
 ) -> List[types.TextContent]:
     """
-    Restore a quarantined file on a requested endpoints.
-When filtering by multiple fields:
-- Response is concatenated using AND condition (OR is not supported).
-- Maximum result set size is 100.
-- Offset is the zero-based number of incidents from the start of the result set.
+        Restore a quarantined file on a requested endpoints.
+    When filtering by multiple fields:
+    - Response is concatenated using AND condition (OR is not supported).
+    - Maximum result set size is 100.
+    - Offset is the zero-based number of incidents from the start of the result set.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        file_hash (str): String that represents the file in hash. Hash must be a valid SHA256. (required)
-        endpoint_id (str): String that represents the endpoint ID. Note: if it is not specified, the request will run restore on all endpoints which relate to the quarantined file you defined. (optional)
-        incident_id (int): String representing the incident ID. When included in the request, the Restore File action will appear in the Cortex XDR Incident View Timeline tab. (optional)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            file_hash (str): String that represents the file in hash. Hash must be a valid SHA256. (required)
+            endpoint_id (str): String that represents the endpoint ID. Note: if it is not specified, the request will run restore on all endpoints which relate to the quarantined file you defined. (optional)
+            incident_id (int): String representing the incident ID. When included in the request, the Restore File action will appear in the Cortex XDR Incident View Timeline tab. (optional)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -3194,7 +3362,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/endpoints/restore"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -3222,7 +3390,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -3237,11 +3405,21 @@ xsiam_restore_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "file_hash": {"type": "str", "description": "String that represents the file in hash. Hash must be a valid SHA256."},
-        "endpoint_id": {"type": "str", "description": "String that represents the endpoint ID. Note: if it is not specified, the request will run restore on all endpoints which relate to the quarantined file you defined."},
-        "incident_id": {"type": "int", "description": "String representing the incident ID. When included in the request, the Restore File action will appear in the Cortex XDR Incident View Timeline tab."},
+        "file_hash": {
+            "type": "str",
+            "description": "String that represents the file in hash. Hash must be a valid SHA256.",
+        },
+        "endpoint_id": {
+            "type": "str",
+            "description": "String that represents the endpoint ID. Note: if it is not specified, the request will run restore on all endpoints which relate to the quarantined file you defined.",
+        },
+        "incident_id": {
+            "type": "int",
+            "description": "String representing the incident ID. When included in the request, the Restore File action will appear in the Cortex XDR Incident View Timeline tab.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_file_retrieval_details(
@@ -3250,42 +3428,42 @@ async def xsiam_file_retrieval_details(
     group_action_id: str,
 ) -> List[types.TextContent]:
     """
-    View the API required to call in order to download the file retrieved by the **Retrieve File** API request according to the action ID.
+        View the API required to call in order to download the file retrieved by the **Retrieve File** API request according to the action ID.
 
-The response contains a file hash you need to download and then unzip to view:
-1. Download the file.
+    The response contains a file hash you need to download and then unzip to view:
+    1. Download the file.
 
-<!--
-title: "Request Example"
--->
-``` curl
-curl -XPOST "https://api-{fqdn}/public_api/v1/download/<api_value>" 
--H "x-xdr-auth-id:{API_KEY_ID}"  
--H "Authorization:{API_KEY}" 
--H 'Content-Type:application/json' 
---output /tmp/file.zip
-```
-2. Unzip the file: `unzip /tmp/file.zip`
+    <!--
+    title: "Request Example"
+    -->
+    ``` curl
+    curl -XPOST "https://api-{fqdn}/public_api/v1/download/<api_value>"
+    -H "x-xdr-auth-id:{API_KEY_ID}"
+    -H "Authorization:{API_KEY}"
+    -H 'Content-Type:application/json'
+    --output /tmp/file.zip
+    ```
+    2. Unzip the file: `unzip /tmp/file.zip`
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        group_action_id (str): The action ID of the **Retrieve File** API response. (required)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            group_action_id (str): The action ID of the **Retrieve File** API response. (required)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -3302,7 +3480,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/actions/file_retrieval_details"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -3330,7 +3508,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -3345,9 +3523,13 @@ xsiam_file_retrieval_details_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "group_action_id": {"type": "str", "description": "The action ID of the **Retrieve File** API response."},
+        "group_action_id": {
+            "type": "str",
+            "description": "The action ID of the **Retrieve File** API response.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_allowlist(
@@ -3358,29 +3540,29 @@ async def xsiam_allowlist(
     incident_id: int | None = None,
 ) -> List[types.TextContent]:
     """
-    Add files which do not exist in the allow or block lists to an allow list.
+        Add files which do not exist in the allow or block lists to an allow list.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        hash_list (List[Any]): A list of hashed files you want to add to the allow list. Hash must be a valid SH256. (required)
-        comment (str): Additional information regarding the action. (optional)
-        incident_id (int): The incident ID related to the hash. When included in the request, the **Allow List** action will appear in the **Cortex XDR Incident View Timeline** tab. (optional)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            hash_list (List[Any]): A list of hashed files you want to add to the allow list. Hash must be a valid SH256. (required)
+            comment (str): Additional information regarding the action. (optional)
+            incident_id (int): The incident ID related to the hash. When included in the request, the **Allow List** action will appear in the **Cortex XDR Incident View Timeline** tab. (optional)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -3401,7 +3583,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/hash_exceptions/allowlist"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -3429,7 +3611,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -3444,11 +3626,18 @@ xsiam_allowlist_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "hash_list": {"type": "List[Any]", "description": "A list of hashed files you want to add to the allow list. Hash must be a valid SH256."},
+        "hash_list": {
+            "type": "List[Any]",
+            "description": "A list of hashed files you want to add to the allow list. Hash must be a valid SH256.",
+        },
         "comment": {"type": "str", "description": "Additional information regarding the action."},
-        "incident_id": {"type": "int", "description": "The incident ID related to the hash. When included in the request, the **Allow List** action will appear in the **Cortex XDR Incident View Timeline** tab."},
+        "incident_id": {
+            "type": "int",
+            "description": "The incident ID related to the hash. When included in the request, the **Allow List** action will appear in the **Cortex XDR Incident View Timeline** tab.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_status(
@@ -3457,27 +3646,27 @@ async def xsiam_status(
     files: List[Any],
 ) -> List[types.TextContent]:
     """
-    Retrieve the quarantine status for specified files.
+        Retrieve the quarantine status for specified files.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        files (List[Any]): Array of endpoint IDs, filepaths, and file hash. (required)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            files (List[Any]): Array of endpoint IDs, filepaths, and file hash. (required)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -3494,7 +3683,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/quarantine/status"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -3522,7 +3711,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -3537,9 +3726,13 @@ xsiam_status_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "files": {"type": "List[Any]", "description": "Array of endpoint IDs, filepaths, and file hash."},
+        "files": {
+            "type": "List[Any]",
+            "description": "Array of endpoint IDs, filepaths, and file hash.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_quarantine(
@@ -3550,34 +3743,34 @@ async def xsiam_quarantine(
     file_hash: str,
 ) -> List[types.TextContent]:
     """
-    Quarantine file on selected endpoints. You can select up to 1000 endpoints.
+        Quarantine file on selected endpoints. You can select up to 1000 endpoints.
 
-Note: A success response means that the request reached the defined endpoints, however if the file was not found there, no quarantine action will take place. To ensure if the file has been quarantined, check the Cortex XDR Action Center.
+    Note: A success response means that the request reached the defined endpoints, however if the file was not found there, no quarantine action will take place. To ensure if the file has been quarantined, check the Cortex XDR Action Center.
 
-When filtering by multiple fields:
-- Response is concatenated using AND condition (OR is not supported).
-- Maximum result set size is 1000.
-- Offset is the zero-based number of incidents from the start of the result set.
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        filters (List[Any]): An array of filter fields. (required)
-        file_path (str): The path of the file you want to quarantine. You must enter a proper path and not symbolic links. (required)
-        file_hash (str): Incident ID. When included in the request, the **Quarantine File** action will appear in the **Cortex XDR Incident View Timeline** tab. (required)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    When filtering by multiple fields:
+    - Response is concatenated using AND condition (OR is not supported).
+    - Maximum result set size is 1000.
+    - Offset is the zero-based number of incidents from the start of the result set.
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            filters (List[Any]): An array of filter fields. (required)
+            file_path (str): The path of the file you want to quarantine. You must enter a proper path and not symbolic links. (required)
+            file_hash (str): Incident ID. When included in the request, the **Quarantine File** action will appear in the **Cortex XDR Incident View Timeline** tab. (required)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -3598,7 +3791,7 @@ When filtering by multiple fields:
     url = base_url + "/public_api/v1/endpoints/quarantine"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -3626,7 +3819,7 @@ When filtering by multiple fields:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -3642,10 +3835,17 @@ xsiam_quarantine_schema = {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
         "filters": {"type": "List[Any]", "description": "An array of filter fields."},
-        "file_path": {"type": "str", "description": "The path of the file you want to quarantine. You must enter a proper path and not symbolic links."},
-        "file_hash": {"type": "str", "description": "Incident ID. When included in the request, the **Quarantine File** action will appear in the **Cortex XDR Incident View Timeline** tab."},
+        "file_path": {
+            "type": "str",
+            "description": "The path of the file you want to quarantine. You must enter a proper path and not symbolic links.",
+        },
+        "file_hash": {
+            "type": "str",
+            "description": "Incident ID. When included in the request, the **Quarantine File** action will appear in the **Cortex XDR Incident View Timeline** tab.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_blocklist(
@@ -3656,29 +3856,29 @@ async def xsiam_blocklist(
     incident_id: int | None = None,
 ) -> List[types.TextContent]:
     """
-    Add files which do not exist in the allow or block lists to a block list. You can view the block list in the UI at **Incident Response** > **Action Center** > **Block List**.
+        Add files which do not exist in the allow or block lists to a block list. You can view the block list in the UI at **Incident Response** > **Action Center** > **Block List**.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        hash_list (List[Any]): A list of hashed files you want add to a block list. Hash must be a valid SH256. (required)
-        comment (str): Additional information regarding the action. (optional)
-        incident_id (int): The incident ID related to the hash. When included in the request, the **Block List** action appears in the **Cortex XDR Incident View Timeline** tab. (optional)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            hash_list (List[Any]): A list of hashed files you want add to a block list. Hash must be a valid SH256. (required)
+            comment (str): Additional information regarding the action. (optional)
+            incident_id (int): The incident ID related to the hash. When included in the request, the **Block List** action appears in the **Cortex XDR Incident View Timeline** tab. (optional)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -3699,7 +3899,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/hash_exceptions/blocklist"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -3727,7 +3927,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -3742,11 +3942,18 @@ xsiam_blocklist_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "hash_list": {"type": "List[Any]", "description": "A list of hashed files you want add to a block list. Hash must be a valid SH256."},
+        "hash_list": {
+            "type": "List[Any]",
+            "description": "A list of hashed files you want add to a block list. Hash must be a valid SH256.",
+        },
         "comment": {"type": "str", "description": "Additional information regarding the action."},
-        "incident_id": {"type": "int", "description": "The incident ID related to the hash. When included in the request, the **Block List** action appears in the **Cortex XDR Incident View Timeline** tab."},
+        "incident_id": {
+            "type": "int",
+            "description": "The incident ID related to the hash. When included in the request, the **Block List** action appears in the **Cortex XDR Incident View Timeline** tab.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_unisolate(
@@ -3757,31 +3964,31 @@ async def xsiam_unisolate(
     incident_id: str | None = None,
 ) -> List[types.TextContent]:
     """
-    Reverse the isolation of one or more endpoints in single request.
+        Reverse the isolation of one or more endpoints in single request.
 
-Note: You can only send a request with either `endpoint_id` to unisolate one endpoint or with filters to unisolate more than one endpoint. An error is raised if you try to use both `endpoint_id` and the filters.
+    Note: You can only send a request with either `endpoint_id` to unisolate one endpoint or with filters to unisolate more than one endpoint. An error is raised if you try to use both `endpoint_id` and the filters.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        filters (List[Any]): An array of filter fields for unisolating a number of endpoints at once. Note: This field is only required if unisolating more than one endpoint. (optional)
-        endpoint_id (str): The ID of the endpoint to unisolate. Note: this field is only required if unisolating one endpoint. (required)
-        incident_id (str): Incident ID. When included in the request, the **Unisolate Endpoints** action will appear in the **Cortex XDR Incident View Timeline** tab. (optional)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            filters (List[Any]): An array of filter fields for unisolating a number of endpoints at once. Note: This field is only required if unisolating more than one endpoint. (optional)
+            endpoint_id (str): The ID of the endpoint to unisolate. Note: this field is only required if unisolating one endpoint. (required)
+            incident_id (str): Incident ID. When included in the request, the **Unisolate Endpoints** action will appear in the **Cortex XDR Incident View Timeline** tab. (optional)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -3802,7 +4009,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/endpoints/unisolate"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -3830,7 +4037,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -3845,11 +4052,21 @@ xsiam_unisolate_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "filters": {"type": "List[Any]", "description": "An array of filter fields for unisolating a number of endpoints at once. Note: This field is only required if unisolating more than one endpoint."},
-        "endpoint_id": {"type": "str", "description": "The ID of the endpoint to unisolate. Note: this field is only required if unisolating one endpoint."},
-        "incident_id": {"type": "str", "description": "Incident ID. When included in the request, the **Unisolate Endpoints** action will appear in the **Cortex XDR Incident View Timeline** tab."},
+        "filters": {
+            "type": "List[Any]",
+            "description": "An array of filter fields for unisolating a number of endpoints at once. Note: This field is only required if unisolating more than one endpoint.",
+        },
+        "endpoint_id": {
+            "type": "str",
+            "description": "The ID of the endpoint to unisolate. Note: this field is only required if unisolating one endpoint.",
+        },
+        "incident_id": {
+            "type": "str",
+            "description": "Incident ID. When included in the request, the **Unisolate Endpoints** action will appear in the **Cortex XDR Incident View Timeline** tab.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_abort_scan(
@@ -3859,32 +4076,32 @@ async def xsiam_abort_scan(
     incident_id: str | None = None,
 ) -> List[types.TextContent]:
     """
-    Cancel the scan of selected endpoints. A scan can only be aborted if the selected endpoints are in **Pending** or in **Progress** status.
+        Cancel the scan of selected endpoints. A scan can only be aborted if the selected endpoints are in **Pending** or in **Progress** status.
 
-When filtering by multiple fields:
-- Response is concatenated using AND condition (OR is not supported).
-- Offset is the zero-based number of endpoints from the start of the result set.
+    When filtering by multiple fields:
+    - Response is concatenated using AND condition (OR is not supported).
+    - Offset is the zero-based number of endpoints from the start of the result set.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        filters (Dict[str, Any]): An array of filter fields. To scan all endpoints, use the value `all`. (required)
-        incident_id (str): Incident ID. When included in the request, the **Scan Endpoints** action will appear in the **Cortex XDR Incident View Timeline** tab. (optional)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            filters (Dict[str, Any]): An array of filter fields. To scan all endpoints, use the value `all`. (required)
+            incident_id (str): Incident ID. When included in the request, the **Scan Endpoints** action will appear in the **Cortex XDR Incident View Timeline** tab. (optional)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -3903,7 +4120,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/endpoints/abort_scan"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -3931,7 +4148,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -3946,10 +4163,17 @@ xsiam_abort_scan_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "filters": {"type": "Dict[str, Any]", "description": "An array of filter fields. To scan all endpoints, use the value `all`."},
-        "incident_id": {"type": "str", "description": "Incident ID. When included in the request, the **Scan Endpoints** action will appear in the **Cortex XDR Incident View Timeline** tab."},
+        "filters": {
+            "type": "Dict[str, Any]",
+            "description": "An array of filter fields. To scan all endpoints, use the value `all`.",
+        },
+        "incident_id": {
+            "type": "str",
+            "description": "Incident ID. When included in the request, the **Scan Endpoints** action will appear in the **Cortex XDR Incident View Timeline** tab.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_scan(
@@ -3959,30 +4183,30 @@ async def xsiam_scan(
     incident_id: str | None = None,
 ) -> List[types.TextContent]:
     """
-    Run a scan on selected endpoints.
-- Response is concatenated using AND condition (OR is not supported).
-- Offset is the zero-based number of incidents from the start of the result set.
+        Run a scan on selected endpoints.
+    - Response is concatenated using AND condition (OR is not supported).
+    - Offset is the zero-based number of incidents from the start of the result set.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        filters (Dict[str, Any]): An array of filter fields. To scan all endpoints, use the value `all`. (required)
-        incident_id (str): Incident ID. When included in the request, the **Scan Endpoints** action will appear in the **Cortex XDR Incident View Timeline** tab. (optional)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            filters (Dict[str, Any]): An array of filter fields. To scan all endpoints, use the value `all`. (required)
+            incident_id (str): Incident ID. When included in the request, the **Scan Endpoints** action will appear in the **Cortex XDR Incident View Timeline** tab. (optional)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -4001,7 +4225,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/endpoints/scan"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -4029,7 +4253,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -4044,10 +4268,17 @@ xsiam_scan_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "filters": {"type": "Dict[str, Any]", "description": "An array of filter fields. To scan all endpoints, use the value `all`."},
-        "incident_id": {"type": "str", "description": "Incident ID. When included in the request, the **Scan Endpoints** action will appear in the **Cortex XDR Incident View Timeline** tab."},
+        "filters": {
+            "type": "Dict[str, Any]",
+            "description": "An array of filter fields. To scan all endpoints, use the value `all`.",
+        },
+        "incident_id": {
+            "type": "str",
+            "description": "Incident ID. When included in the request, the **Scan Endpoints** action will appear in the **Cortex XDR Incident View Timeline** tab.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_get_action_status(
@@ -4056,27 +4287,27 @@ async def xsiam_get_action_status(
     group_action_id: int,
 ) -> List[types.TextContent]:
     """
-    Retrieve the status of the requested actions according to the action ID.
+        Retrieve the status of the requested actions according to the action ID.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        group_action_id (int): Action ID of the selected request. (required)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            group_action_id (int): Action ID of the selected request. (required)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -4093,7 +4324,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/actions/get_action_status"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -4121,7 +4352,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -4140,6 +4371,7 @@ xsiam_get_action_status_schema = {
     },
 }
 
+
 @server.call_tool()
 async def xsiam_run_snippet_code_script(
     authorization: str,
@@ -4150,30 +4382,30 @@ async def xsiam_run_snippet_code_script(
     incident_id: str | None = None,
 ) -> List[types.TextContent]:
     """
-    Initiate a new endpoint script execution action using provided snippet code. Cortex XDR supports sending your request in Base64.
+        Initiate a new endpoint script execution action using provided snippet code. Cortex XDR supports sending your request in Base64.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        filters (List[Any]): An array of filter fields for running the script on a number of endpoints at once. (required)
-        timeout (int): The timeout in seconds for this execution. Default value is 600. (optional)
-        snippet_code (str): Section of a script you want to initiate on an endpoint. (required)
-        incident_id (str): Incident ID. When included in the request, the **Run Snippet Code Script** action will appear in the **Cortex XDR Incident View Timeline** tab. (optional)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            filters (List[Any]): An array of filter fields for running the script on a number of endpoints at once. (required)
+            timeout (int): The timeout in seconds for this execution. Default value is 600. (optional)
+            snippet_code (str): Section of a script you want to initiate on an endpoint. (required)
+            incident_id (str): Incident ID. When included in the request, the **Run Snippet Code Script** action will appear in the **Cortex XDR Incident View Timeline** tab. (optional)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -4196,7 +4428,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/scripts/run_snippet_code_script"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -4224,7 +4456,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -4239,12 +4471,25 @@ xsiam_run_snippet_code_script_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "filters": {"type": "List[Any]", "description": "An array of filter fields for running the script on a number of endpoints at once."},
-        "timeout": {"type": "int", "description": "The timeout in seconds for this execution. Default value is 600."},
-        "snippet_code": {"type": "str", "description": "Section of a script you want to initiate on an endpoint."},
-        "incident_id": {"type": "str", "description": "Incident ID. When included in the request, the **Run Snippet Code Script** action will appear in the **Cortex XDR Incident View Timeline** tab."},
+        "filters": {
+            "type": "List[Any]",
+            "description": "An array of filter fields for running the script on a number of endpoints at once.",
+        },
+        "timeout": {
+            "type": "int",
+            "description": "The timeout in seconds for this execution. Default value is 600.",
+        },
+        "snippet_code": {
+            "type": "str",
+            "description": "Section of a script you want to initiate on an endpoint.",
+        },
+        "incident_id": {
+            "type": "str",
+            "description": "Incident ID. When included in the request, the **Run Snippet Code Script** action will appear in the **Cortex XDR Incident View Timeline** tab.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_run_script(
@@ -4258,32 +4503,32 @@ async def xsiam_run_script(
     incident_id: str | None = None,
 ) -> List[types.TextContent]:
     """
-    Initiate a new endpoint script execution action using a script from the script library. The script can be run on up to 1000 endpoints.
+        Initiate a new endpoint script execution action using a script from the script library. The script can be run on up to 1000 endpoints.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        filters (List[Any]): Array of filter fields for running the script on a number of endpoints at once. (required)
-        script_uid (str): GUID, unique identifier of the script, returned by the **Get Scripts** API per script. (required)
-        x (str): No description provided (required)
-        y (int): No description provided (required)
-        timeout (int): Timeout in seconds for this execution. Default value is 600. (optional)
-        incident_id (str): Incident ID. When included in the request, the **Run Script** action will appear in the **Cortex XDR Incident View Timeline** tab. (optional)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            filters (List[Any]): Array of filter fields for running the script on a number of endpoints at once. (required)
+            script_uid (str): GUID, unique identifier of the script, returned by the **Get Scripts** API per script. (required)
+            x (str): No description provided (required)
+            y (int): No description provided (required)
+            timeout (int): Timeout in seconds for this execution. Default value is 600. (optional)
+            incident_id (str): Incident ID. When included in the request, the **Run Script** action will appear in the **Cortex XDR Incident View Timeline** tab. (optional)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -4314,7 +4559,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/scripts/run_script"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -4342,7 +4587,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -4357,14 +4602,27 @@ xsiam_run_script_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "filters": {"type": "List[Any]", "description": "Array of filter fields for running the script on a number of endpoints at once."},
-        "script_uid": {"type": "str", "description": "GUID, unique identifier of the script, returned by the **Get Scripts** API per script."},
+        "filters": {
+            "type": "List[Any]",
+            "description": "Array of filter fields for running the script on a number of endpoints at once.",
+        },
+        "script_uid": {
+            "type": "str",
+            "description": "GUID, unique identifier of the script, returned by the **Get Scripts** API per script.",
+        },
         "x": {"type": "str", "description": ""},
         "y": {"type": "int", "description": ""},
-        "timeout": {"type": "int", "description": "Timeout in seconds for this execution. Default value is 600."},
-        "incident_id": {"type": "str", "description": "Incident ID. When included in the request, the **Run Script** action will appear in the **Cortex XDR Incident View Timeline** tab."},
+        "timeout": {
+            "type": "int",
+            "description": "Timeout in seconds for this execution. Default value is 600.",
+        },
+        "incident_id": {
+            "type": "str",
+            "description": "Incident ID. When included in the request, the **Run Script** action will appear in the **Cortex XDR Incident View Timeline** tab.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_get_script_metadata(
@@ -4373,27 +4631,27 @@ async def xsiam_get_script_metadata(
     script_uid: str,
 ) -> List[types.TextContent]:
     """
-    Get the full definitions of a specific script in the scripts library.
+        Get the full definitions of a specific script in the scripts library.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        script_uid (str): Unique identifier of the script, returned by the **Get Scripts** API per script. (required)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            script_uid (str): Unique identifier of the script, returned by the **Get Scripts** API per script. (required)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -4410,7 +4668,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/scripts/get_script_metadata"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -4438,7 +4696,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -4453,9 +4711,13 @@ xsiam_get_script_metadata_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "script_uid": {"type": "str", "description": "Unique identifier of the script, returned by the **Get Scripts** API per script."},
+        "script_uid": {
+            "type": "str",
+            "description": "Unique identifier of the script, returned by the **Get Scripts** API per script.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_get_script_execution_status(
@@ -4464,27 +4726,27 @@ async def xsiam_get_script_execution_status(
     action_id: str,
 ) -> List[types.TextContent]:
     """
-    Retrieve the status of a script execution action.
+        Retrieve the status of a script execution action.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        action_id (str): Identifier of the action, can be found in Cortex XDR console **Response** > **Action Center** > **Action ID** field. (required)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            action_id (str): Identifier of the action, can be found in Cortex XDR console **Response** > **Action Center** > **Action ID** field. (required)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -4501,7 +4763,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/scripts/get_script_execution_status"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -4529,7 +4791,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -4544,9 +4806,13 @@ xsiam_get_script_execution_status_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "action_id": {"type": "str", "description": "Identifier of the action, can be found in Cortex XDR console **Response** > **Action Center** > **Action ID** field."},
+        "action_id": {
+            "type": "str",
+            "description": "Identifier of the action, can be found in Cortex XDR console **Response** > **Action Center** > **Action ID** field.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_get_scripts(
@@ -4555,27 +4821,27 @@ async def xsiam_get_scripts(
     filters: List[Any],
 ) -> List[types.TextContent]:
     """
-    Get a list of scripts available in the scripts library.
+        Get a list of scripts available in the scripts library.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        filters (List[Any]): An array of filter fields. (required)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            filters (List[Any]): An array of filter fields. (required)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -4592,7 +4858,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/scripts/get_scripts"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -4620,7 +4886,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -4639,6 +4905,7 @@ xsiam_get_scripts_schema = {
     },
 }
 
+
 @server.call_tool()
 async def xsiam_get_script_execution_results(
     authorization: str,
@@ -4646,27 +4913,27 @@ async def xsiam_get_script_execution_results(
     action_id: str,
 ) -> List[types.TextContent]:
     """
-    Retrieve the results of a script execution action.
+        Retrieve the results of a script execution action.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        action_id (str): Action ID. This can be found in the Cortex XDR console **Response** > **Action Center** > **Action ID** field. (required)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            action_id (str): Action ID. This can be found in the Cortex XDR console **Response** > **Action Center** > **Action ID** field. (required)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -4683,7 +4950,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/scripts/get_script_execution_results"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -4711,7 +4978,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -4726,9 +4993,13 @@ xsiam_get_script_execution_results_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "action_id": {"type": "str", "description": "Action ID. This can be found in the Cortex XDR console **Response** > **Action Center** > **Action ID** field."},
+        "action_id": {
+            "type": "str",
+            "description": "Action ID. This can be found in the Cortex XDR console **Response** > **Action Center** > **Action ID** field.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_get_script_execution_results_files(
@@ -4738,28 +5009,28 @@ async def xsiam_get_script_execution_results_files(
     endpoint_id: str,
 ) -> List[types.TextContent]:
     """
-    Get the files retrieved from a specific endpoint during a script execution.
+        Get the files retrieved from a specific endpoint during a script execution.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        action_id (str): Identifier of the action, can be found in Cortex XDR console **Response** > **Action Center** > **Action ID** field. (required)
-        endpoint_id (str): Endpoint ID. (required)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            action_id (str): Identifier of the action, can be found in Cortex XDR console **Response** > **Action Center** > **Action ID** field. (required)
+            endpoint_id (str): Endpoint ID. (required)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -4778,7 +5049,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/scripts/get_script_execution_results_files"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -4806,7 +5077,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -4821,10 +5092,14 @@ xsiam_get_script_execution_results_files_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "action_id": {"type": "str", "description": "Identifier of the action, can be found in Cortex XDR console **Response** > **Action Center** > **Action ID** field."},
+        "action_id": {
+            "type": "str",
+            "description": "Identifier of the action, can be found in Cortex XDR console **Response** > **Action Center** > **Action ID** field.",
+        },
         "endpoint_id": {"type": "str", "description": "Endpoint ID."},
     },
 }
+
 
 @server.call_tool()
 async def xsiam_get_script_code(
@@ -4833,27 +5108,27 @@ async def xsiam_get_script_code(
     script_uid: str,
 ) -> List[types.TextContent]:
     """
-    Get the code of a specific script in the script library.
+        Get the code of a specific script in the script library.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        script_uid (str): Unique identifier of the script, returned by the **Get Scripts** API per script. (required)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            script_uid (str): Unique identifier of the script, returned by the **Get Scripts** API per script. (required)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -4870,7 +5145,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/scripts/get_script_code"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -4898,7 +5173,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -4913,9 +5188,13 @@ xsiam_get_script_code_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "script_uid": {"type": "str", "description": "Unique identifier of the script, returned by the **Get Scripts** API per script."},
+        "script_uid": {
+            "type": "str",
+            "description": "Unique identifier of the script, returned by the **Get Scripts** API per script.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_insert_csv(
@@ -4925,30 +5204,30 @@ async def xsiam_insert_csv(
     validate: bool | None = None,
 ) -> List[types.TextContent]:
     """
-    Upload IOCs in CSV format that you retrieved from external threat intelligence sources. 
+        Upload IOCs in CSV format that you retrieved from external threat intelligence sources.
 
-Note: Cortex XDR does not scan historic data, but rather only new incoming data.
+    Note: Cortex XDR does not scan historic data, but rather only new incoming data.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        request_data (str): The body of this request contains a JSON object with a single field: `request_data`. This field is required. Its value is as string containing two or more comma-separated lines. The first line must contain the CSV header. All subsequent lines must represent IOC data. Each line must include at a minimum the required CSV fields, which are identified below. To help you validate the upload, you can send a separate validate field to view an array of errors with an unsuccessful call. | Field | Description | | ----------- | ----------- | | indicator | (Required) String that identifies the indicator you want to insert into Cortex XDR. | | type | (Required) Keyword identifying the type of indicator. Valid values are: `HASH`, `IP`, `PATH`, `DOMAIN_NAME`, or `FILENAME` | | severity | (Required) Keyword identifying the indicator's severity. Valid values are: `INFO`, `LOW`, `MEDIUM`, `HIGH`, or `CRITICAL` | | expiration_date | Integer representing the indicator's expiration timestamp. This is a Unix epoch timestamp value, in milliseconds. If this indicator has no expiration, use `Never`. If this value is NULL, the indicator receives the indicator's type value with the default expiration date. Valid values are: 7 days, 30 days, 90 days, or 180 days | | comment | Comment string. | | reputation | Keyword representing the indicator's reputation. Valid values are: `GOOD`, `BAD`, `SUSPICIOUS`, or `UNKNOWN` | | reliability | Character representing the indicator's reliability rating. Valid values are A-F. A is the most reliable, F is the least. | | class | String representing the indicator class (for example, \"Malware\") | | vendor.name | String representing the name of the vendor who reported this indicator. | | vendor.reputation | Keyword representing the vendor's reputation. Valid values are: `GOOD`, `BAD`, `SUSPICIOUS`, or `UNKNOWN` | | vendor.reliability | Character representing the vendor's reliability rating. Valid values are A-F. A is the most reliable, F is the least. | (required)
-        validate (bool): Indicates whether to return an array of errors in the case of an unsuccessful update indicator API request. (optional)
-    
-    Returns:
-        List[types.TextContent]: SUCCESS
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            request_data (str): The body of this request contains a JSON object with a single field: `request_data`. This field is required. Its value is as string containing two or more comma-separated lines. The first line must contain the CSV header. All subsequent lines must represent IOC data. Each line must include at a minimum the required CSV fields, which are identified below. To help you validate the upload, you can send a separate validate field to view an array of errors with an unsuccessful call. | Field | Description | | ----------- | ----------- | | indicator | (Required) String that identifies the indicator you want to insert into Cortex XDR. | | type | (Required) Keyword identifying the type of indicator. Valid values are: `HASH`, `IP`, `PATH`, `DOMAIN_NAME`, or `FILENAME` | | severity | (Required) Keyword identifying the indicator's severity. Valid values are: `INFO`, `LOW`, `MEDIUM`, `HIGH`, or `CRITICAL` | | expiration_date | Integer representing the indicator's expiration timestamp. This is a Unix epoch timestamp value, in milliseconds. If this indicator has no expiration, use `Never`. If this value is NULL, the indicator receives the indicator's type value with the default expiration date. Valid values are: 7 days, 30 days, 90 days, or 180 days | | comment | Comment string. | | reputation | Keyword representing the indicator's reputation. Valid values are: `GOOD`, `BAD`, `SUSPICIOUS`, or `UNKNOWN` | | reliability | Character representing the indicator's reliability rating. Valid values are A-F. A is the most reliable, F is the least. | | class | String representing the indicator class (for example, \"Malware\") | | vendor.name | String representing the name of the vendor who reported this indicator. | | vendor.reputation | Keyword representing the vendor's reputation. Valid values are: `GOOD`, `BAD`, `SUSPICIOUS`, or `UNKNOWN` | | vendor.reliability | Character representing the vendor's reliability rating. Valid values are A-F. A is the most reliable, F is the least. | (required)
+            validate (bool): Indicates whether to return an array of errors in the case of an unsuccessful update indicator API request. (optional)
+
+        Returns:
+            List[types.TextContent]: SUCCESS
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -4963,7 +5242,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/indicators/insert_csv"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -4991,7 +5270,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -5006,10 +5285,17 @@ xsiam_insert_csv_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_data": {"type": "str", "description": "The body of this request contains a JSON object with a single field: `request_data`. This field is required. Its value is as string containing two or more comma-separated lines. The first line must contain the CSV header. All subsequent lines must represent IOC data. Each line must include at a minimum the required CSV fields, which are identified below. To help you validate the upload, you can send a separate validate field to view an array of errors with an unsuccessful call. | Field | Description | | ----------- | ----------- | | indicator | (Required) String that identifies the indicator you want to insert into Cortex XDR. | | type | (Required) Keyword identifying the type of indicator. Valid values are: `HASH`, `IP`, `PATH`, `DOMAIN_NAME`, or `FILENAME` | | severity | (Required) Keyword identifying the indicator's severity. Valid values are: `INFO`, `LOW`, `MEDIUM`, `HIGH`, or `CRITICAL` | | expiration_date | Integer representing the indicator's expiration timestamp. This is a Unix epoch timestamp value, in milliseconds. If this indicator has no expiration, use `Never`. If this value is NULL, the indicator receives the indicator's type value with the default expiration date. Valid values are: 7 days, 30 days, 90 days, or 180 days | | comment | Comment string. | | reputation | Keyword representing the indicator's reputation. Valid values are: `GOOD`, `BAD`, `SUSPICIOUS`, or `UNKNOWN` | | reliability | Character representing the indicator's reliability rating. Valid values are A-F. A is the most reliable, F is the least. | | class | String representing the indicator class (for example, \"Malware\") | | vendor.name | String representing the name of the vendor who reported this indicator. | | vendor.reputation | Keyword representing the vendor's reputation. Valid values are: `GOOD`, `BAD`, `SUSPICIOUS`, or `UNKNOWN` | | vendor.reliability | Character representing the vendor's reliability rating. Valid values are A-F. A is the most reliable, F is the least. |"},
-        "validate": {"type": "bool", "description": "Indicates whether to return an array of errors in the case of an unsuccessful update indicator API request."},
+        "request_data": {
+            "type": "str",
+            "description": "The body of this request contains a JSON object with a single field: `request_data`. This field is required. Its value is as string containing two or more comma-separated lines. The first line must contain the CSV header. All subsequent lines must represent IOC data. Each line must include at a minimum the required CSV fields, which are identified below. To help you validate the upload, you can send a separate validate field to view an array of errors with an unsuccessful call. | Field | Description | | ----------- | ----------- | | indicator | (Required) String that identifies the indicator you want to insert into Cortex XDR. | | type | (Required) Keyword identifying the type of indicator. Valid values are: `HASH`, `IP`, `PATH`, `DOMAIN_NAME`, or `FILENAME` | | severity | (Required) Keyword identifying the indicator's severity. Valid values are: `INFO`, `LOW`, `MEDIUM`, `HIGH`, or `CRITICAL` | | expiration_date | Integer representing the indicator's expiration timestamp. This is a Unix epoch timestamp value, in milliseconds. If this indicator has no expiration, use `Never`. If this value is NULL, the indicator receives the indicator's type value with the default expiration date. Valid values are: 7 days, 30 days, 90 days, or 180 days | | comment | Comment string. | | reputation | Keyword representing the indicator's reputation. Valid values are: `GOOD`, `BAD`, `SUSPICIOUS`, or `UNKNOWN` | | reliability | Character representing the indicator's reliability rating. Valid values are A-F. A is the most reliable, F is the least. | | class | String representing the indicator class (for example, \"Malware\") | | vendor.name | String representing the name of the vendor who reported this indicator. | | vendor.reputation | Keyword representing the vendor's reputation. Valid values are: `GOOD`, `BAD`, `SUSPICIOUS`, or `UNKNOWN` | | vendor.reliability | Character representing the vendor's reliability rating. Valid values are A-F. A is the most reliable, F is the least. |",
+        },
+        "validate": {
+            "type": "bool",
+            "description": "Indicates whether to return an array of errors in the case of an unsuccessful update indicator API request.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_insert_jsons(
@@ -5019,30 +5305,30 @@ async def xsiam_insert_jsons(
     validate: bool | None = None,
 ) -> List[types.TextContent]:
     """
-    Upload IOCs as JSON objects that you retrieved from external threat intelligence sources.
+        Upload IOCs as JSON objects that you retrieved from external threat intelligence sources.
 
-Note: Cortex XSIAM does not scan historic data, rather only new incoming data.
+    Note: Cortex XSIAM does not scan historic data, rather only new incoming data.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        request_data (List[Any]): No description provided (required)
-        validate (bool): Whether to return an array of errors in the case of an unsuccessful update indicator API request. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            request_data (List[Any]): No description provided (required)
+            validate (bool): Whether to return an array of errors in the case of an unsuccessful update indicator API request. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -5057,7 +5343,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/indicators/insert_jsons"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -5085,7 +5371,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -5101,9 +5387,13 @@ xsiam_insert_jsons_schema = {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
         "request_data": {"type": "List[Any]", "description": ""},
-        "validate": {"type": "bool", "description": "Whether to return an array of errors in the case of an unsuccessful update indicator API request."},
+        "validate": {
+            "type": "bool",
+            "description": "Whether to return an array of errors in the case of an unsuccessful update indicator API request.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_management_logs(
@@ -5116,32 +5406,32 @@ async def xsiam_management_logs(
     search_to: int | None = None,
 ) -> List[types.TextContent]:
     """
-    Get audit management logs.
-- Response is concatenated using AND condition (OR is not supported).
-- Maximum result set size is 100.
-- Offset is the zero-based number of incidents from the start of the result set.
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        filters (List[Any]): Array of filter fields. (optional)
-        search_from (int): An integer representing the starting offset within the query result set from which you want management logs returned. Management logs are returned as a zero-based list. Any log indexed less than this value is not returned in the final result set and defaults to zero. (optional)
-        search_to (int): An integer representing the end offset within the result set after which you do not want management logs returned. Logs in the management log list that are indexed higher than this value are not returned in the final results set. Defaults to 100, which returns all logs to the end of the list. (optional)
-        field (str): The field you want to sort by. (required)
-        keyword (str): Whether to sort in ascending or descending order. (required)
-    
-    Returns:
-        List[types.TextContent]: Successful response
+        Get audit management logs.
+    - Response is concatenated using AND condition (OR is not supported).
+    - Maximum result set size is 100.
+    - Offset is the zero-based number of incidents from the start of the result set.
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            filters (List[Any]): Array of filter fields. (optional)
+            search_from (int): An integer representing the starting offset within the query result set from which you want management logs returned. Management logs are returned as a zero-based list. Any log indexed less than this value is not returned in the final result set and defaults to zero. (optional)
+            search_to (int): An integer representing the end offset within the result set after which you do not want management logs returned. Logs in the management log list that are indexed higher than this value are not returned in the final results set. Defaults to 100, which returns all logs to the end of the list. (optional)
+            field (str): The field you want to sort by. (required)
+            keyword (str): Whether to sort in ascending or descending order. (required)
+
+        Returns:
+            List[types.TextContent]: Successful response
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -5170,7 +5460,7 @@ async def xsiam_management_logs(
     url = base_url + "/public_api/v1/audits/management_logs"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -5198,7 +5488,7 @@ async def xsiam_management_logs(
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -5214,12 +5504,22 @@ xsiam_management_logs_schema = {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
         "filters": {"type": "List[Any]", "description": "Array of filter fields."},
-        "search_from": {"type": "int", "description": "An integer representing the starting offset within the query result set from which you want management logs returned. Management logs are returned as a zero-based list. Any log indexed less than this value is not returned in the final result set and defaults to zero."},
-        "search_to": {"type": "int", "description": "An integer representing the end offset within the result set after which you do not want management logs returned. Logs in the management log list that are indexed higher than this value are not returned in the final results set. Defaults to 100, which returns all logs to the end of the list."},
+        "search_from": {
+            "type": "int",
+            "description": "An integer representing the starting offset within the query result set from which you want management logs returned. Management logs are returned as a zero-based list. Any log indexed less than this value is not returned in the final result set and defaults to zero.",
+        },
+        "search_to": {
+            "type": "int",
+            "description": "An integer representing the end offset within the result set after which you do not want management logs returned. Logs in the management log list that are indexed higher than this value are not returned in the final results set. Defaults to 100, which returns all logs to the end of the list.",
+        },
         "field": {"type": "str", "description": "The field you want to sort by."},
-        "keyword": {"type": "str", "description": "Whether to sort in ascending or descending order."},
+        "keyword": {
+            "type": "str",
+            "description": "Whether to sort in ascending or descending order.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_healthcheck(
@@ -5227,26 +5527,26 @@ async def xsiam_healthcheck(
     x_xdr_auth_id: str,
 ) -> List[types.TextContent]:
     """
-    Perform a health check of your Cortex XSIAM environment.
+        Perform a health check of your Cortex XSIAM environment.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-    
-    Returns:
-        List[types.TextContent]: OK
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -5257,7 +5557,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/healthcheck"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -5285,7 +5585,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -5303,32 +5603,33 @@ xsiam_healthcheck_schema = {
     },
 }
 
+
 @server.call_tool()
 async def xsiam_system_get_tenant_info_v1(
     authorization: str,
     x_xdr_auth_id: str,
 ) -> List[types.TextContent]:
     """
-    Get your tenant license information.
+        Get your tenant license information.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-    
-    Returns:
-        List[types.TextContent]: OK
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -5344,7 +5645,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/system/get_tenant_info"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -5372,7 +5673,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -5390,6 +5691,7 @@ xsiam_system_get_tenant_info_v1_schema = {
     },
 }
 
+
 @server.call_tool()
 async def xsiam_incidents_get_incident_extra_data_v1(
     authorization: str,
@@ -5398,33 +5700,33 @@ async def xsiam_incidents_get_incident_extra_data_v1(
     alerts_limit: int | None = None,
 ) -> List[types.TextContent]:
     """
-    Get extra data fields of a specific incident including alerts and key artifacts.
+        Get extra data fields of a specific incident including alerts and key artifacts.
 
-- Cortex XDR displays in the APIs response whether a PAN NGFW type alert contains a PCAP triggering packet.
-Use the **Retrieve PCAP Packet** API to retrieve a list of alert IDs and their associated PCAP data.
+    - Cortex XDR displays in the APIs response whether a PAN NGFW type alert contains a PCAP triggering packet.
+    Use the **Retrieve PCAP Packet** API to retrieve a list of alert IDs and their associated PCAP data.
 
-Note: The API includes a limit rate of 10 API requests per minute.
+    Note: The API includes a limit rate of 10 API requests per minute.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        incident_id (str): The ID of the incident for which you want to retrieve extra data. (required)
-        alerts_limit (int): The maximum number of related alerts in the incident that you want to retrieve. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            incident_id (str): The ID of the incident for which you want to retrieve extra data. (required)
+            alerts_limit (int): The maximum number of related alerts in the incident that you want to retrieve. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -5443,7 +5745,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/incidents/get_incident_extra_data"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -5471,7 +5773,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -5486,10 +5788,17 @@ xsiam_incidents_get_incident_extra_data_v1_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "incident_id": {"type": "str", "description": "The ID of the incident for which you want to retrieve extra data."},
-        "alerts_limit": {"type": "int", "description": "The maximum number of related alerts in the incident that you want to retrieve."},
+        "incident_id": {
+            "type": "str",
+            "description": "The ID of the incident for which you want to retrieve extra data.",
+        },
+        "alerts_limit": {
+            "type": "int",
+            "description": "The maximum number of related alerts in the incident that you want to retrieve.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_rbac_get_users_v1(
@@ -5497,26 +5806,26 @@ async def xsiam_rbac_get_users_v1(
     x_xdr_auth_id: str,
 ) -> List[types.TextContent]:
     """
-    Retrieve a list of the current users in your environment.
+        Retrieve a list of the current users in your environment.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-    
-    Returns:
-        List[types.TextContent]: OK
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -5527,7 +5836,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/rbac/get_users"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -5555,7 +5864,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -5573,6 +5882,7 @@ xsiam_rbac_get_users_v1_schema = {
     },
 }
 
+
 @server.call_tool()
 async def xsiam_rbac_get_roles_v1(
     authorization: str,
@@ -5580,27 +5890,27 @@ async def xsiam_rbac_get_roles_v1(
     role_names: List[Any] | None = None,
 ) -> List[types.TextContent]:
     """
-    Retrieve information about one or more roles created in your environment.
+        Retrieve information about one or more roles created in your environment.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        role_names (List[Any]): List of one or more role names in your environment for which you want detailed information. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            role_names (List[Any]): List of one or more role names in your environment for which you want detailed information. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -5617,7 +5927,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/rbac/get_roles"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -5645,7 +5955,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -5660,9 +5970,13 @@ xsiam_rbac_get_roles_v1_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "role_names": {"type": "List[Any]", "description": "List of one or more role names in your environment for which you want detailed information."},
+        "role_names": {
+            "type": "List[Any]",
+            "description": "List of one or more role names in your environment for which you want detailed information.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_rbac_get_user_group_v1(
@@ -5671,27 +5985,27 @@ async def xsiam_rbac_get_user_group_v1(
     group_names: List[Any] | None = None,
 ) -> List[types.TextContent]:
     """
-    Retrieve a list of the current user emails associated with one or more user groups in your environment.
+        Retrieve a list of the current user emails associated with one or more user groups in your environment.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        group_names (List[Any]): List of one or more user group names for which you want the associated users. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            group_names (List[Any]): List of one or more user group names for which you want the associated users. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -5708,7 +6022,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/rbac/get_user_group"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -5736,7 +6050,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -5751,9 +6065,13 @@ xsiam_rbac_get_user_group_v1_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "group_names": {"type": "List[Any]", "description": "List of one or more user group names for which you want the associated users."},
+        "group_names": {
+            "type": "List[Any]",
+            "description": "List of one or more user group names for which you want the associated users.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_rbac_set_user_role_v1(
@@ -5763,28 +6081,28 @@ async def xsiam_rbac_set_user_role_v1(
     role_name: str | None = None,
 ) -> List[types.TextContent]:
     """
-    Add or remove one or more users from a role.
+        Add or remove one or more users from a role.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        user_emails (List[Any]): List of one or more user emails of users you want to add to or remove from a role. (optional)
-        role_name (str): Name of the role you want to add a user to. Send an empty field to remove the user. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            user_emails (List[Any]): List of one or more user emails of users you want to add to or remove from a role. (optional)
+            role_name (str): Name of the role you want to add a user to. Send an empty field to remove the user. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -5803,7 +6121,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/rbac/set_user_role"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -5831,7 +6149,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -5846,10 +6164,17 @@ xsiam_rbac_set_user_role_v1_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "user_emails": {"type": "List[Any]", "description": "List of one or more user emails of users you want to add to or remove from a role."},
-        "role_name": {"type": "str", "description": "Name of the role you want to add a user to. Send an empty field to remove the user."},
+        "user_emails": {
+            "type": "List[Any]",
+            "description": "List of one or more user emails of users you want to add to or remove from a role.",
+        },
+        "role_name": {
+            "type": "str",
+            "description": "Name of the role you want to add a user to. Send an empty field to remove the user.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_endpoints_get_endpoint_v1(
@@ -5862,34 +6187,34 @@ async def xsiam_endpoints_get_endpoint_v1(
     search_to: int | None = None,
 ) -> List[types.TextContent]:
     """
-    Gets a list of filtered endpoints.
-- The response is concatenated using AND condition (OR is not supported).
-- The maximum result set size is 100.
-- Offset is the zero-based number of endpoints from the start of the result set.
+        Gets a list of filtered endpoints.
+    - The response is concatenated using AND condition (OR is not supported).
+    - The maximum result set size is 100.
+    - Offset is the zero-based number of endpoints from the start of the result set.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        filters (List[Any]): Array of filter fields. (optional)
-        search_from (int): Represents the start offset within the query result set from which you want endpoints returned. Endpoints are returned as a zero-based list. Any endpoint indexed less than this value is not returned in the final result set and defaults to zero. (optional)
-        search_to (int): Represents the end offset within the result set after which you do not want endpoints returned. Endpoint in the endpoint list that is indexed higher than this value is not returned in the final results set. Defaults to 100, which returns all endpoints to the end of the list. (optional)
-        field (str): Identifies the field you want to sort by. Case-sensitive. (required)
-        keyword (str): Whether you want to sort in ascending (`ASC`) or descending (`DESC`) order. Case-sensitive. (required)
-    
-    Returns:
-        List[types.TextContent]: OK
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            filters (List[Any]): Array of filter fields. (optional)
+            search_from (int): Represents the start offset within the query result set from which you want endpoints returned. Endpoints are returned as a zero-based list. Any endpoint indexed less than this value is not returned in the final result set and defaults to zero. (optional)
+            search_to (int): Represents the end offset within the result set after which you do not want endpoints returned. Endpoint in the endpoint list that is indexed higher than this value is not returned in the final results set. Defaults to 100, which returns all endpoints to the end of the list. (optional)
+            field (str): Identifies the field you want to sort by. Case-sensitive. (required)
+            keyword (str): Whether you want to sort in ascending (`ASC`) or descending (`DESC`) order. Case-sensitive. (required)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -5918,7 +6243,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/endpoints/get_endpoint"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -5946,7 +6271,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -5962,12 +6287,25 @@ xsiam_endpoints_get_endpoint_v1_schema = {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
         "filters": {"type": "List[Any]", "description": "Array of filter fields."},
-        "search_from": {"type": "int", "description": "Represents the start offset within the query result set from which you want endpoints returned. Endpoints are returned as a zero-based list. Any endpoint indexed less than this value is not returned in the final result set and defaults to zero."},
-        "search_to": {"type": "int", "description": "Represents the end offset within the result set after which you do not want endpoints returned. Endpoint in the endpoint list that is indexed higher than this value is not returned in the final results set. Defaults to 100, which returns all endpoints to the end of the list."},
-        "field": {"type": "str", "description": "Identifies the field you want to sort by. Case-sensitive."},
-        "keyword": {"type": "str", "description": "Whether you want to sort in ascending (`ASC`) or descending (`DESC`) order. Case-sensitive."},
+        "search_from": {
+            "type": "int",
+            "description": "Represents the start offset within the query result set from which you want endpoints returned. Endpoints are returned as a zero-based list. Any endpoint indexed less than this value is not returned in the final result set and defaults to zero.",
+        },
+        "search_to": {
+            "type": "int",
+            "description": "Represents the end offset within the result set after which you do not want endpoints returned. Endpoint in the endpoint list that is indexed higher than this value is not returned in the final results set. Defaults to 100, which returns all endpoints to the end of the list.",
+        },
+        "field": {
+            "type": "str",
+            "description": "Identifies the field you want to sort by. Case-sensitive.",
+        },
+        "keyword": {
+            "type": "str",
+            "description": "Whether you want to sort in ascending (`ASC`) or descending (`DESC`) order. Case-sensitive.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_get_risk_score_v1(
@@ -5976,27 +6314,27 @@ async def xsiam_get_risk_score_v1(
     id: str,
 ) -> List[types.TextContent]:
     """
-    Retrieve the risk score of a specific user or endpoint in your environment, along with the reason for the score.
+        Retrieve the risk score of a specific user or endpoint in your environment, along with the reason for the score.
 
-Required license: **Cortex XSIAM Premium** or **Identity Threat Module**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        id (str): Unique ID of a specific user or endpoint. - User ID should be in the following format: `netBIOS/samAccount` - Endpoint ID is the Cortex Agent ID. You can only request one ID at a time. (required)
-    
-    Returns:
-        List[types.TextContent]: OK
+    Required license: **Cortex XSIAM Premium** or **Identity Threat Module**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            id (str): Unique ID of a specific user or endpoint. - User ID should be in the following format: `netBIOS/samAccount` - Endpoint ID is the Cortex Agent ID. You can only request one ID at a time. (required)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -6013,7 +6351,7 @@ Required license: **Cortex XSIAM Premium** or **Identity Threat Module**
     url = base_url + "/public_api/v1/get_risk_score"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -6041,7 +6379,7 @@ Required license: **Cortex XSIAM Premium** or **Identity Threat Module**
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -6056,9 +6394,13 @@ xsiam_get_risk_score_v1_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "id": {"type": "str", "description": "Unique ID of a specific user or endpoint. - User ID should be in the following format: `netBIOS/samAccount` - Endpoint ID is the Cortex Agent ID. You can only request one ID at a time."},
+        "id": {
+            "type": "str",
+            "description": "Unique ID of a specific user or endpoint. - User ID should be in the following format: `netBIOS/samAccount` - Endpoint ID is the Cortex Agent ID. You can only request one ID at a time.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_get_risky_users_v1(
@@ -6066,26 +6408,26 @@ async def xsiam_get_risky_users_v1(
     x_xdr_auth_id: str,
 ) -> List[types.TextContent]:
     """
-    Retrieve a list of users with the highest risk score in your environment along with the reason affecting each score.
+        Retrieve a list of users with the highest risk score in your environment along with the reason affecting each score.
 
-Required license: **Cortex XSIAM Premium** or **Identity Threat Module**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-    
-    Returns:
-        List[types.TextContent]: OK
+    Required license: **Cortex XSIAM Premium** or **Identity Threat Module**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -6096,7 +6438,7 @@ Required license: **Cortex XSIAM Premium** or **Identity Threat Module**
     url = base_url + "/public_api/v1/get_risky_users"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -6124,7 +6466,7 @@ Required license: **Cortex XSIAM Premium** or **Identity Threat Module**
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -6142,32 +6484,33 @@ xsiam_get_risky_users_v1_schema = {
     },
 }
 
+
 @server.call_tool()
 async def xsiam_get_risky_hosts_v1(
     authorization: str,
     x_xdr_auth_id: str,
 ) -> List[types.TextContent]:
     """
-    Retrieve a list of endpoints with the highest risk score in your environment along with the reason for each score.
+        Retrieve a list of endpoints with the highest risk score in your environment along with the reason for each score.
 
-Required license: **Cortex XSIAM Premium** or **Identity Threat Module**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-    
-    Returns:
-        List[types.TextContent]: OK
+    Required license: **Cortex XSIAM Premium** or **Identity Threat Module**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -6178,7 +6521,7 @@ Required license: **Cortex XSIAM Premium** or **Identity Threat Module**
     url = base_url + "/public_api/v1/get_risky_hosts"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -6206,7 +6549,7 @@ Required license: **Cortex XSIAM Premium** or **Identity Threat Module**
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -6224,6 +6567,7 @@ xsiam_get_risky_hosts_v1_schema = {
     },
 }
 
+
 @server.call_tool()
 async def xsiam_endpoints_file_retrieval_v1(
     authorization: str,
@@ -6235,33 +6579,33 @@ async def xsiam_endpoints_file_retrieval_v1(
     incident_id: str | None = None,
 ) -> List[types.TextContent]:
     """
-    Retrieve files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints.
-- Response is concatenated using AND condition (OR is not supported).
-- Offset is the zero-based number of incidents from the start of the result set.
+        Retrieve files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints.
+    - Response is concatenated using AND condition (OR is not supported).
+    - Offset is the zero-based number of incidents from the start of the result set.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        filters (List[Any]): An array of filter fields. (required)
-        windows (List[Any]): No description provided (optional)
-        linux (List[Any]): No description provided (optional)
-        macos (List[Any]): No description provided (optional)
-        incident_id (str): Incident ID. When included in the request, the Retrieve File action will appear in the Cortex XDR Incident View Timeline tab. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            filters (List[Any]): An array of filter fields. (required)
+            windows (List[Any]): No description provided (optional)
+            linux (List[Any]): No description provided (optional)
+            macos (List[Any]): No description provided (optional)
+            incident_id (str): Incident ID. When included in the request, the Retrieve File action will appear in the Cortex XDR Incident View Timeline tab. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -6290,7 +6634,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/endpoints/file_retrieval"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -6318,7 +6662,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -6337,9 +6681,13 @@ xsiam_endpoints_file_retrieval_v1_schema = {
         "windows": {"type": "List[Any]", "description": ""},
         "linux": {"type": "List[Any]", "description": ""},
         "macos": {"type": "List[Any]", "description": ""},
-        "incident_id": {"type": "str", "description": "Incident ID. When included in the request, the Retrieve File action will appear in the Cortex XDR Incident View Timeline tab."},
+        "incident_id": {
+            "type": "str",
+            "description": "Incident ID. When included in the request, the Retrieve File action will appear in the Cortex XDR Incident View Timeline tab.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_endpoints_isolate_v1(
@@ -6350,29 +6698,29 @@ async def xsiam_endpoints_isolate_v1(
     incident_id: str | None = None,
 ) -> List[types.TextContent]:
     """
-    Isolate one or more endpoints in a single request. Request is limited to 1000 endpoints.
+        Isolate one or more endpoints in a single request. Request is limited to 1000 endpoints.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        filters (List[Any]): Array of filtered fields for isolating a number of endpoints at once. Note: Only required if isolating more than one endpoint. (optional)
-        endpoint_id (str): Identifies the endpoint to isolate. Note: Only required if isolating one endpoint. (required)
-        incident_id (str): The incident ID. When included in the request, the **Isolate Endpoints action** will appear in the Cortex XDR Incident ViewTimeline tab. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            filters (List[Any]): Array of filtered fields for isolating a number of endpoints at once. Note: Only required if isolating more than one endpoint. (optional)
+            endpoint_id (str): Identifies the endpoint to isolate. Note: Only required if isolating one endpoint. (required)
+            incident_id (str): The incident ID. When included in the request, the **Isolate Endpoints action** will appear in the Cortex XDR Incident ViewTimeline tab. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -6393,7 +6741,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/endpoints/isolate"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -6421,7 +6769,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -6436,11 +6784,21 @@ xsiam_endpoints_isolate_v1_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "filters": {"type": "List[Any]", "description": "Array of filtered fields for isolating a number of endpoints at once. Note: Only required if isolating more than one endpoint."},
-        "endpoint_id": {"type": "str", "description": "Identifies the endpoint to isolate. Note: Only required if isolating one endpoint."},
-        "incident_id": {"type": "str", "description": "The incident ID. When included in the request, the **Isolate Endpoints action** will appear in the Cortex XDR Incident ViewTimeline tab."},
+        "filters": {
+            "type": "List[Any]",
+            "description": "Array of filtered fields for isolating a number of endpoints at once. Note: Only required if isolating more than one endpoint.",
+        },
+        "endpoint_id": {
+            "type": "str",
+            "description": "Identifies the endpoint to isolate. Note: Only required if isolating one endpoint.",
+        },
+        "incident_id": {
+            "type": "str",
+            "description": "The incident ID. When included in the request, the **Isolate Endpoints action** will appear in the Cortex XDR Incident ViewTimeline tab.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_audits_agents_reports_v1(
@@ -6453,34 +6811,34 @@ async def xsiam_audits_agents_reports_v1(
     search_to: int | None = None,
 ) -> List[types.TextContent]:
     """
-    Get agent event reports.
-- Response is concatenated using AND condition (OR is not supported).
-- Maximum result set size is 100.
-- Offset is the zero-based number of incidents from the start of the result set.
+        Get agent event reports.
+    - Response is concatenated using AND condition (OR is not supported).
+    - Maximum result set size is 100.
+    - Offset is the zero-based number of incidents from the start of the result set.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        filters (List[Any]): An array of filter fields. (optional)
-        search_from (int): An integer representing the starting offset within the query result set from which you want agent reports returned. Reports are returned as a zero-based list. Any report indexed less than this value is not returned in the final result set and defaults to zero. (optional)
-        search_to (int): An integer representing the end offset within the result set after which you do not want agent reports returned. Reports in the agent report list that are indexed higher than this value are not returned in the final results set. Defaults to 100, which returns all reports to the end ofthe list. (optional)
-        field (str): The field you want to sort by. (required)
-        keyword (str): Whether to sort in ascending or descending order. (required)
-    
-    Returns:
-        List[types.TextContent]: OK
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            filters (List[Any]): An array of filter fields. (optional)
+            search_from (int): An integer representing the starting offset within the query result set from which you want agent reports returned. Reports are returned as a zero-based list. Any report indexed less than this value is not returned in the final result set and defaults to zero. (optional)
+            search_to (int): An integer representing the end offset within the result set after which you do not want agent reports returned. Reports in the agent report list that are indexed higher than this value are not returned in the final results set. Defaults to 100, which returns all reports to the end ofthe list. (optional)
+            field (str): The field you want to sort by. (required)
+            keyword (str): Whether to sort in ascending or descending order. (required)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -6509,7 +6867,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/audits/agents_reports"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -6537,7 +6895,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -6553,12 +6911,22 @@ xsiam_audits_agents_reports_v1_schema = {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
         "filters": {"type": "List[Any]", "description": "An array of filter fields."},
-        "search_from": {"type": "int", "description": "An integer representing the starting offset within the query result set from which you want agent reports returned. Reports are returned as a zero-based list. Any report indexed less than this value is not returned in the final result set and defaults to zero."},
-        "search_to": {"type": "int", "description": "An integer representing the end offset within the result set after which you do not want agent reports returned. Reports in the agent report list that are indexed higher than this value are not returned in the final results set. Defaults to 100, which returns all reports to the end ofthe list."},
+        "search_from": {
+            "type": "int",
+            "description": "An integer representing the starting offset within the query result set from which you want agent reports returned. Reports are returned as a zero-based list. Any report indexed less than this value is not returned in the final result set and defaults to zero.",
+        },
+        "search_to": {
+            "type": "int",
+            "description": "An integer representing the end offset within the result set after which you do not want agent reports returned. Reports in the agent report list that are indexed higher than this value are not returned in the final results set. Defaults to 100, which returns all reports to the end ofthe list.",
+        },
         "field": {"type": "str", "description": "The field you want to sort by."},
-        "keyword": {"type": "str", "description": "Whether to sort in ascending or descending order."},
+        "keyword": {
+            "type": "str",
+            "description": "Whether to sort in ascending or descending order.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_assets_get_external_service_v1(
@@ -6567,27 +6935,27 @@ async def xsiam_assets_get_external_service_v1(
     service_id_list: List[Any] | None = None,
 ) -> List[types.TextContent]:
     """
-    Get service details according to the service ID. You can send up to 20 IDs.
+        Get service details according to the service ID. You can send up to 20 IDs.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise**, **Cortex XSIAM Enterprise Plus** or **Cortex XSIAM Premium**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        service_id_list (List[Any]): Represents the service ID you want to get details for. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise**, **Cortex XSIAM Enterprise Plus** or **Cortex XSIAM Premium**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            service_id_list (List[Any]): Represents the service ID you want to get details for. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -6604,7 +6972,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise**, **Cor
     url = base_url + "/public_api/v1/assets/get_external_service"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -6632,7 +7000,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise**, **Cor
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -6647,9 +7015,13 @@ xsiam_assets_get_external_service_v1_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "service_id_list": {"type": "List[Any]", "description": "Represents the service ID you want to get details for."},
+        "service_id_list": {
+            "type": "List[Any]",
+            "description": "Represents the service ID you want to get details for.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_assets_get_external_services_v1(
@@ -6665,36 +7037,36 @@ async def xsiam_assets_get_external_services_v1(
     sort_field: str | None = None,
 ) -> List[types.TextContent]:
     """
-    Get a complete or filtered list of all your external services.
+        Get a complete or filtered list of all your external services.
 
-The maximum result limit is 500.
+    The maximum result limit is 500.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise**, **Cortex XSIAM Enterprise Plus** or **Cortex XSIAM Premium**
-    
-    Args:
-        authorization (str): api-key (required)
-        x_xdr_auth_id (str): api-key-id (required)
-        filters_field (str): String that identifies the service field the filter is matching. Filters are based on the following case-sensitive keywords: - active_classifications - business_units_list - discovery_type - domain - externally_detected_providers - externally_inferred_cves - inactive_classifications - ip_address - ipv6_address - is_active - protocol - service_name - service_type - service_type_list - tags (optional)
-        operator (str): String that identifies the comparison operator you want to use for this filter. Valid keywords and values are: - **contains** / **not_contains**— use with `externally_detected_providers`, `domain`, `externally_inferred_cves`, `active_classifications`, `inactive_classifications`, service_name, `service_type`, `protocol` - **eq** / **neq**— use with `service_name`, `service_type`, `protocol`, `ip_address` - **in** — use with `is_active`, `discovery_type`, `business_units_list`, `tags` (optional)
-        value (str): Value that this filter must match. The contents of this field will differ depending on the services field that you specified for this filter: - active_classifications — String - business_units_list — String or list of strings in the format \"BU name\" or \"BU:BU name\", for example “Acme & Co, Inc.” or “BU:Acme & Co, Inc.” - discovery_type — String. Values are: `colocated_on_ip`, `directly_discovered`, `unknown`. - domain — String - externally_detected_providers — String - externally_inferred_cves — String - inactive_classifications — String - ip_address — String - ipv6_address— String - is_active — String. Values are:`yes`, `no` - protocol — string - service_name — String - service_type — String - service_type_list — String - tags — List of strings indicating the tags to filter on in the format `\"tag-family:tag-name\"`, for example `\"AR:registered to you\"`. (optional)
-        vulnerability_test_results (str): Use this field with the value `true` to get vulnerability test results for the last 14 days for each service. Using this field will slow down the endpoint. (optional)
-        search_from (int): An integer representing the start offset index of results. (optional)
-        search_to (int): An integer representing the start offset index of results. Use this field to specify the number of results on a page when using page token pagination. (optional)
-        keyword (str): Can be either ASC (ascending order) or DESC (descending order). Default is ASC. Values are case sensitive. (optional)
-        sort_field (str): Values are: - service_name - first_observed - last_observed By default, case-sensitive, sort is defined as service_name. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise**, **Cortex XSIAM Enterprise Plus** or **Cortex XSIAM Premium**
+
+        Args:
+            authorization (str): api-key (required)
+            x_xdr_auth_id (str): api-key-id (required)
+            filters_field (str): String that identifies the service field the filter is matching. Filters are based on the following case-sensitive keywords: - active_classifications - business_units_list - discovery_type - domain - externally_detected_providers - externally_inferred_cves - inactive_classifications - ip_address - ipv6_address - is_active - protocol - service_name - service_type - service_type_list - tags (optional)
+            operator (str): String that identifies the comparison operator you want to use for this filter. Valid keywords and values are: - **contains** / **not_contains**— use with `externally_detected_providers`, `domain`, `externally_inferred_cves`, `active_classifications`, `inactive_classifications`, service_name, `service_type`, `protocol` - **eq** / **neq**— use with `service_name`, `service_type`, `protocol`, `ip_address` - **in** — use with `is_active`, `discovery_type`, `business_units_list`, `tags` (optional)
+            value (str): Value that this filter must match. The contents of this field will differ depending on the services field that you specified for this filter: - active_classifications — String - business_units_list — String or list of strings in the format \"BU name\" or \"BU:BU name\", for example “Acme & Co, Inc.” or “BU:Acme & Co, Inc.” - discovery_type — String. Values are: `colocated_on_ip`, `directly_discovered`, `unknown`. - domain — String - externally_detected_providers — String - externally_inferred_cves — String - inactive_classifications — String - ip_address — String - ipv6_address— String - is_active — String. Values are:`yes`, `no` - protocol — string - service_name — String - service_type — String - service_type_list — String - tags — List of strings indicating the tags to filter on in the format `\"tag-family:tag-name\"`, for example `\"AR:registered to you\"`. (optional)
+            vulnerability_test_results (str): Use this field with the value `true` to get vulnerability test results for the last 14 days for each service. Using this field will slow down the endpoint. (optional)
+            search_from (int): An integer representing the start offset index of results. (optional)
+            search_to (int): An integer representing the start offset index of results. Use this field to specify the number of results on a page when using page token pagination. (optional)
+            keyword (str): Can be either ASC (ascending order) or DESC (descending order). Default is ASC. Values are case sensitive. (optional)
+            sort_field (str): Values are: - service_name - first_observed - last_observed By default, case-sensitive, sort is defined as service_name. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -6733,7 +7105,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise**, **Cor
     url = base_url + "/public_api/v1/assets/get_external_services"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -6761,7 +7133,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise**, **Cor
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -6776,16 +7148,41 @@ xsiam_assets_get_external_services_v1_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "api-key"},
         "x_xdr_auth_id": {"type": "str", "description": "api-key-id"},
-        "filters_field": {"type": "str", "description": "String that identifies the service field the filter is matching. Filters are based on the following case-sensitive keywords: - active_classifications - business_units_list - discovery_type - domain - externally_detected_providers - externally_inferred_cves - inactive_classifications - ip_address - ipv6_address - is_active - protocol - service_name - service_type - service_type_list - tags"},
-        "operator": {"type": "str", "description": "String that identifies the comparison operator you want to use for this filter. Valid keywords and values are: - **contains** / **not_contains**— use with `externally_detected_providers`, `domain`, `externally_inferred_cves`, `active_classifications`, `inactive_classifications`, service_name, `service_type`, `protocol` - **eq** / **neq**— use with `service_name`, `service_type`, `protocol`, `ip_address` - **in** — use with `is_active`, `discovery_type`, `business_units_list`, `tags`"},
-        "value": {"type": "str", "description": "Value that this filter must match. The contents of this field will differ depending on the services field that you specified for this filter: - active_classifications — String - business_units_list — String or list of strings in the format \"BU name\" or \"BU:BU name\", for example “Acme & Co, Inc.” or “BU:Acme & Co, Inc.” - discovery_type — String. Values are: `colocated_on_ip`, `directly_discovered`, `unknown`. - domain — String - externally_detected_providers — String - externally_inferred_cves — String - inactive_classifications — String - ip_address — String - ipv6_address— String - is_active — String. Values are:`yes`, `no` - protocol — string - service_name — String - service_type — String - service_type_list — String - tags — List of strings indicating the tags to filter on in the format `\"tag-family:tag-name\"`, for example `\"AR:registered to you\"`."},
-        "vulnerability_test_results": {"type": "str", "description": "Use this field with the value `true` to get vulnerability test results for the last 14 days for each service. Using this field will slow down the endpoint."},
-        "search_from": {"type": "int", "description": "An integer representing the start offset index of results."},
-        "search_to": {"type": "int", "description": "An integer representing the start offset index of results. Use this field to specify the number of results on a page when using page token pagination."},
-        "keyword": {"type": "str", "description": "Can be either ASC (ascending order) or DESC (descending order). Default is ASC. Values are case sensitive."},
-        "sort_field": {"type": "str", "description": "Values are: - service_name - first_observed - last_observed By default, case-sensitive, sort is defined as service_name."},
+        "filters_field": {
+            "type": "str",
+            "description": "String that identifies the service field the filter is matching. Filters are based on the following case-sensitive keywords: - active_classifications - business_units_list - discovery_type - domain - externally_detected_providers - externally_inferred_cves - inactive_classifications - ip_address - ipv6_address - is_active - protocol - service_name - service_type - service_type_list - tags",
+        },
+        "operator": {
+            "type": "str",
+            "description": "String that identifies the comparison operator you want to use for this filter. Valid keywords and values are: - **contains** / **not_contains**— use with `externally_detected_providers`, `domain`, `externally_inferred_cves`, `active_classifications`, `inactive_classifications`, service_name, `service_type`, `protocol` - **eq** / **neq**— use with `service_name`, `service_type`, `protocol`, `ip_address` - **in** — use with `is_active`, `discovery_type`, `business_units_list`, `tags`",
+        },
+        "value": {
+            "type": "str",
+            "description": 'Value that this filter must match. The contents of this field will differ depending on the services field that you specified for this filter: - active_classifications — String - business_units_list — String or list of strings in the format "BU name" or "BU:BU name", for example “Acme & Co, Inc.” or “BU:Acme & Co, Inc.” - discovery_type — String. Values are: `colocated_on_ip`, `directly_discovered`, `unknown`. - domain — String - externally_detected_providers — String - externally_inferred_cves — String - inactive_classifications — String - ip_address — String - ipv6_address— String - is_active — String. Values are:`yes`, `no` - protocol — string - service_name — String - service_type — String - service_type_list — String - tags — List of strings indicating the tags to filter on in the format `"tag-family:tag-name"`, for example `"AR:registered to you"`.',
+        },
+        "vulnerability_test_results": {
+            "type": "str",
+            "description": "Use this field with the value `true` to get vulnerability test results for the last 14 days for each service. Using this field will slow down the endpoint.",
+        },
+        "search_from": {
+            "type": "int",
+            "description": "An integer representing the start offset index of results.",
+        },
+        "search_to": {
+            "type": "int",
+            "description": "An integer representing the start offset index of results. Use this field to specify the number of results on a page when using page token pagination.",
+        },
+        "keyword": {
+            "type": "str",
+            "description": "Can be either ASC (ascending order) or DESC (descending order). Default is ASC. Values are case sensitive.",
+        },
+        "sort_field": {
+            "type": "str",
+            "description": "Values are: - service_name - first_observed - last_observed By default, case-sensitive, sort is defined as service_name.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_assets_get_assets_internet_exposure_v1(
@@ -6798,35 +7195,35 @@ async def xsiam_assets_get_assets_internet_exposure_v1(
     search_to: int | None = None,
 ) -> List[types.TextContent]:
     """
-    Get a list of all your Internet exposure filtered by business units, externally detected providers, externally inferred CVEs, mac addresses, names, IP addresses, whether it has an XDR agent, whether it has active external services, and type.
+        Get a list of all your Internet exposure filtered by business units, externally detected providers, externally inferred CVEs, mac addresses, names, IP addresses, whether it has an XDR agent, whether it has active external services, and type.
 
-The maximum result limit is 500 assets.
+    The maximum result limit is 500 assets.
 
-Note: You can send a request to retrieve either all or filtered results.
+    Note: You can send a request to retrieve either all or filtered results.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        filters (List[Any]): An array of filter fields. (optional)
-        search_from (int): Represents the start offset index of results. (optional)
-        search_to (int): Represents the end offset index of results. (optional)
-        field (str): The field you want to sort by. Case-sensitive. (required)
-        keyword (str): Whether you want to sort in ascending or descending order. (required)
-    
-    Returns:
-        List[types.TextContent]: OK
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            filters (List[Any]): An array of filter fields. (optional)
+            search_from (int): Represents the start offset index of results. (optional)
+            search_to (int): Represents the end offset index of results. (optional)
+            field (str): The field you want to sort by. Case-sensitive. (required)
+            keyword (str): Whether you want to sort in ascending or descending order. (required)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -6855,7 +7252,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/assets/get_assets_internet_exposure"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -6883,7 +7280,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -6899,12 +7296,19 @@ xsiam_assets_get_assets_internet_exposure_v1_schema = {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
         "filters": {"type": "List[Any]", "description": "An array of filter fields."},
-        "search_from": {"type": "int", "description": "Represents the start offset index of results."},
+        "search_from": {
+            "type": "int",
+            "description": "Represents the start offset index of results.",
+        },
         "search_to": {"type": "int", "description": "Represents the end offset index of results."},
         "field": {"type": "str", "description": "The field you want to sort by. Case-sensitive."},
-        "keyword": {"type": "str", "description": "Whether you want to sort in ascending or descending order."},
+        "keyword": {
+            "type": "str",
+            "description": "Whether you want to sort in ascending or descending order.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_assets_get_asset_internet_exposure_v1(
@@ -6913,27 +7317,27 @@ async def xsiam_assets_get_asset_internet_exposure_v1(
     asm_id_list: List[Any] | None = None,
 ) -> List[types.TextContent]:
     """
-    Get Internet exposure asset details according to the asset ID. You can send up to 20 IDs.
+        Get Internet exposure asset details according to the asset ID. You can send up to 20 IDs.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        asm_id_list (List[Any]): Represents the asset ID for which you want to get the details. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            asm_id_list (List[Any]): Represents the asset ID for which you want to get the details. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -6950,7 +7354,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/assets/get_asset_internet_exposure"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -6978,7 +7382,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -6993,9 +7397,13 @@ xsiam_assets_get_asset_internet_exposure_v1_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "asm_id_list": {"type": "List[Any]", "description": "Represents the asset ID for which you want to get the details."},
+        "asm_id_list": {
+            "type": "List[Any]",
+            "description": "Represents the asset ID for which you want to get the details.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_assets_get_external_ip_address_ranges_v1(
@@ -7008,35 +7416,35 @@ async def xsiam_assets_get_external_ip_address_ranges_v1(
     search_to: int | None = None,
 ) -> List[types.TextContent]:
     """
-    Get a list of all your Internet exposure filtered by business units and organization handles.
+        Get a list of all your Internet exposure filtered by business units and organization handles.
 
-The maximum result limit is 1000 ranges.
+    The maximum result limit is 1000 ranges.
 
-Note: You can send a request to retrieve either **all** or **filtered** results.
+    Note: You can send a request to retrieve either **all** or **filtered** results.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        filters (List[Any]): Array of filter fields. (optional)
-        search_from (int): Represents the start offset index of results. (optional)
-        search_to (int): Represents the end offset index of results. (optional)
-        field (str): Identifies the field you want to sort by. Case-sensitive. (required)
-        keyword (str): Whether you want to sort in ascending (`ASC`) or descending (`DESC`) order. Case-sensitive. (required)
-    
-    Returns:
-        List[types.TextContent]: OK
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            filters (List[Any]): Array of filter fields. (optional)
+            search_from (int): Represents the start offset index of results. (optional)
+            search_to (int): Represents the end offset index of results. (optional)
+            field (str): Identifies the field you want to sort by. Case-sensitive. (required)
+            keyword (str): Whether you want to sort in ascending (`ASC`) or descending (`DESC`) order. Case-sensitive. (required)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -7065,7 +7473,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/assets/get_external_ip_address_ranges"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -7093,7 +7501,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -7109,12 +7517,22 @@ xsiam_assets_get_external_ip_address_ranges_v1_schema = {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
         "filters": {"type": "List[Any]", "description": "Array of filter fields."},
-        "search_from": {"type": "int", "description": "Represents the start offset index of results."},
+        "search_from": {
+            "type": "int",
+            "description": "Represents the start offset index of results.",
+        },
         "search_to": {"type": "int", "description": "Represents the end offset index of results."},
-        "field": {"type": "str", "description": "Identifies the field you want to sort by. Case-sensitive."},
-        "keyword": {"type": "str", "description": "Whether you want to sort in ascending (`ASC`) or descending (`DESC`) order. Case-sensitive."},
+        "field": {
+            "type": "str",
+            "description": "Identifies the field you want to sort by. Case-sensitive.",
+        },
+        "keyword": {
+            "type": "str",
+            "description": "Whether you want to sort in ascending (`ASC`) or descending (`DESC`) order. Case-sensitive.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_assets_get_external_ip_address_range_v1(
@@ -7123,27 +7541,27 @@ async def xsiam_assets_get_external_ip_address_range_v1(
     range_id_list: List[Any] | None = None,
 ) -> List[types.TextContent]:
     """
-    Get external IP address range details according to the range IDs. You can send up to 100 IDs.
+        Get external IP address range details according to the range IDs. You can send up to 100 IDs.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        range_id_list (List[Any]): A list of strings representing the range ID for which you want to get the details. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            range_id_list (List[Any]): A list of strings representing the range ID for which you want to get the details. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -7160,7 +7578,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/assets/get_external_ip_address_range"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -7188,7 +7606,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -7203,9 +7621,13 @@ xsiam_assets_get_external_ip_address_range_v1_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "range_id_list": {"type": "List[Any]", "description": "A list of strings representing the range ID for which you want to get the details."},
+        "range_id_list": {
+            "type": "List[Any]",
+            "description": "A list of strings representing the range ID for which you want to get the details.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_triage_endpoint_v1(
@@ -7215,32 +7637,32 @@ async def xsiam_triage_endpoint_v1(
     collector_uuid: str | None = None,
 ) -> List[types.TextContent]:
     """
-    Initiate forensics triage for the specified agents.
-- Maximum of 10 concurrent triage actions at a time.
-- Specified agents must have Forensics License enabled.
-- Specified agents must be the same OS, Windows or macOS, but not a mixture of both.
-- Specified configuration must have type "Online = True".
+        Initiate forensics triage for the specified agents.
+    - Maximum of 10 concurrent triage actions at a time.
+    - Specified agents must have Forensics License enabled.
+    - Specified agents must be the same OS, Windows or macOS, but not a mixture of both.
+    - Specified configuration must have type "Online = True".
 
-Required license: **Cortex XSIAM Premium** or  
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        agent_ids (List[Any]): List of agents to run forensics triage on. (required)
-        collector_uuid (str): UUID of the triage configuration. If none is specified, the default configuration is used for this action. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    Required license: **Cortex XSIAM Premium** or
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            agent_ids (List[Any]): List of agents to run forensics triage on. (required)
+            collector_uuid (str): UUID of the triage configuration. If none is specified, the default configuration is used for this action. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -7259,7 +7681,7 @@ Required license: **Cortex XSIAM Premium** or
     url = base_url + "/public_api/v1/triage_endpoint"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -7287,7 +7709,7 @@ Required license: **Cortex XSIAM Premium** or
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -7302,10 +7724,17 @@ xsiam_triage_endpoint_v1_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "agent_ids": {"type": "List[Any]", "description": "List of agents to run forensics triage on."},
-        "collector_uuid": {"type": "str", "description": "UUID of the triage configuration. If none is specified, the default configuration is used for this action."},
+        "agent_ids": {
+            "type": "List[Any]",
+            "description": "List of agents to run forensics triage on.",
+        },
+        "collector_uuid": {
+            "type": "str",
+            "description": "UUID of the triage configuration. If none is specified, the default configuration is used for this action.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_assets_get_vulnerability_tests_v1(
@@ -7315,24 +7744,24 @@ async def xsiam_assets_get_vulnerability_tests_v1(
 ) -> List[types.TextContent]:
     """
     Get a complete or filtered list of vulnerability tests. Results include details about each test, including the number of services confirmed vulnerable.
-    
+
     Args:
         authorization (str): {api_key} (required)
         x_xdr_auth_id (str): {api_key_id} (required)
         filters (List[Any]): An array of filter fields. (optional)
-    
+
     Returns:
         List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -7349,7 +7778,7 @@ async def xsiam_assets_get_vulnerability_tests_v1(
     url = base_url + "/public_api/v1/assets/get_vulnerability_tests"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -7377,7 +7806,7 @@ async def xsiam_assets_get_vulnerability_tests_v1(
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -7396,6 +7825,7 @@ xsiam_assets_get_vulnerability_tests_v1_schema = {
     },
 }
 
+
 @server.call_tool()
 async def xsiam_assets_bulk_update_vulnerability_tests_v1(
     authorization: str,
@@ -7405,25 +7835,25 @@ async def xsiam_assets_bulk_update_vulnerability_tests_v1(
 ) -> List[types.TextContent]:
     """
     Enable or disable vulnerability tests.
-    
+
     Args:
         authorization (str): {api_key} (required)
         x_xdr_auth_id (str): {api_key_id} (required)
         test_names (List[Any]): Names of tests, for example [\"test1\", \"test2\", \"test3\"] (optional)
         status (str): No description provided (optional)
-    
+
     Returns:
         List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -7442,7 +7872,7 @@ async def xsiam_assets_bulk_update_vulnerability_tests_v1(
     url = base_url + "/public_api/v1/assets/bulk_update_vulnerability_tests"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -7470,7 +7900,7 @@ async def xsiam_assets_bulk_update_vulnerability_tests_v1(
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -7485,39 +7915,43 @@ xsiam_assets_bulk_update_vulnerability_tests_v1_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "test_names": {"type": "List[Any]", "description": "Names of tests, for example [\"test1\", \"test2\", \"test3\"]"},
+        "test_names": {
+            "type": "List[Any]",
+            "description": 'Names of tests, for example ["test1", "test2", "test3"]',
+        },
         "status": {"type": "str", "description": ""},
     },
 }
+
 
 @server.call_tool()
 async def xsiam_dataset_define_dataset_v1(
     table_name: str,
 ) -> List[types.TextContent]:
     """
-    Define an XQL user dataset based on an existing BigQuery table created by the user.
+        Define an XQL user dataset based on an existing BigQuery table created by the user.
 
-**Note:** BigQuery table must be an existing table under public_access_user.
+    **Note:** BigQuery table must be an existing table under public_access_user.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**.
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**.
 
-These APIs are only applicable from within the XSIAM Notebook environment.
-    
-    Args:
-        table_name (str): An existing BigQuery table name that was created by the user. (required)
-    
-    Returns:
-        List[types.TextContent]: OK
+    These APIs are only applicable from within the XSIAM Notebook environment.
+
+        Args:
+            table_name (str): An existing BigQuery table name that was created by the user. (required)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     # Build request_data object from parameters
     request_data_obj = {}
     if table_name is not None:
@@ -7530,7 +7964,7 @@ These APIs are only applicable from within the XSIAM Notebook environment.
     url = base_url + "/public_api/v1/dataset/define_dataset"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -7558,7 +7992,7 @@ These APIs are only applicable from within the XSIAM Notebook environment.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -7571,43 +8005,44 @@ These APIs are only applicable from within the XSIAM Notebook environment.
 xsiam_dataset_define_dataset_v1_schema = {
     "type": "object",
     "properties": {
-        "table_name": {"type": "str", "description": "An existing BigQuery table name that was created by the user."},
+        "table_name": {
+            "type": "str",
+            "description": "An existing BigQuery table name that was created by the user.",
+        },
     },
 }
 
+
 @server.call_tool()
-async def xsiam_dataset_get_created_datasets_v1(
-
-) -> List[types.TextContent]:
+async def xsiam_dataset_get_created_datasets_v1() -> List[types.TextContent]:
     """
-    Retrieve a list of all XQL user datasets created using the Cortex SDK.
+        Retrieve a list of all XQL user datasets created using the Cortex SDK.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**.
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**.
 
-These APIs are only applicable from within the XSIAM Notebook environment.
-    
-    Args:
-        No parameters required
-    
-    Returns:
-        List[types.TextContent]: OK
+    These APIs are only applicable from within the XSIAM Notebook environment.
+
+        Args:
+            No parameters required
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsiam_api_url", "https://api-yourfqdn")
     url = base_url + "/public_api/v1/dataset/get_created_datasets"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -7635,7 +8070,7 @@ These APIs are only applicable from within the XSIAM Notebook environment.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -7647,10 +8082,9 @@ These APIs are only applicable from within the XSIAM Notebook environment.
 # Schema for xsiam_dataset_get_created_datasets_v1
 xsiam_dataset_get_created_datasets_v1_schema = {
     "type": "object",
-    "properties": {
-
-    },
+    "properties": {},
 }
+
 
 @server.call_tool()
 async def xsiam_dataset_delete_dataset_v1(
@@ -7658,28 +8092,28 @@ async def xsiam_dataset_delete_dataset_v1(
     delete_underlying_bq_table: bool | None = None,
 ) -> List[types.TextContent]:
     """
-    Delete an XQL user dataset that was created by the Cortex SDK.
+        Delete an XQL user dataset that was created by the Cortex SDK.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**.
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**.
 
-These APIs are only applicable from within the XSIAM Notebook environment.
-    
-    Args:
-        dataset_name (str): The dataset name to be deleted. (required)
-        delete_underlying_bq_table (bool): Define whether or not to delete the BigQuery table related to the dataset. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    These APIs are only applicable from within the XSIAM Notebook environment.
+
+        Args:
+            dataset_name (str): The dataset name to be deleted. (required)
+            delete_underlying_bq_table (bool): Define whether or not to delete the BigQuery table related to the dataset. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     # Build request_data object from parameters
     request_data_obj = {}
     if dataset_name is not None:
@@ -7694,7 +8128,7 @@ These APIs are only applicable from within the XSIAM Notebook environment.
     url = base_url + "/public_api/v1/dataset/delete_dataset"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -7722,7 +8156,7 @@ These APIs are only applicable from within the XSIAM Notebook environment.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -7736,9 +8170,13 @@ xsiam_dataset_delete_dataset_v1_schema = {
     "type": "object",
     "properties": {
         "dataset_name": {"type": "str", "description": "The dataset name to be deleted."},
-        "delete_underlying_bq_table": {"type": "bool", "description": "Define whether or not to delete the BigQuery table related to the dataset."},
+        "delete_underlying_bq_table": {
+            "type": "bool",
+            "description": "Define whether or not to delete the BigQuery table related to the dataset.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_xql_add_dataset_v1(
@@ -7749,29 +8187,29 @@ async def xsiam_xql_add_dataset_v1(
     dataset_schema: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-    Add a dataset of type `lookup` with the specified name and schema.
+        Add a dataset of type `lookup` with the specified name and schema.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        dataset_name (str): The designated name of the dataset. (required)
-        dataset_type (str): Dataset type. Currently only `lookup` is supported. (required)
-        dataset_schema (Dict[str, Any]): The schema of the dataset in a comma-separated list of JSON pairs where the key is the field name and the value is the field type. (required)
-    
-    Returns:
-        List[types.TextContent]: OK
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            dataset_name (str): The designated name of the dataset. (required)
+            dataset_type (str): Dataset type. Currently only `lookup` is supported. (required)
+            dataset_schema (Dict[str, Any]): The schema of the dataset in a comma-separated list of JSON pairs where the key is the field name and the value is the field type. (required)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -7792,7 +8230,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/xql/add_dataset"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -7820,7 +8258,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -7836,10 +8274,17 @@ xsiam_xql_add_dataset_v1_schema = {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
         "dataset_name": {"type": "str", "description": "The designated name of the dataset."},
-        "dataset_type": {"type": "str", "description": "Dataset type. Currently only `lookup` is supported."},
-        "dataset_schema": {"type": "Dict[str, Any]", "description": "The schema of the dataset in a comma-separated list of JSON pairs where the key is the field name and the value is the field type."},
+        "dataset_type": {
+            "type": "str",
+            "description": "Dataset type. Currently only `lookup` is supported.",
+        },
+        "dataset_schema": {
+            "type": "Dict[str, Any]",
+            "description": "The schema of the dataset in a comma-separated list of JSON pairs where the key is the field name and the value is the field type.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_xql_delete_dataset_v1(
@@ -7849,30 +8294,30 @@ async def xsiam_xql_delete_dataset_v1(
     force: bool | None = None,
 ) -> List[types.TextContent]:
     """
-    Delete a dataset with the specified name. The following dataset types can be deleted: Lookup, Raw, User, Snapshot, and Correlation. You can only delete a dataset with dependencies by setting `force` to TRUE.
+        Delete a dataset with the specified name. The following dataset types can be deleted: Lookup, Raw, User, Snapshot, and Correlation. You can only delete a dataset with dependencies by setting `force` to TRUE.
 
-**Note:** The System dataset and other protected datasets cannot be deleted.
+    **Note:** The System dataset and other protected datasets cannot be deleted.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        dataset_name (str): The name of the dataset to be deleted. (required)
-        force (bool): **Warning:** Setting this to `True` forces deletion even when there are dependencies. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            dataset_name (str): The name of the dataset to be deleted. (required)
+            force (bool): **Warning:** Setting this to `True` forces deletion even when there are dependencies. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -7891,7 +8336,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v2/xql/delete_dataset"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -7919,7 +8364,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -7935,34 +8380,36 @@ xsiam_xql_delete_dataset_v1_schema = {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
         "dataset_name": {"type": "str", "description": "The name of the dataset to be deleted."},
-        "force": {"type": "bool", "description": "**Warning:** Setting this to `True` forces deletion even when there are dependencies."},
+        "force": {
+            "type": "bool",
+            "description": "**Warning:** Setting this to `True` forces deletion even when there are dependencies.",
+        },
     },
 }
 
+
 @server.call_tool()
-async def xsiam_xql_get_datasets_v1(
-
-) -> List[types.TextContent]:
+async def xsiam_xql_get_datasets_v1() -> List[types.TextContent]:
     """
-    Retrieve a list of all the datasets and their properties.
+        Retrieve a list of all the datasets and their properties.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        No parameters required
-    
-    Returns:
-        List[types.TextContent]: OK
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            No parameters required
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     # Build request_data object from parameters
     request_data_obj = {}
 
@@ -7974,7 +8421,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/xql/get_datasets"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -8002,7 +8449,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -8014,10 +8461,9 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
 # Schema for xsiam_xql_get_datasets_v1
 xsiam_xql_get_datasets_v1_schema = {
     "type": "object",
-    "properties": {
-
-    },
+    "properties": {},
 }
+
 
 @server.call_tool()
 async def xsiam_xql_lookups_add_data_v1(
@@ -8028,38 +8474,38 @@ async def xsiam_xql_lookups_add_data_v1(
     key_fields: List[Any] | None = None,
 ) -> List[types.TextContent]:
     """
-    Add or update data in a lookup dataset.
+        Add or update data in a lookup dataset.
 
-When updating data, any field not specified in the `data` field, but specified on at least one of the rows, will be set to `None`.
+    When updating data, any field not specified in the `data` field, but specified on at least one of the rows, will be set to `None`.
 
-The `/public_api/xql/lookups/add_data/`  endpoint does not support concurrent edits. Sending concurrent calls to this endpoint can cause data to be unintentionally overwritten or deleted. To allow sufficient time for each API call to complete its operation before initiating another one, assume that 1000 entries can be added per API every 10 seconds.
+    The `/public_api/xql/lookups/add_data/`  endpoint does not support concurrent edits. Sending concurrent calls to this endpoint can cause data to be unintentionally overwritten or deleted. To allow sufficient time for each API call to complete its operation before initiating another one, assume that 1000 entries can be added per API every 10 seconds.
 
-**Note: ** 
+    **Note: **
 
-- The maximum size of a lookup dataset is 50 MB. Attemping to exceed this limit will fail.
-- Requests time out after three minutes.
+    - The maximum size of a lookup dataset is 50 MB. Attemping to exceed this limit will fail.
+    - Requests time out after three minutes.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        dataset_name (str): Unique dataset name (required)
-        key_fields (List[Any]): The fields used to identify existing records. If there is not an exact match to the key_fields specified, a new row is created. When you specify `key_fields`, these fields are mandatory in data entries. When `key_fields` are not specified, existing data entries are not updated, and new entries are added with the specified data. (optional)
-        data (Dict[str, Any]): Key-value pairs of data entries. (required)
-    
-    Returns:
-        List[types.TextContent]: OK
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            dataset_name (str): Unique dataset name (required)
+            key_fields (List[Any]): The fields used to identify existing records. If there is not an exact match to the key_fields specified, a new row is created. When you specify `key_fields`, these fields are mandatory in data entries. When `key_fields` are not specified, existing data entries are not updated, and new entries are added with the specified data. (optional)
+            data (Dict[str, Any]): Key-value pairs of data entries. (required)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -8080,7 +8526,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/xql/lookups/add_data"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -8108,7 +8554,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -8124,10 +8570,14 @@ xsiam_xql_lookups_add_data_v1_schema = {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
         "dataset_name": {"type": "str", "description": "Unique dataset name"},
-        "key_fields": {"type": "List[Any]", "description": "The fields used to identify existing records. If there is not an exact match to the key_fields specified, a new row is created. When you specify `key_fields`, these fields are mandatory in data entries. When `key_fields` are not specified, existing data entries are not updated, and new entries are added with the specified data."},
+        "key_fields": {
+            "type": "List[Any]",
+            "description": "The fields used to identify existing records. If there is not an exact match to the key_fields specified, a new row is created. When you specify `key_fields`, these fields are mandatory in data entries. When `key_fields` are not specified, existing data entries are not updated, and new entries are added with the specified data.",
+        },
         "data": {"type": "Dict[str, Any]", "description": "Key-value pairs of data entries."},
     },
 }
+
 
 @server.call_tool()
 async def xsiam_xql_lookups_remove_data_v1(
@@ -8137,34 +8587,34 @@ async def xsiam_xql_lookups_remove_data_v1(
     filters: Dict[str, Any],
 ) -> List[types.TextContent]:
     """
-    Remove data from a dataset based on the specified parameters. If any one of the filter sets are not found, the API does not delete any data.
+        Remove data from a dataset based on the specified parameters. If any one of the filter sets are not found, the API does not delete any data.
 
-The `/public_api/xql/lookups/remove_data/`  endpoint does not support concurrent edits. Sending concurrent calls to this endpoint can cause data to be unintentionally overwritten or deleted. To allow sufficient time for each API call to complete its operation before initiating another one, assume that 1000 entries can be added per API every 10 seconds.
+    The `/public_api/xql/lookups/remove_data/`  endpoint does not support concurrent edits. Sending concurrent calls to this endpoint can cause data to be unintentionally overwritten or deleted. To allow sufficient time for each API call to complete its operation before initiating another one, assume that 1000 entries can be added per API every 10 seconds.
 
-**Note:** 
-- All lookup entries matching any of the filter blocks are deleted. To match a filter block, a lookup entry must match all the specified fields as if there were an `AND` operator between them. 
-- Requests time out after three minutes.
+    **Note:**
+    - All lookup entries matching any of the filter blocks are deleted. To match a filter block, a lookup entry must match all the specified fields as if there were an `AND` operator between them.
+    - Requests time out after three minutes.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        dataset_name (str): The name of the dataset to delete. (required)
-        filters (Dict[str, Any]): Key-value pairs of fields to query in datasets. A lookup entry must match all the specified fields as if there were an `AND` operator between them. You can use one or more fields, up to the number of fields in the schema. (required)
-    
-    Returns:
-        List[types.TextContent]: OK
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            dataset_name (str): The name of the dataset to delete. (required)
+            filters (Dict[str, Any]): Key-value pairs of fields to query in datasets. A lookup entry must match all the specified fields as if there were an `AND` operator between them. You can use one or more fields, up to the number of fields in the schema. (required)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -8183,7 +8633,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/xql/lookups/remove_data"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -8211,7 +8661,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -8227,9 +8677,13 @@ xsiam_xql_lookups_remove_data_v1_schema = {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
         "dataset_name": {"type": "str", "description": "The name of the dataset to delete."},
-        "filters": {"type": "Dict[str, Any]", "description": "Key-value pairs of fields to query in datasets. A lookup entry must match all the specified fields as if there were an `AND` operator between them. You can use one or more fields, up to the number of fields in the schema."},
+        "filters": {
+            "type": "Dict[str, Any]",
+            "description": "Key-value pairs of fields to query in datasets. A lookup entry must match all the specified fields as if there were an `AND` operator between them. You can use one or more fields, up to the number of fields in the schema.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_xql_lookups_get_data_v1(
@@ -8240,34 +8694,34 @@ async def xsiam_xql_lookups_get_data_v1(
     limit: int | None = None,
 ) -> List[types.TextContent]:
     """
-    Get data from a lookup dataset according to the specified filter fields. All lookup entries matching any of the filter blocks are returned. To match a filter block, a lookup entry must match all the specified fields as if there were an `AND` operator between them. If no filters are specified, return all lookup entries. 
+        Get data from a lookup dataset according to the specified filter fields. All lookup entries matching any of the filter blocks are returned. To match a filter block, a lookup entry must match all the specified fields as if there were an `AND` operator between them. If no filters are specified, return all lookup entries.
 
-**Note:** 
+    **Note:**
 
-- The maximum number of entries returned is 10,000.
-- Requests time out after three minutes.
+    - The maximum number of entries returned is 10,000.
+    - Requests time out after three minutes.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        dataset_name (str): Name of the dataset to query. (required)
-        filters (List[Any]): Key-value pairs of fields to query in a dataset. A lookup entry must match all the specified fields as if there were an `AND` operator between them. You can use one or more fields, up to the number of fields in the schema. (optional)
-        limit (int): The maximum number of results to return. If this is not specified, return all lookup entries that match the filter criteria. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            dataset_name (str): Name of the dataset to query. (required)
+            filters (List[Any]): Key-value pairs of fields to query in a dataset. A lookup entry must match all the specified fields as if there were an `AND` operator between them. You can use one or more fields, up to the number of fields in the schema. (optional)
+            limit (int): The maximum number of results to return. If this is not specified, return all lookup entries that match the filter criteria. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -8288,7 +8742,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/xql/lookups/get_data"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -8316,7 +8770,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -8332,10 +8786,17 @@ xsiam_xql_lookups_get_data_v1_schema = {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
         "dataset_name": {"type": "str", "description": "Name of the dataset to query."},
-        "filters": {"type": "List[Any]", "description": "Key-value pairs of fields to query in a dataset. A lookup entry must match all the specified fields as if there were an `AND` operator between them. You can use one or more fields, up to the number of fields in the schema."},
-        "limit": {"type": "int", "description": "The maximum number of results to return. If this is not specified, return all lookup entries that match the filter criteria."},
+        "filters": {
+            "type": "List[Any]",
+            "description": "Key-value pairs of fields to query in a dataset. A lookup entry must match all the specified fields as if there were an `AND` operator between them. You can use one or more fields, up to the number of fields in the schema.",
+        },
+        "limit": {
+            "type": "int",
+            "description": "The maximum number of results to return. If this is not specified, return all lookup entries that match the filter criteria.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_get_triage_presets_v1(
@@ -8343,26 +8804,26 @@ async def xsiam_get_triage_presets_v1(
     x_xdr_auth_id: str,
 ) -> List[types.TextContent]:
     """
-    Get all triage preset information including triage name, platform, description, created by, and triage type.
+        Get all triage preset information including triage name, platform, description, created by, and triage type.
 
-Required license: **Cortex XSIAM Premium** or **Forensics add-on**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-    
-    Returns:
-        List[types.TextContent]: OK
+    Required license: **Cortex XSIAM Premium** or **Forensics add-on**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -8378,7 +8839,7 @@ Required license: **Cortex XSIAM Premium** or **Forensics add-on**
     url = base_url + "/public_api/v1/get_triage_presets"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -8406,7 +8867,7 @@ Required license: **Cortex XSIAM Premium** or **Forensics add-on**
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -8423,6 +8884,7 @@ xsiam_get_triage_presets_v1_schema = {
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
     },
 }
+
 
 @server.call_tool()
 async def xsiam_authentication_settings_create_v1(
@@ -8448,44 +8910,44 @@ async def xsiam_authentication_settings_create_v1(
     metadata_url: str | None = None,
 ) -> List[types.TextContent]:
     """
-    Create authentication settings for IdP SSO or metadata URL. You must include either the `metadata_url` field or all of the following fields: `idp_sso_url`, `idp_issuer`, and `idp_certificate`.
+        Create authentication settings for IdP SSO or metadata URL. You must include either the `metadata_url` field or all of the following fields: `idp_sso_url`, `idp_issuer`, and `idp_certificate`.
 
-You must have **Instance Administrator** permissions to run this endpoint.
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        name (str): The name of the SSO integration. (required)
-        default_role (str): The default role automatically assigned to every user who authenticates to Cortex using SAML. This is an inherited role and is not the same as a direct role assigned to the user. If a role with the same name exists on both Cortex Gateway and the tenant, the role will mapped to the role from the tenant. If you want to use specifically the role from Cortex Gateway, use the `is_account_role` parameter set to `true`. (optional)
-        is_account_role (bool): Whether the role was created in Cortex Gateway or in the tenant. When the value is `true`, the role was created in Cortex Gateway. (optional)
-        domain (str): When configuring the first SSO, this parameter should be included as empty because it is the default SSO and has a fixed, read-only value. For additional SSOs, specify this IdP with an email domain (user@<domain>). When logging in, users are redirected to the IdP associated with their email domain or to the default IdP if no association exists. (optional)
-        email (str): The IdP attribute mapped to the user's email address in the Syslog server. (required)
-        firstname (str): The IdP attribute mapped to the user's first name. (required)
-        lastname (str): The IdP attribute mapped to the user's last name. (required)
-        group_name (str): The IdP attribute mapped to the user's group membership for authorization. **Note:** Cortex requires the IdP to send the group membership as part of the SAML token. Some IdPs send values in a format that include a comma, which is not compatible with Cortex. In that case, you must configure your IdP to send a single value without a comma for each group membership. For example, if your IdP sends the Group DN (a comma-separated list), by default, you must configure IdP to send the Group CN (Common Name) instead. (required)
-        relay_state (str): The URL for a specific page that you want users to be directed to after they've been authenticated by your organization's IdP and log in to Cortex. (optional)
-        idp_single_logout_url (str): The URL of the IdP's Single Logout endpoint. This ensures that when a user initiates a logout from Cortex, the identity provider logs the user out of all applications in the current identity provider login session. (optional)
-        service_provider_public_cert (str): The Syslog server's public X.509 certificate in PEM format for IdP validation. (optional)
-        service_provider_private_key (str): The Syslog server's private key in PEM format for signing SAML responses. (This is mostly required for ADFS) (optional)
-        authn_context_enabled (bool): Whether to remove the `RequestedAuthnContext` parameter from SAML requests. If `true`, allows users to log in by using additional authentication methods. (optional)
-        force_authn (bool): Whether to force users to reauthenticate to access the Cortex tenant if requested by the IdP, even if they already authenticated to access other applications. (optional)
-        idp_sso_url (str): The login URL of your IdP and should be copied from your SAML integration configuration on the IdP. For example: - Okta: https://cortex-test.okta.com/app/cortex-test/eacbt6b2jj08CasdUQ7sdf15d7/sso/SAML - Microsoft Azure: https://login.microsoftonline.com/6a5a9780-96a4-41ef-bf45-0535d8a70025/saml2 (optional)
-        idp_certificate (str): The Idp's public X.509 digital certificate in PEM format for verification, which is copied from your organization's IdP. (optional)
-        idp_issuer (str): The unique identifier of the IdP issuing SAML assertions, which is copied from your organization's IdP. (optional)
-        metadata_url (str): The metadata URL provides information about hte IdP's capabilities, endpoints, keys, and more. For example: - Okta: https://cortex-test.okta.com/app/exkbuuzw77Bh04V6M6b8/sso/saml/metadata - Microsoft Azure: https://login.microsoftonline.com/6a5a9780-96a4-41ef-bf45-0535d8a70025/saml2/metadata (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    You must have **Instance Administrator** permissions to run this endpoint.
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            name (str): The name of the SSO integration. (required)
+            default_role (str): The default role automatically assigned to every user who authenticates to Cortex using SAML. This is an inherited role and is not the same as a direct role assigned to the user. If a role with the same name exists on both Cortex Gateway and the tenant, the role will mapped to the role from the tenant. If you want to use specifically the role from Cortex Gateway, use the `is_account_role` parameter set to `true`. (optional)
+            is_account_role (bool): Whether the role was created in Cortex Gateway or in the tenant. When the value is `true`, the role was created in Cortex Gateway. (optional)
+            domain (str): When configuring the first SSO, this parameter should be included as empty because it is the default SSO and has a fixed, read-only value. For additional SSOs, specify this IdP with an email domain (user@<domain>). When logging in, users are redirected to the IdP associated with their email domain or to the default IdP if no association exists. (optional)
+            email (str): The IdP attribute mapped to the user's email address in the Syslog server. (required)
+            firstname (str): The IdP attribute mapped to the user's first name. (required)
+            lastname (str): The IdP attribute mapped to the user's last name. (required)
+            group_name (str): The IdP attribute mapped to the user's group membership for authorization. **Note:** Cortex requires the IdP to send the group membership as part of the SAML token. Some IdPs send values in a format that include a comma, which is not compatible with Cortex. In that case, you must configure your IdP to send a single value without a comma for each group membership. For example, if your IdP sends the Group DN (a comma-separated list), by default, you must configure IdP to send the Group CN (Common Name) instead. (required)
+            relay_state (str): The URL for a specific page that you want users to be directed to after they've been authenticated by your organization's IdP and log in to Cortex. (optional)
+            idp_single_logout_url (str): The URL of the IdP's Single Logout endpoint. This ensures that when a user initiates a logout from Cortex, the identity provider logs the user out of all applications in the current identity provider login session. (optional)
+            service_provider_public_cert (str): The Syslog server's public X.509 certificate in PEM format for IdP validation. (optional)
+            service_provider_private_key (str): The Syslog server's private key in PEM format for signing SAML responses. (This is mostly required for ADFS) (optional)
+            authn_context_enabled (bool): Whether to remove the `RequestedAuthnContext` parameter from SAML requests. If `true`, allows users to log in by using additional authentication methods. (optional)
+            force_authn (bool): Whether to force users to reauthenticate to access the Cortex tenant if requested by the IdP, even if they already authenticated to access other applications. (optional)
+            idp_sso_url (str): The login URL of your IdP and should be copied from your SAML integration configuration on the IdP. For example: - Okta: https://cortex-test.okta.com/app/cortex-test/eacbt6b2jj08CasdUQ7sdf15d7/sso/SAML - Microsoft Azure: https://login.microsoftonline.com/6a5a9780-96a4-41ef-bf45-0535d8a70025/saml2 (optional)
+            idp_certificate (str): The Idp's public X.509 digital certificate in PEM format for verification, which is copied from your organization's IdP. (optional)
+            idp_issuer (str): The unique identifier of the IdP issuing SAML assertions, which is copied from your organization's IdP. (optional)
+            metadata_url (str): The metadata URL provides information about hte IdP's capabilities, endpoints, keys, and more. For example: - Okta: https://cortex-test.okta.com/app/exkbuuzw77Bh04V6M6b8/sso/saml/metadata - Microsoft Azure: https://login.microsoftonline.com/6a5a9780-96a4-41ef-bf45-0535d8a70025/saml2/metadata (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -8544,7 +9006,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
     url = base_url + "/public_api/v1/authentication-settings/create"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -8572,7 +9034,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -8588,25 +9050,77 @@ xsiam_authentication_settings_create_v1_schema = {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
         "name": {"type": "str", "description": "The name of the SSO integration."},
-        "default_role": {"type": "str", "description": "The default role automatically assigned to every user who authenticates to Cortex using SAML. This is an inherited role and is not the same as a direct role assigned to the user. If a role with the same name exists on both Cortex Gateway and the tenant, the role will mapped to the role from the tenant. If you want to use specifically the role from Cortex Gateway, use the `is_account_role` parameter set to `true`."},
-        "is_account_role": {"type": "bool", "description": "Whether the role was created in Cortex Gateway or in the tenant. When the value is `true`, the role was created in Cortex Gateway."},
-        "domain": {"type": "str", "description": "When configuring the first SSO, this parameter should be included as empty because it is the default SSO and has a fixed, read-only value. For additional SSOs, specify this IdP with an email domain (user@<domain>). When logging in, users are redirected to the IdP associated with their email domain or to the default IdP if no association exists."},
-        "email": {"type": "str", "description": "The IdP attribute mapped to the user's email address in the Syslog server."},
-        "firstname": {"type": "str", "description": "The IdP attribute mapped to the user's first name."},
-        "lastname": {"type": "str", "description": "The IdP attribute mapped to the user's last name."},
-        "group_name": {"type": "str", "description": "The IdP attribute mapped to the user's group membership for authorization. **Note:** Cortex requires the IdP to send the group membership as part of the SAML token. Some IdPs send values in a format that include a comma, which is not compatible with Cortex. In that case, you must configure your IdP to send a single value without a comma for each group membership. For example, if your IdP sends the Group DN (a comma-separated list), by default, you must configure IdP to send the Group CN (Common Name) instead."},
-        "relay_state": {"type": "str", "description": "The URL for a specific page that you want users to be directed to after they've been authenticated by your organization's IdP and log in to Cortex."},
-        "idp_single_logout_url": {"type": "str", "description": "The URL of the IdP's Single Logout endpoint. This ensures that when a user initiates a logout from Cortex, the identity provider logs the user out of all applications in the current identity provider login session."},
-        "service_provider_public_cert": {"type": "str", "description": "The Syslog server's public X.509 certificate in PEM format for IdP validation."},
-        "service_provider_private_key": {"type": "str", "description": "The Syslog server's private key in PEM format for signing SAML responses. (This is mostly required for ADFS)"},
-        "authn_context_enabled": {"type": "bool", "description": "Whether to remove the `RequestedAuthnContext` parameter from SAML requests. If `true`, allows users to log in by using additional authentication methods."},
-        "force_authn": {"type": "bool", "description": "Whether to force users to reauthenticate to access the Cortex tenant if requested by the IdP, even if they already authenticated to access other applications."},
-        "idp_sso_url": {"type": "str", "description": "The login URL of your IdP and should be copied from your SAML integration configuration on the IdP. For example: - Okta: https://cortex-test.okta.com/app/cortex-test/eacbt6b2jj08CasdUQ7sdf15d7/sso/SAML - Microsoft Azure: https://login.microsoftonline.com/6a5a9780-96a4-41ef-bf45-0535d8a70025/saml2"},
-        "idp_certificate": {"type": "str", "description": "The Idp's public X.509 digital certificate in PEM format for verification, which is copied from your organization's IdP."},
-        "idp_issuer": {"type": "str", "description": "The unique identifier of the IdP issuing SAML assertions, which is copied from your organization's IdP."},
-        "metadata_url": {"type": "str", "description": "The metadata URL provides information about hte IdP's capabilities, endpoints, keys, and more. For example: - Okta: https://cortex-test.okta.com/app/exkbuuzw77Bh04V6M6b8/sso/saml/metadata - Microsoft Azure: https://login.microsoftonline.com/6a5a9780-96a4-41ef-bf45-0535d8a70025/saml2/metadata"},
+        "default_role": {
+            "type": "str",
+            "description": "The default role automatically assigned to every user who authenticates to Cortex using SAML. This is an inherited role and is not the same as a direct role assigned to the user. If a role with the same name exists on both Cortex Gateway and the tenant, the role will mapped to the role from the tenant. If you want to use specifically the role from Cortex Gateway, use the `is_account_role` parameter set to `true`.",
+        },
+        "is_account_role": {
+            "type": "bool",
+            "description": "Whether the role was created in Cortex Gateway or in the tenant. When the value is `true`, the role was created in Cortex Gateway.",
+        },
+        "domain": {
+            "type": "str",
+            "description": "When configuring the first SSO, this parameter should be included as empty because it is the default SSO and has a fixed, read-only value. For additional SSOs, specify this IdP with an email domain (user@<domain>). When logging in, users are redirected to the IdP associated with their email domain or to the default IdP if no association exists.",
+        },
+        "email": {
+            "type": "str",
+            "description": "The IdP attribute mapped to the user's email address in the Syslog server.",
+        },
+        "firstname": {
+            "type": "str",
+            "description": "The IdP attribute mapped to the user's first name.",
+        },
+        "lastname": {
+            "type": "str",
+            "description": "The IdP attribute mapped to the user's last name.",
+        },
+        "group_name": {
+            "type": "str",
+            "description": "The IdP attribute mapped to the user's group membership for authorization. **Note:** Cortex requires the IdP to send the group membership as part of the SAML token. Some IdPs send values in a format that include a comma, which is not compatible with Cortex. In that case, you must configure your IdP to send a single value without a comma for each group membership. For example, if your IdP sends the Group DN (a comma-separated list), by default, you must configure IdP to send the Group CN (Common Name) instead.",
+        },
+        "relay_state": {
+            "type": "str",
+            "description": "The URL for a specific page that you want users to be directed to after they've been authenticated by your organization's IdP and log in to Cortex.",
+        },
+        "idp_single_logout_url": {
+            "type": "str",
+            "description": "The URL of the IdP's Single Logout endpoint. This ensures that when a user initiates a logout from Cortex, the identity provider logs the user out of all applications in the current identity provider login session.",
+        },
+        "service_provider_public_cert": {
+            "type": "str",
+            "description": "The Syslog server's public X.509 certificate in PEM format for IdP validation.",
+        },
+        "service_provider_private_key": {
+            "type": "str",
+            "description": "The Syslog server's private key in PEM format for signing SAML responses. (This is mostly required for ADFS)",
+        },
+        "authn_context_enabled": {
+            "type": "bool",
+            "description": "Whether to remove the `RequestedAuthnContext` parameter from SAML requests. If `true`, allows users to log in by using additional authentication methods.",
+        },
+        "force_authn": {
+            "type": "bool",
+            "description": "Whether to force users to reauthenticate to access the Cortex tenant if requested by the IdP, even if they already authenticated to access other applications.",
+        },
+        "idp_sso_url": {
+            "type": "str",
+            "description": "The login URL of your IdP and should be copied from your SAML integration configuration on the IdP. For example: - Okta: https://cortex-test.okta.com/app/cortex-test/eacbt6b2jj08CasdUQ7sdf15d7/sso/SAML - Microsoft Azure: https://login.microsoftonline.com/6a5a9780-96a4-41ef-bf45-0535d8a70025/saml2",
+        },
+        "idp_certificate": {
+            "type": "str",
+            "description": "The Idp's public X.509 digital certificate in PEM format for verification, which is copied from your organization's IdP.",
+        },
+        "idp_issuer": {
+            "type": "str",
+            "description": "The unique identifier of the IdP issuing SAML assertions, which is copied from your organization's IdP.",
+        },
+        "metadata_url": {
+            "type": "str",
+            "description": "The metadata URL provides information about hte IdP's capabilities, endpoints, keys, and more. For example: - Okta: https://cortex-test.okta.com/app/exkbuuzw77Bh04V6M6b8/sso/saml/metadata - Microsoft Azure: https://login.microsoftonline.com/6a5a9780-96a4-41ef-bf45-0535d8a70025/saml2/metadata",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_authentication_settings_update_v1(
@@ -8633,45 +9147,45 @@ async def xsiam_authentication_settings_update_v1(
     metadata_url: str | None = None,
 ) -> List[types.TextContent]:
     """
-    Update existing authentication settings. To update the default domain, include empty value for both `current_domain_value` and `new_domain_value`.
+        Update existing authentication settings. To update the default domain, include empty value for both `current_domain_value` and `new_domain_value`.
 
-You must have **Instance Administrator** permissions to run this endpoint.
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        name (str): The name of the SSO integration. (required)
-        default_role (str): The default role automatically assigned to every user who authenticates to Cortex using SAML. This is an inherited role and is not the same as a direct role assigned to the user. If a role with the same name exists on both Cortex Gateway and the tenant, the role will mapped to the role from the tenant. If you want to use specifically the role from Cortex Gateway, use the `is_account_role` parameter set to `true`. (optional)
-        is_account_role (bool): Whether the role was created in Cortex Gateway or in the tenant. When the value is `true`, the role was created in Cortex Gateway. (optional)
-        current_domain_value (str): The domain whose authentication settings you want to update. (optional)
-        new_domain_value (str): If you want to update the domain value, include a new unique domain. (optional)
-        email (str): The IdP attribute mapped to the user's email address in the Syslog server. (required)
-        firstname (str): The IdP attribute mapped to the user's first name. (required)
-        lastname (str): The IdP attribute mapped to the user's last name. (required)
-        group_name (str): The IdP attribute mapped to the user's group membership for authorization. **Note:** Cortex requires the IdP to send the group membership as part of the SAML token. Some IdPs send values in a format that include a comma, which is not compatible with Cortex. In that case, you must configure your IdP to send a single value without a comma for each group membership. For example, if your IdP sends the Group DN (a comma-separated list), by default, you must configure IdP to send the Group CN (Common Name) instead. (required)
-        relay_state (str): The URL for a specific page that you want users to be directed to after they've been authenticated by your organization's IdP and log in to Cortex. (optional)
-        idp_single_logout_url (str): The URL of the IdP's Single Logout endpoint. This ensures that when a user initiates a logout from Cortex, the identity provider logs the user out of all applications in the current identity provider login session. (optional)
-        service_provider_public_cert (str): The Syslog server's public X.509 certificate in PEM format for IdP validation. (optional)
-        service_provider_private_key (str): The Syslog server's private key in PEM format for signing SAML responses. (This is mostly required for ADFS) (optional)
-        authn_context_enabled (bool): Whether to remove the `RequestedAuthnContext` parameter from SAML requests. If `true`, allows users to log in by using additional authentication methods. (optional)
-        force_authn (bool): Whether to force users to reauthenticate to access the Cortex tenant if requested by the IdP, even if they already authenticated to access other applications. (optional)
-        idp_sso_url (str): The URL of your IdP's SSO, which is a fixed, read-only value based on your tenant's URL. If you are using this parameter, you must also specify: `idp_certificate` and `idp_issuer`. (optional)
-        idp_certificate (str): The Idp's public X.509 digital certificate in PEM format for verification, which is copied from your organization's IdP. (optional)
-        idp_issuer (str): The unique identifier of the IdP issuing SAML assertions, which is copied from your organization's IdP. (optional)
-        metadata_url (str): Specify your IdP SSO URL, which is a fixed, read-only value based on your tenant's URL. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    You must have **Instance Administrator** permissions to run this endpoint.
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            name (str): The name of the SSO integration. (required)
+            default_role (str): The default role automatically assigned to every user who authenticates to Cortex using SAML. This is an inherited role and is not the same as a direct role assigned to the user. If a role with the same name exists on both Cortex Gateway and the tenant, the role will mapped to the role from the tenant. If you want to use specifically the role from Cortex Gateway, use the `is_account_role` parameter set to `true`. (optional)
+            is_account_role (bool): Whether the role was created in Cortex Gateway or in the tenant. When the value is `true`, the role was created in Cortex Gateway. (optional)
+            current_domain_value (str): The domain whose authentication settings you want to update. (optional)
+            new_domain_value (str): If you want to update the domain value, include a new unique domain. (optional)
+            email (str): The IdP attribute mapped to the user's email address in the Syslog server. (required)
+            firstname (str): The IdP attribute mapped to the user's first name. (required)
+            lastname (str): The IdP attribute mapped to the user's last name. (required)
+            group_name (str): The IdP attribute mapped to the user's group membership for authorization. **Note:** Cortex requires the IdP to send the group membership as part of the SAML token. Some IdPs send values in a format that include a comma, which is not compatible with Cortex. In that case, you must configure your IdP to send a single value without a comma for each group membership. For example, if your IdP sends the Group DN (a comma-separated list), by default, you must configure IdP to send the Group CN (Common Name) instead. (required)
+            relay_state (str): The URL for a specific page that you want users to be directed to after they've been authenticated by your organization's IdP and log in to Cortex. (optional)
+            idp_single_logout_url (str): The URL of the IdP's Single Logout endpoint. This ensures that when a user initiates a logout from Cortex, the identity provider logs the user out of all applications in the current identity provider login session. (optional)
+            service_provider_public_cert (str): The Syslog server's public X.509 certificate in PEM format for IdP validation. (optional)
+            service_provider_private_key (str): The Syslog server's private key in PEM format for signing SAML responses. (This is mostly required for ADFS) (optional)
+            authn_context_enabled (bool): Whether to remove the `RequestedAuthnContext` parameter from SAML requests. If `true`, allows users to log in by using additional authentication methods. (optional)
+            force_authn (bool): Whether to force users to reauthenticate to access the Cortex tenant if requested by the IdP, even if they already authenticated to access other applications. (optional)
+            idp_sso_url (str): The URL of your IdP's SSO, which is a fixed, read-only value based on your tenant's URL. If you are using this parameter, you must also specify: `idp_certificate` and `idp_issuer`. (optional)
+            idp_certificate (str): The Idp's public X.509 digital certificate in PEM format for verification, which is copied from your organization's IdP. (optional)
+            idp_issuer (str): The unique identifier of the IdP issuing SAML assertions, which is copied from your organization's IdP. (optional)
+            metadata_url (str): Specify your IdP SSO URL, which is a fixed, read-only value based on your tenant's URL. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -8732,7 +9246,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
     url = base_url + "/public_api/v1/authentication-settings/update"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -8760,7 +9274,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -8776,26 +9290,81 @@ xsiam_authentication_settings_update_v1_schema = {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
         "name": {"type": "str", "description": "The name of the SSO integration."},
-        "default_role": {"type": "str", "description": "The default role automatically assigned to every user who authenticates to Cortex using SAML. This is an inherited role and is not the same as a direct role assigned to the user. If a role with the same name exists on both Cortex Gateway and the tenant, the role will mapped to the role from the tenant. If you want to use specifically the role from Cortex Gateway, use the `is_account_role` parameter set to `true`."},
-        "is_account_role": {"type": "bool", "description": "Whether the role was created in Cortex Gateway or in the tenant. When the value is `true`, the role was created in Cortex Gateway."},
-        "current_domain_value": {"type": "str", "description": "The domain whose authentication settings you want to update."},
-        "new_domain_value": {"type": "str", "description": "If you want to update the domain value, include a new unique domain."},
-        "email": {"type": "str", "description": "The IdP attribute mapped to the user's email address in the Syslog server."},
-        "firstname": {"type": "str", "description": "The IdP attribute mapped to the user's first name."},
-        "lastname": {"type": "str", "description": "The IdP attribute mapped to the user's last name."},
-        "group_name": {"type": "str", "description": "The IdP attribute mapped to the user's group membership for authorization. **Note:** Cortex requires the IdP to send the group membership as part of the SAML token. Some IdPs send values in a format that include a comma, which is not compatible with Cortex. In that case, you must configure your IdP to send a single value without a comma for each group membership. For example, if your IdP sends the Group DN (a comma-separated list), by default, you must configure IdP to send the Group CN (Common Name) instead."},
-        "relay_state": {"type": "str", "description": "The URL for a specific page that you want users to be directed to after they've been authenticated by your organization's IdP and log in to Cortex."},
-        "idp_single_logout_url": {"type": "str", "description": "The URL of the IdP's Single Logout endpoint. This ensures that when a user initiates a logout from Cortex, the identity provider logs the user out of all applications in the current identity provider login session."},
-        "service_provider_public_cert": {"type": "str", "description": "The Syslog server's public X.509 certificate in PEM format for IdP validation."},
-        "service_provider_private_key": {"type": "str", "description": "The Syslog server's private key in PEM format for signing SAML responses. (This is mostly required for ADFS)"},
-        "authn_context_enabled": {"type": "bool", "description": "Whether to remove the `RequestedAuthnContext` parameter from SAML requests. If `true`, allows users to log in by using additional authentication methods."},
-        "force_authn": {"type": "bool", "description": "Whether to force users to reauthenticate to access the Cortex tenant if requested by the IdP, even if they already authenticated to access other applications."},
-        "idp_sso_url": {"type": "str", "description": "The URL of your IdP's SSO, which is a fixed, read-only value based on your tenant's URL. If you are using this parameter, you must also specify: `idp_certificate` and `idp_issuer`."},
-        "idp_certificate": {"type": "str", "description": "The Idp's public X.509 digital certificate in PEM format for verification, which is copied from your organization's IdP."},
-        "idp_issuer": {"type": "str", "description": "The unique identifier of the IdP issuing SAML assertions, which is copied from your organization's IdP."},
-        "metadata_url": {"type": "str", "description": "Specify your IdP SSO URL, which is a fixed, read-only value based on your tenant's URL."},
+        "default_role": {
+            "type": "str",
+            "description": "The default role automatically assigned to every user who authenticates to Cortex using SAML. This is an inherited role and is not the same as a direct role assigned to the user. If a role with the same name exists on both Cortex Gateway and the tenant, the role will mapped to the role from the tenant. If you want to use specifically the role from Cortex Gateway, use the `is_account_role` parameter set to `true`.",
+        },
+        "is_account_role": {
+            "type": "bool",
+            "description": "Whether the role was created in Cortex Gateway or in the tenant. When the value is `true`, the role was created in Cortex Gateway.",
+        },
+        "current_domain_value": {
+            "type": "str",
+            "description": "The domain whose authentication settings you want to update.",
+        },
+        "new_domain_value": {
+            "type": "str",
+            "description": "If you want to update the domain value, include a new unique domain.",
+        },
+        "email": {
+            "type": "str",
+            "description": "The IdP attribute mapped to the user's email address in the Syslog server.",
+        },
+        "firstname": {
+            "type": "str",
+            "description": "The IdP attribute mapped to the user's first name.",
+        },
+        "lastname": {
+            "type": "str",
+            "description": "The IdP attribute mapped to the user's last name.",
+        },
+        "group_name": {
+            "type": "str",
+            "description": "The IdP attribute mapped to the user's group membership for authorization. **Note:** Cortex requires the IdP to send the group membership as part of the SAML token. Some IdPs send values in a format that include a comma, which is not compatible with Cortex. In that case, you must configure your IdP to send a single value without a comma for each group membership. For example, if your IdP sends the Group DN (a comma-separated list), by default, you must configure IdP to send the Group CN (Common Name) instead.",
+        },
+        "relay_state": {
+            "type": "str",
+            "description": "The URL for a specific page that you want users to be directed to after they've been authenticated by your organization's IdP and log in to Cortex.",
+        },
+        "idp_single_logout_url": {
+            "type": "str",
+            "description": "The URL of the IdP's Single Logout endpoint. This ensures that when a user initiates a logout from Cortex, the identity provider logs the user out of all applications in the current identity provider login session.",
+        },
+        "service_provider_public_cert": {
+            "type": "str",
+            "description": "The Syslog server's public X.509 certificate in PEM format for IdP validation.",
+        },
+        "service_provider_private_key": {
+            "type": "str",
+            "description": "The Syslog server's private key in PEM format for signing SAML responses. (This is mostly required for ADFS)",
+        },
+        "authn_context_enabled": {
+            "type": "bool",
+            "description": "Whether to remove the `RequestedAuthnContext` parameter from SAML requests. If `true`, allows users to log in by using additional authentication methods.",
+        },
+        "force_authn": {
+            "type": "bool",
+            "description": "Whether to force users to reauthenticate to access the Cortex tenant if requested by the IdP, even if they already authenticated to access other applications.",
+        },
+        "idp_sso_url": {
+            "type": "str",
+            "description": "The URL of your IdP's SSO, which is a fixed, read-only value based on your tenant's URL. If you are using this parameter, you must also specify: `idp_certificate` and `idp_issuer`.",
+        },
+        "idp_certificate": {
+            "type": "str",
+            "description": "The Idp's public X.509 digital certificate in PEM format for verification, which is copied from your organization's IdP.",
+        },
+        "idp_issuer": {
+            "type": "str",
+            "description": "The unique identifier of the IdP issuing SAML assertions, which is copied from your organization's IdP.",
+        },
+        "metadata_url": {
+            "type": "str",
+            "description": "Specify your IdP SSO URL, which is a fixed, read-only value based on your tenant's URL.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_authentication_settings_delete_v1(
@@ -8804,29 +9373,29 @@ async def xsiam_authentication_settings_delete_v1(
     domain: str | None = None,
 ) -> List[types.TextContent]:
     """
-    Delete all authentication settings for the specified domain. 
+        Delete all authentication settings for the specified domain.
 
-**Note: ** The first configuration on the tenant is the default configuration and cannot be deleted.
+    **Note: ** The first configuration on the tenant is the default configuration and cannot be deleted.
 
-You must have **Instance Administrator** permissions to run this endpoint.
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        domain (str): The domain whose authentication settings you want to delete. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    You must have **Instance Administrator** permissions to run this endpoint.
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            domain (str): The domain whose authentication settings you want to delete. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -8843,7 +9412,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
     url = base_url + "/public_api/v1/authentication-settings/delete"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -8871,7 +9440,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -8886,9 +9455,13 @@ xsiam_authentication_settings_delete_v1_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "domain": {"type": "str", "description": "The domain whose authentication settings you want to delete."},
+        "domain": {
+            "type": "str",
+            "description": "The domain whose authentication settings you want to delete.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_authentication_settings_get_settings_v1(
@@ -8896,27 +9469,27 @@ async def xsiam_authentication_settings_get_settings_v1(
     x_xdr_auth_id: str,
 ) -> List[types.TextContent]:
     """
-    Get all the authentication settings for every configured domain in the tenant.
+        Get all the authentication settings for every configured domain in the tenant.
 
-You must have **Instance Administrator** permissions to run this endpoint.
+    You must have **Instance Administrator** permissions to run this endpoint.
 
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-    
-    Returns:
-        List[types.TextContent]: OK
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -8932,7 +9505,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
     url = base_url + "/public_api/v1/authentication-settings/get/settings"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -8960,7 +9533,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -8978,32 +9551,33 @@ xsiam_authentication_settings_get_settings_v1_schema = {
     },
 }
 
+
 @server.call_tool()
 async def xsiam_authentication_settings_get_metadata_v1(
     authorization: str,
     x_xdr_auth_id: str,
 ) -> List[types.TextContent]:
     """
-    Get the metadata for all IdPs.
+        Get the metadata for all IdPs.
 
-You must have **Instance Administrator** permissions to run this endpoint.
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-    
-    Returns:
-        List[types.TextContent]: OK
+    You must have **Instance Administrator** permissions to run this endpoint.
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -9019,7 +9593,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
     url = base_url + "/public_api/v1/authentication-settings/get/metadata"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -9047,7 +9621,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -9065,6 +9639,7 @@ xsiam_authentication_settings_get_metadata_v1_schema = {
     },
 }
 
+
 @server.call_tool()
 async def xsiam_asm_management_upload_asm_data_v1(
     authorization: str,
@@ -9075,32 +9650,32 @@ async def xsiam_asm_management_upload_asm_data_v1(
     business_units: List[Any] | None = None,
 ) -> List[types.TextContent]:
     """
-    Upload domains (paid-level domains (PLD) and subdomains) and IPv4 address ranges. You can upload up to 500 IP address ranges or domains in each request.
+        Upload domains (paid-level domains (PLD) and subdomains) and IPv4 address ranges. You can upload up to 500 IP address ranges or domains in each request.
 
-You must have **Instance Administrator** permissions to run this endpoint.
+    You must have **Instance Administrator** permissions to run this endpoint.
 
-Required license: **Cortex XSIAM Premium** or  Cortex XSIAM with ASM add-on
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        request_type (str): The action to take on the specified assets. Currently only `addition` is supported, to add the assets to the inventory. (required)
-        asset_type (str): The type of asset being added. (required)
-        asset_identifiers (List[Any]): A list of one or more assets you want to add to the inventory in the specified asset type. For IP ranges, the accepted format is first-last or CIDR format. Individual IP addresses can be listed using either CIDR notation (for example, 8.8.8.8/32) or first-last format (for example, 8.8.8.8-8.8.8.8). (required)
-        business_units (List[Any]): List of business unit IDs or names that the assets will be applied to. If the business unit is not specified, the default is the top-level business unit. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    Required license: **Cortex XSIAM Premium** or  Cortex XSIAM with ASM add-on
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            request_type (str): The action to take on the specified assets. Currently only `addition` is supported, to add the assets to the inventory. (required)
+            asset_type (str): The type of asset being added. (required)
+            asset_identifiers (List[Any]): A list of one or more assets you want to add to the inventory in the specified asset type. For IP ranges, the accepted format is first-last or CIDR format. Individual IP addresses can be listed using either CIDR notation (for example, 8.8.8.8/32) or first-last format (for example, 8.8.8.8-8.8.8.8). (required)
+            business_units (List[Any]): List of business unit IDs or names that the assets will be applied to. If the business unit is not specified, the default is the top-level business unit. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -9123,7 +9698,7 @@ Required license: **Cortex XSIAM Premium** or  Cortex XSIAM with ASM add-on
     url = base_url + "/public_api/v1/asm_management/upload_asm_data"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -9151,7 +9726,7 @@ Required license: **Cortex XSIAM Premium** or  Cortex XSIAM with ASM add-on
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -9166,12 +9741,22 @@ xsiam_asm_management_upload_asm_data_v1_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "request_type": {"type": "str", "description": "The action to take on the specified assets. Currently only `addition` is supported, to add the assets to the inventory."},
+        "request_type": {
+            "type": "str",
+            "description": "The action to take on the specified assets. Currently only `addition` is supported, to add the assets to the inventory.",
+        },
         "asset_type": {"type": "str", "description": "The type of asset being added."},
-        "asset_identifiers": {"type": "List[Any]", "description": "A list of one or more assets you want to add to the inventory in the specified asset type. For IP ranges, the accepted format is first-last or CIDR format. Individual IP addresses can be listed using either CIDR notation (for example, 8.8.8.8/32) or first-last format (for example, 8.8.8.8-8.8.8.8)."},
-        "business_units": {"type": "List[Any]", "description": "List of business unit IDs or names that the assets will be applied to. If the business unit is not specified, the default is the top-level business unit."},
+        "asset_identifiers": {
+            "type": "List[Any]",
+            "description": "A list of one or more assets you want to add to the inventory in the specified asset type. For IP ranges, the accepted format is first-last or CIDR format. Individual IP addresses can be listed using either CIDR notation (for example, 8.8.8.8/32) or first-last format (for example, 8.8.8.8-8.8.8.8).",
+        },
+        "business_units": {
+            "type": "List[Any]",
+            "description": "List of business unit IDs or names that the assets will be applied to. If the business unit is not specified, the default is the top-level business unit.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_assets_get_external_website_v1(
@@ -9180,27 +9765,27 @@ async def xsiam_assets_get_external_website_v1(
     website_id_list: List[Any] | None = None,
 ) -> List[types.TextContent]:
     """
-    Get details about specific websites based on website IDs. You can submit up to 20 website IDs. 
+        Get details about specific websites based on website IDs. You can submit up to 20 website IDs.
 
-Required license: **Cortex XSIAM Premium** or  Cortex XSIAM with ASM Add-on
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        website_id_list (List[Any]): A list of website IDs representing the websites you want to get details for. Limit is 20 website IDs. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    Required license: **Cortex XSIAM Premium** or  Cortex XSIAM with ASM Add-on
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            website_id_list (List[Any]): A list of website IDs representing the websites you want to get details for. Limit is 20 website IDs. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -9217,7 +9802,7 @@ Required license: **Cortex XSIAM Premium** or  Cortex XSIAM with ASM Add-on
     url = base_url + "/public_api/v1/assets/get_external_website"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -9245,7 +9830,7 @@ Required license: **Cortex XSIAM Premium** or  Cortex XSIAM with ASM Add-on
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -9260,9 +9845,13 @@ xsiam_assets_get_external_website_v1_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "website_id_list": {"type": "List[Any]", "description": "A list of website IDs representing the websites you want to get details for. Limit is 20 website IDs."},
+        "website_id_list": {
+            "type": "List[Any]",
+            "description": "A list of website IDs representing the websites you want to get details for. Limit is 20 website IDs.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_assets_get_external_websites_v1(
@@ -9275,32 +9864,32 @@ async def xsiam_assets_get_external_websites_v1(
     keyword: str | None = None,
 ) -> List[types.TextContent]:
     """
-    Get a complete or filtered list of your public-facing websites. 
+        Get a complete or filtered list of your public-facing websites.
 
-Required license: **Cortex XSIAM Premium** or  Cortex XSIAM with ASM Add-on
+    Required license: **Cortex XSIAM Premium** or  Cortex XSIAM with ASM Add-on
 
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        filters (List[Any]): Array of filter fields. Each JSON object must contain a field, operator, and value. (optional)
-        search_from (int): An integer representing the start offset index of results Default value: 0 (optional)
-        search_to (int): An integer representing the start offset index of results. Use this field to specify the number of results on a page when using page token pagination. Default value: 500 (optional)
-        field (str): Valid values are: - `host` - `first_observed` - `last_observed` (optional)
-        keyword (str): Valid values are: - `ASC` - ascending order - `DESC` - descending order `ASC` is the default. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            filters (List[Any]): Array of filter fields. Each JSON object must contain a field, operator, and value. (optional)
+            search_from (int): An integer representing the start offset index of results Default value: 0 (optional)
+            search_to (int): An integer representing the start offset index of results. Use this field to specify the number of results on a page when using page token pagination. Default value: 500 (optional)
+            field (str): Valid values are: - `host` - `first_observed` - `last_observed` (optional)
+            keyword (str): Valid values are: - `ASC` - ascending order - `DESC` - descending order `ASC` is the default. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -9329,7 +9918,7 @@ Required license: **Cortex XSIAM Premium** or  Cortex XSIAM with ASM Add-on
     url = base_url + "/public_api/v1/assets/get_external_websites"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -9357,7 +9946,7 @@ Required license: **Cortex XSIAM Premium** or  Cortex XSIAM with ASM Add-on
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -9372,13 +9961,29 @@ xsiam_assets_get_external_websites_v1_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "filters": {"type": "List[Any]", "description": "Array of filter fields. Each JSON object must contain a field, operator, and value."},
-        "search_from": {"type": "int", "description": "An integer representing the start offset index of results Default value: 0"},
-        "search_to": {"type": "int", "description": "An integer representing the start offset index of results. Use this field to specify the number of results on a page when using page token pagination. Default value: 500"},
-        "field": {"type": "str", "description": "Valid values are: - `host` - `first_observed` - `last_observed`"},
-        "keyword": {"type": "str", "description": "Valid values are: - `ASC` - ascending order - `DESC` - descending order `ASC` is the default."},
+        "filters": {
+            "type": "List[Any]",
+            "description": "Array of filter fields. Each JSON object must contain a field, operator, and value.",
+        },
+        "search_from": {
+            "type": "int",
+            "description": "An integer representing the start offset index of results Default value: 0",
+        },
+        "search_to": {
+            "type": "int",
+            "description": "An integer representing the start offset index of results. Use this field to specify the number of results on a page when using page token pagination. Default value: 500",
+        },
+        "field": {
+            "type": "str",
+            "description": "Valid values are: - `host` - `first_observed` - `last_observed`",
+        },
+        "keyword": {
+            "type": "str",
+            "description": "Valid values are: - `ASC` - ascending order - `DESC` - descending order `ASC` is the default.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_assets_get_external_websites_last_external_assessment_v1(
@@ -9387,23 +9992,23 @@ async def xsiam_assets_get_external_websites_last_external_assessment_v1(
 ) -> List[types.TextContent]:
     """
     Gets the time and status of the last update of websites data in Cortex. A status of "true" indicates the websites data update was successful.
-    
+
     Args:
         authorization (str): {api_key} (required)
         x_xdr_auth_id (str): {api_key_id} (required)
-    
+
     Returns:
         List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -9419,7 +10024,7 @@ async def xsiam_assets_get_external_websites_last_external_assessment_v1(
     url = base_url + "/public_api/v1/assets/get_external_websites/last_external_assessment"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -9447,7 +10052,7 @@ async def xsiam_assets_get_external_websites_last_external_assessment_v1(
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -9465,6 +10070,7 @@ xsiam_assets_get_external_websites_last_external_assessment_v1_schema = {
     },
 }
 
+
 @server.call_tool()
 async def xsiam_integrations_syslog_create_v1(
     authorization: str,
@@ -9479,34 +10085,34 @@ async def xsiam_integrations_syslog_create_v1(
     certificate_content: str | None = None,
 ) -> List[types.TextContent]:
     """
-    Create a new syslog integration.
+        Create a new syslog integration.
 
-You must have **View/Edit Alert Notification** permissions to run this endpoint.
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        name (str): Unique name for the syslog server integration. (optional)
-        address (str): IP address or fully qualified domain name (FQDN) of the syslog server. (optional)
-        port (int): The port number on which the syslog server listens for messages. (optional)
-        protocol (str): Select a method of communication: - TCP: No validation is made on the connection with the syslog server. However, if an error occurred with the domain used to make the connection, the Test connection will fail. - UDP: No error checking, error correction, or acknowledgment. No validation is done for the connection or when sending data. - TLS: Cortex validates the syslog server certificate and uses the certificate signature and public key to encrypt the data sent over the connection. (optional)
-        facility (str): Choose one of the syslog standard values. The value maps to how your syslog server uses the facility field to manage messages. For details on the facility field, see [RFC 5424](https://datatracker.ietf.org/doc/html/rfc5424). (optional)
-        certificate_name (str): When using TLS for communication between Cortex and the syslog server, Cortex validates that the syslog receiver has a certificate. Specify the certificate name here. (optional)
-        ignore_cert_errors (bool): Whether to ignore certificate errors. For security reasons, this is not recommended. If you set this to `true`, logs will be forwarded even if the certificate contains errors. (optional)
-        certificate_content (str): Binary string of the certificate. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    You must have **View/Edit Alert Notification** permissions to run this endpoint.
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            name (str): Unique name for the syslog server integration. (optional)
+            address (str): IP address or fully qualified domain name (FQDN) of the syslog server. (optional)
+            port (int): The port number on which the syslog server listens for messages. (optional)
+            protocol (str): Select a method of communication: - TCP: No validation is made on the connection with the syslog server. However, if an error occurred with the domain used to make the connection, the Test connection will fail. - UDP: No error checking, error correction, or acknowledgment. No validation is done for the connection or when sending data. - TLS: Cortex validates the syslog server certificate and uses the certificate signature and public key to encrypt the data sent over the connection. (optional)
+            facility (str): Choose one of the syslog standard values. The value maps to how your syslog server uses the facility field to manage messages. For details on the facility field, see [RFC 5424](https://datatracker.ietf.org/doc/html/rfc5424). (optional)
+            certificate_name (str): When using TLS for communication between Cortex and the syslog server, Cortex validates that the syslog receiver has a certificate. Specify the certificate name here. (optional)
+            ignore_cert_errors (bool): Whether to ignore certificate errors. For security reasons, this is not recommended. If you set this to `true`, logs will be forwarded even if the certificate contains errors. (optional)
+            certificate_content (str): Binary string of the certificate. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -9541,7 +10147,7 @@ You must have **View/Edit Alert Notification** permissions to run this endpoint.
     url = base_url + "/public_api/v1/integrations/syslog/create"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -9569,7 +10175,7 @@ You must have **View/Edit Alert Notification** permissions to run this endpoint.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -9585,15 +10191,34 @@ xsiam_integrations_syslog_create_v1_schema = {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
         "name": {"type": "str", "description": "Unique name for the syslog server integration."},
-        "address": {"type": "str", "description": "IP address or fully qualified domain name (FQDN) of the syslog server."},
-        "port": {"type": "int", "description": "The port number on which the syslog server listens for messages."},
-        "protocol": {"type": "str", "description": "Select a method of communication: - TCP: No validation is made on the connection with the syslog server. However, if an error occurred with the domain used to make the connection, the Test connection will fail. - UDP: No error checking, error correction, or acknowledgment. No validation is done for the connection or when sending data. - TLS: Cortex validates the syslog server certificate and uses the certificate signature and public key to encrypt the data sent over the connection."},
-        "facility": {"type": "str", "description": "Choose one of the syslog standard values. The value maps to how your syslog server uses the facility field to manage messages. For details on the facility field, see [RFC 5424](https://datatracker.ietf.org/doc/html/rfc5424)."},
-        "certificate_name": {"type": "str", "description": "When using TLS for communication between Cortex and the syslog server, Cortex validates that the syslog receiver has a certificate. Specify the certificate name here."},
-        "ignore_cert_errors": {"type": "bool", "description": "Whether to ignore certificate errors. For security reasons, this is not recommended. If you set this to `true`, logs will be forwarded even if the certificate contains errors."},
+        "address": {
+            "type": "str",
+            "description": "IP address or fully qualified domain name (FQDN) of the syslog server.",
+        },
+        "port": {
+            "type": "int",
+            "description": "The port number on which the syslog server listens for messages.",
+        },
+        "protocol": {
+            "type": "str",
+            "description": "Select a method of communication: - TCP: No validation is made on the connection with the syslog server. However, if an error occurred with the domain used to make the connection, the Test connection will fail. - UDP: No error checking, error correction, or acknowledgment. No validation is done for the connection or when sending data. - TLS: Cortex validates the syslog server certificate and uses the certificate signature and public key to encrypt the data sent over the connection.",
+        },
+        "facility": {
+            "type": "str",
+            "description": "Choose one of the syslog standard values. The value maps to how your syslog server uses the facility field to manage messages. For details on the facility field, see [RFC 5424](https://datatracker.ietf.org/doc/html/rfc5424).",
+        },
+        "certificate_name": {
+            "type": "str",
+            "description": "When using TLS for communication between Cortex and the syslog server, Cortex validates that the syslog receiver has a certificate. Specify the certificate name here.",
+        },
+        "ignore_cert_errors": {
+            "type": "bool",
+            "description": "Whether to ignore certificate errors. For security reasons, this is not recommended. If you set this to `true`, logs will be forwarded even if the certificate contains errors.",
+        },
         "certificate_content": {"type": "str", "description": "Binary string of the certificate."},
     },
 }
+
 
 @server.call_tool()
 async def xsiam_integrations_syslog_get_v1(
@@ -9602,27 +10227,27 @@ async def xsiam_integrations_syslog_get_v1(
     filters: List[Any] | None = None,
 ) -> List[types.TextContent]:
     """
-    Get a complete or filtered list of syslog servers.
+        Get a complete or filtered list of syslog servers.
 
-You must have **View Alert Notification** permissions to run this endpoint.
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        filters (List[Any]): Array of filter fields. Each JSON object must contain a field, operator, and value. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    You must have **View Alert Notification** permissions to run this endpoint.
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            filters (List[Any]): Array of filter fields. Each JSON object must contain a field, operator, and value. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -9639,7 +10264,7 @@ You must have **View Alert Notification** permissions to run this endpoint.
     url = base_url + "/public_api/v1/integrations/syslog/get"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -9667,7 +10292,7 @@ You must have **View Alert Notification** permissions to run this endpoint.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -9682,9 +10307,13 @@ xsiam_integrations_syslog_get_v1_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "filters": {"type": "List[Any]", "description": "Array of filter fields. Each JSON object must contain a field, operator, and value."},
+        "filters": {
+            "type": "List[Any]",
+            "description": "Array of filter fields. Each JSON object must contain a field, operator, and value.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_integrations_syslog_update_v1(
@@ -9701,35 +10330,35 @@ async def xsiam_integrations_syslog_update_v1(
     certificate_content: str | None = None,
 ) -> List[types.TextContent]:
     """
-    Update the details of the specified syslog integration.
+        Update the details of the specified syslog integration.
 
-You must have **View/Edit Alert Notification** permissions to run this endpoint.
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        syslog_id (str): ID of the syslog server (required)
-        name (str): Unique name for the syslog server integration. (optional)
-        address (str): IP address or fully qualified domain name (FQDN) of the syslog server. (optional)
-        port (str): The port number on which the syslog server listens for messages. (optional)
-        protocol (str): Select a method of communication: - `TCP`: No validation is made on the connection with the syslog server. However, if an error occurred with the domain used to make the connection, the Test connection will fail. - `UDP`: No error checking, error correction, or acknowledgment. No validation is done for the connection or when sending data. - `TLS`: Cortex validates the syslog server certificate and uses the certificate signature and public key to encrypt the data sent over the connection. (optional)
-        facility (str): Choose one of the syslog standard values. The value maps to how your syslog server uses the facility field to manage messages. For details on the facility field, see [RFC 5424](https://datatracker.ietf.org/doc/html/rfc5424). (optional)
-        certificate_name (str): When using TLS for communication between Cortex and the syslog server, Cortex validates that the syslog receiver has a certificate. Specify the certificate name here. (optional)
-        ignore_cert_errors (bool): Whether to ignore certificate errors. For security reasons, this is not recommended. If you set this to `true`, logs will be forwarded even if the certificate contains errors. (optional)
-        certificate_content (str): Binary string of the certificate. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    You must have **View/Edit Alert Notification** permissions to run this endpoint.
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            syslog_id (str): ID of the syslog server (required)
+            name (str): Unique name for the syslog server integration. (optional)
+            address (str): IP address or fully qualified domain name (FQDN) of the syslog server. (optional)
+            port (str): The port number on which the syslog server listens for messages. (optional)
+            protocol (str): Select a method of communication: - `TCP`: No validation is made on the connection with the syslog server. However, if an error occurred with the domain used to make the connection, the Test connection will fail. - `UDP`: No error checking, error correction, or acknowledgment. No validation is done for the connection or when sending data. - `TLS`: Cortex validates the syslog server certificate and uses the certificate signature and public key to encrypt the data sent over the connection. (optional)
+            facility (str): Choose one of the syslog standard values. The value maps to how your syslog server uses the facility field to manage messages. For details on the facility field, see [RFC 5424](https://datatracker.ietf.org/doc/html/rfc5424). (optional)
+            certificate_name (str): When using TLS for communication between Cortex and the syslog server, Cortex validates that the syslog receiver has a certificate. Specify the certificate name here. (optional)
+            ignore_cert_errors (bool): Whether to ignore certificate errors. For security reasons, this is not recommended. If you set this to `true`, logs will be forwarded even if the certificate contains errors. (optional)
+            certificate_content (str): Binary string of the certificate. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -9766,7 +10395,7 @@ You must have **View/Edit Alert Notification** permissions to run this endpoint.
     url = base_url + "/public_api/v1/integrations/syslog/update"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -9794,7 +10423,7 @@ You must have **View/Edit Alert Notification** permissions to run this endpoint.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -9811,15 +10440,34 @@ xsiam_integrations_syslog_update_v1_schema = {
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
         "syslog_id": {"type": "str", "description": "ID of the syslog server"},
         "name": {"type": "str", "description": "Unique name for the syslog server integration."},
-        "address": {"type": "str", "description": "IP address or fully qualified domain name (FQDN) of the syslog server."},
-        "port": {"type": "str", "description": "The port number on which the syslog server listens for messages."},
-        "protocol": {"type": "str", "description": "Select a method of communication: - `TCP`: No validation is made on the connection with the syslog server. However, if an error occurred with the domain used to make the connection, the Test connection will fail. - `UDP`: No error checking, error correction, or acknowledgment. No validation is done for the connection or when sending data. - `TLS`: Cortex validates the syslog server certificate and uses the certificate signature and public key to encrypt the data sent over the connection."},
-        "facility": {"type": "str", "description": "Choose one of the syslog standard values. The value maps to how your syslog server uses the facility field to manage messages. For details on the facility field, see [RFC 5424](https://datatracker.ietf.org/doc/html/rfc5424)."},
-        "certificate_name": {"type": "str", "description": "When using TLS for communication between Cortex and the syslog server, Cortex validates that the syslog receiver has a certificate. Specify the certificate name here."},
-        "ignore_cert_errors": {"type": "bool", "description": "Whether to ignore certificate errors. For security reasons, this is not recommended. If you set this to `true`, logs will be forwarded even if the certificate contains errors."},
+        "address": {
+            "type": "str",
+            "description": "IP address or fully qualified domain name (FQDN) of the syslog server.",
+        },
+        "port": {
+            "type": "str",
+            "description": "The port number on which the syslog server listens for messages.",
+        },
+        "protocol": {
+            "type": "str",
+            "description": "Select a method of communication: - `TCP`: No validation is made on the connection with the syslog server. However, if an error occurred with the domain used to make the connection, the Test connection will fail. - `UDP`: No error checking, error correction, or acknowledgment. No validation is done for the connection or when sending data. - `TLS`: Cortex validates the syslog server certificate and uses the certificate signature and public key to encrypt the data sent over the connection.",
+        },
+        "facility": {
+            "type": "str",
+            "description": "Choose one of the syslog standard values. The value maps to how your syslog server uses the facility field to manage messages. For details on the facility field, see [RFC 5424](https://datatracker.ietf.org/doc/html/rfc5424).",
+        },
+        "certificate_name": {
+            "type": "str",
+            "description": "When using TLS for communication between Cortex and the syslog server, Cortex validates that the syslog receiver has a certificate. Specify the certificate name here.",
+        },
+        "ignore_cert_errors": {
+            "type": "bool",
+            "description": "Whether to ignore certificate errors. For security reasons, this is not recommended. If you set this to `true`, logs will be forwarded even if the certificate contains errors.",
+        },
         "certificate_content": {"type": "str", "description": "Binary string of the certificate."},
     },
 }
+
 
 @server.call_tool()
 async def xsiam_integrations_syslog_delete_v1(
@@ -9828,27 +10476,27 @@ async def xsiam_integrations_syslog_delete_v1(
     filters: List[Any] | None = None,
 ) -> List[types.TextContent]:
     """
-    Delete all the syslog integrations or the ones who match the filter criteria.
+        Delete all the syslog integrations or the ones who match the filter criteria.
 
-You must have **View/Edit Alert Notification** permissions to run this endpoint.
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        filters (List[Any]): Array of filter fields. Each JSON object must contain a field, operator, and value. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    You must have **View/Edit Alert Notification** permissions to run this endpoint.
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            filters (List[Any]): Array of filter fields. Each JSON object must contain a field, operator, and value. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -9865,7 +10513,7 @@ You must have **View/Edit Alert Notification** permissions to run this endpoint.
     url = base_url + "/public_api/v1/integrations/syslog/delete"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -9893,7 +10541,7 @@ You must have **View/Edit Alert Notification** permissions to run this endpoint.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -9908,9 +10556,13 @@ xsiam_integrations_syslog_delete_v1_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "filters": {"type": "List[Any]", "description": "Array of filter fields. Each JSON object must contain a field, operator, and value."},
+        "filters": {
+            "type": "List[Any]",
+            "description": "Array of filter fields. Each JSON object must contain a field, operator, and value.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_integrations_syslog_test_v1(
@@ -9927,35 +10579,35 @@ async def xsiam_integrations_syslog_test_v1(
     certificate_content: str | None = None,
 ) -> List[types.TextContent]:
     """
-    Tests a syslog integration's validity.
+        Tests a syslog integration's validity.
 
-You must have **View Alert Notification** permissions to run this endpoint.
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        syslog_id (str): If you include the `syslog_id` of an existing syslog integration, it will try to load the certificate data from the database to test the existing syslog integration. (optional)
-        name (str): Unique name for the syslog server integration. (optional)
-        address (str): IP address or fully qualified domain name (FQDN) of the syslog server. (optional)
-        port (str): The port number on which the syslog server listens for messages. (optional)
-        protocol (str): Select a method of communication: - `TCP`: No validation is made on the connection with the syslog server. However, if an error occurred with the domain used to make the connection, the Test connection will fail. - `UDP`: No error checking, error correction, or acknowledgment. No validation is done for the connection or when sending data. - `TLS`: Cortex validates the syslog server certificate and uses the certificate signature and public key to encrypt the data sent over the connection. (optional)
-        facility (str): Choose one of the syslog standard values. The value maps to how your syslog server uses the facility field to manage messages. For details on the facility field, see [RFC 5424](https://datatracker.ietf.org/doc/html/rfc5424). (optional)
-        certificate_name (str): When using TLS for communication between Cortex and the syslog server, Cortex validates that the syslog receiver has a certificate. Specify the certificate name here. (optional)
-        ignore_cert_errors (bool): Whether to ignore certificate errors. For security reasons, this is not recommended. If you set this to `true`, logs will be forwarded even if the certificate contains errors. (optional)
-        certificate_content (str): Binary string of the certificate. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    You must have **View Alert Notification** permissions to run this endpoint.
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            syslog_id (str): If you include the `syslog_id` of an existing syslog integration, it will try to load the certificate data from the database to test the existing syslog integration. (optional)
+            name (str): Unique name for the syslog server integration. (optional)
+            address (str): IP address or fully qualified domain name (FQDN) of the syslog server. (optional)
+            port (str): The port number on which the syslog server listens for messages. (optional)
+            protocol (str): Select a method of communication: - `TCP`: No validation is made on the connection with the syslog server. However, if an error occurred with the domain used to make the connection, the Test connection will fail. - `UDP`: No error checking, error correction, or acknowledgment. No validation is done for the connection or when sending data. - `TLS`: Cortex validates the syslog server certificate and uses the certificate signature and public key to encrypt the data sent over the connection. (optional)
+            facility (str): Choose one of the syslog standard values. The value maps to how your syslog server uses the facility field to manage messages. For details on the facility field, see [RFC 5424](https://datatracker.ietf.org/doc/html/rfc5424). (optional)
+            certificate_name (str): When using TLS for communication between Cortex and the syslog server, Cortex validates that the syslog receiver has a certificate. Specify the certificate name here. (optional)
+            ignore_cert_errors (bool): Whether to ignore certificate errors. For security reasons, this is not recommended. If you set this to `true`, logs will be forwarded even if the certificate contains errors. (optional)
+            certificate_content (str): Binary string of the certificate. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -9992,7 +10644,7 @@ You must have **View Alert Notification** permissions to run this endpoint.
     url = base_url + "/public_api/v1/integrations/syslog/test"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -10020,7 +10672,7 @@ You must have **View Alert Notification** permissions to run this endpoint.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -10035,17 +10687,39 @@ xsiam_integrations_syslog_test_v1_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "syslog_id": {"type": "str", "description": "If you include the `syslog_id` of an existing syslog integration, it will try to load the certificate data from the database to test the existing syslog integration."},
+        "syslog_id": {
+            "type": "str",
+            "description": "If you include the `syslog_id` of an existing syslog integration, it will try to load the certificate data from the database to test the existing syslog integration.",
+        },
         "name": {"type": "str", "description": "Unique name for the syslog server integration."},
-        "address": {"type": "str", "description": "IP address or fully qualified domain name (FQDN) of the syslog server."},
-        "port": {"type": "str", "description": "The port number on which the syslog server listens for messages."},
-        "protocol": {"type": "str", "description": "Select a method of communication: - `TCP`: No validation is made on the connection with the syslog server. However, if an error occurred with the domain used to make the connection, the Test connection will fail. - `UDP`: No error checking, error correction, or acknowledgment. No validation is done for the connection or when sending data. - `TLS`: Cortex validates the syslog server certificate and uses the certificate signature and public key to encrypt the data sent over the connection."},
-        "facility": {"type": "str", "description": "Choose one of the syslog standard values. The value maps to how your syslog server uses the facility field to manage messages. For details on the facility field, see [RFC 5424](https://datatracker.ietf.org/doc/html/rfc5424)."},
-        "certificate_name": {"type": "str", "description": "When using TLS for communication between Cortex and the syslog server, Cortex validates that the syslog receiver has a certificate. Specify the certificate name here."},
-        "ignore_cert_errors": {"type": "bool", "description": "Whether to ignore certificate errors. For security reasons, this is not recommended. If you set this to `true`, logs will be forwarded even if the certificate contains errors."},
+        "address": {
+            "type": "str",
+            "description": "IP address or fully qualified domain name (FQDN) of the syslog server.",
+        },
+        "port": {
+            "type": "str",
+            "description": "The port number on which the syslog server listens for messages.",
+        },
+        "protocol": {
+            "type": "str",
+            "description": "Select a method of communication: - `TCP`: No validation is made on the connection with the syslog server. However, if an error occurred with the domain used to make the connection, the Test connection will fail. - `UDP`: No error checking, error correction, or acknowledgment. No validation is done for the connection or when sending data. - `TLS`: Cortex validates the syslog server certificate and uses the certificate signature and public key to encrypt the data sent over the connection.",
+        },
+        "facility": {
+            "type": "str",
+            "description": "Choose one of the syslog standard values. The value maps to how your syslog server uses the facility field to manage messages. For details on the facility field, see [RFC 5424](https://datatracker.ietf.org/doc/html/rfc5424).",
+        },
+        "certificate_name": {
+            "type": "str",
+            "description": "When using TLS for communication between Cortex and the syslog server, Cortex validates that the syslog receiver has a certificate. Specify the certificate name here.",
+        },
+        "ignore_cert_errors": {
+            "type": "bool",
+            "description": "Whether to ignore certificate errors. For security reasons, this is not recommended. If you set this to `true`, logs will be forwarded even if the certificate contains errors.",
+        },
         "certificate_content": {"type": "str", "description": "Binary string of the certificate."},
     },
 }
+
 
 @server.call_tool()
 async def xsiam_entries_insert_v1(
@@ -10056,25 +10730,25 @@ async def xsiam_entries_insert_v1(
 ) -> List[types.TextContent]:
     """
     Add an entry to the incident or alert War Room, including data.
-    
+
     Args:
         authorization (str): {api_key} (required)
         x_xdr_auth_id (str): {api_key_id} (required)
         id (str): The ID of the incident or alert for which you want to add a War Room entry. For an incident ID, prepend \"INCIDENT-\" to the incident ID. For example, if the incident ID is 3, the value of `id` should be `INCIDENT-3`. For alert IDs, just put the ID. For example, if the alert ID is 3, the value of `id` should be `3`. (optional)
         data (str): The data you want to add or the command you want to run in the War Room. (optional)
-    
+
     Returns:
         List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -10089,7 +10763,7 @@ async def xsiam_entries_insert_v1(
     url = base_url + "/public_api/v1/entries/insert"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -10117,7 +10791,7 @@ async def xsiam_entries_insert_v1(
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -10132,10 +10806,17 @@ xsiam_entries_insert_v1_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "id": {"type": "str", "description": "The ID of the incident or alert for which you want to add a War Room entry. For an incident ID, prepend \"INCIDENT-\" to the incident ID. For example, if the incident ID is 3, the value of `id` should be `INCIDENT-3`. For alert IDs, just put the ID. For example, if the alert ID is 3, the value of `id` should be `3`."},
-        "data": {"type": "str", "description": "The data you want to add or the command you want to run in the War Room."},
+        "id": {
+            "type": "str",
+            "description": 'The ID of the incident or alert for which you want to add a War Room entry. For an incident ID, prepend "INCIDENT-" to the incident ID. For example, if the incident ID is 3, the value of `id` should be `INCIDENT-3`. For alert IDs, just put the ID. For example, if the alert ID is 3, the value of `id` should be `3`.',
+        },
+        "data": {
+            "type": "str",
+            "description": "The data you want to add or the command you want to run in the War Room.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_entries_get_v1(
@@ -10145,27 +10826,27 @@ async def xsiam_entries_get_v1(
     filter: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
-    Get the War Room entries for a specific incident or alert. You can filter by timestamp, ID, and tags. You can also choose which type of entries you want to retrieve (notes, chat, attachments...).
-The response depends on what type of entry you choose to retrieve.
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        id (str): The ID of the incident or alert you want to get the War Room entries of. For an incident ID, prepend \"INCIDENT-\" to the incident ID. For example, if the incident ID is 3, the value of `id` should be `INCIDENT-3`. For alert IDs, just put the ID. For example, if the alert ID is 3, the value of `id` should be `3`. (optional)
-        filter (Dict[str, Any]): No description provided (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+        Get the War Room entries for a specific incident or alert. You can filter by timestamp, ID, and tags. You can also choose which type of entries you want to retrieve (notes, chat, attachments...).
+    The response depends on what type of entry you choose to retrieve.
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            id (str): The ID of the incident or alert you want to get the War Room entries of. For an incident ID, prepend \"INCIDENT-\" to the incident ID. For example, if the incident ID is 3, the value of `id` should be `INCIDENT-3`. For alert IDs, just put the ID. For example, if the alert ID is 3, the value of `id` should be `3`. (optional)
+            filter (Dict[str, Any]): No description provided (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -10180,7 +10861,7 @@ The response depends on what type of entry you choose to retrieve.
     url = base_url + "/public_api/v1/entries/get"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -10208,7 +10889,7 @@ The response depends on what type of entry you choose to retrieve.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -10223,10 +10904,14 @@ xsiam_entries_get_v1_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "id": {"type": "str", "description": "The ID of the incident or alert you want to get the War Room entries of. For an incident ID, prepend \"INCIDENT-\" to the incident ID. For example, if the incident ID is 3, the value of `id` should be `INCIDENT-3`. For alert IDs, just put the ID. For example, if the alert ID is 3, the value of `id` should be `3`."},
+        "id": {
+            "type": "str",
+            "description": 'The ID of the incident or alert you want to get the War Room entries of. For an incident ID, prepend "INCIDENT-" to the incident ID. For example, if the incident ID is 3, the value of `id` should be `INCIDENT-3`. For alert IDs, just put the ID. For example, if the alert ID is 3, the value of `id` should be `3`.',
+        },
         "filter": {"type": "Dict[str, Any]", "description": ""},
     },
 }
+
 
 @server.call_tool()
 async def xsiam_distributions_delete_v1(
@@ -10235,29 +10920,29 @@ async def xsiam_distributions_delete_v1(
     distribution_id: str | None = None,
 ) -> List[types.TextContent]:
     """
-    Delete an agent installation package. The distribution ID is required and can be found in the [Create distributions](https://docs-cortex.paloaltonetworks.com/r/ppPm_R5Omz9LsbjR8gZJbg/NIB~j5teUOLZlFNOhL3dZg) API response or in the **Agent Installations** screen in the Cortex Console.
+        Delete an agent installation package. The distribution ID is required and can be found in the [Create distributions](https://docs-cortex.paloaltonetworks.com/r/ppPm_R5Omz9LsbjR8gZJbg/NIB~j5teUOLZlFNOhL3dZg) API response or in the **Agent Installations** screen in the Cortex Console.
 
-**Note: ** Once you delete an installation package, it prevents new agents using the package, including VDI, from registering. 
+    **Note: ** Once you delete an installation package, it prevents new agents using the package, including VDI, from registering.
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        distribution_id (str): Installation package distribution ID. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus**
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            distribution_id (str): Installation package distribution ID. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -10274,7 +10959,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
     url = base_url + "/public_api/v1/distributions/delete"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -10302,7 +10987,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -10321,6 +11006,7 @@ xsiam_distributions_delete_v1_schema = {
     },
 }
 
+
 @server.call_tool()
 async def xsiam_asm_management_remove_asm_data_v1(
     authorization: str,
@@ -10329,35 +11015,35 @@ async def xsiam_asm_management_remove_asm_data_v1(
     asset_identifiers: List[Any],
 ) -> List[types.TextContent]:
     """
-    Remove certificates, domains (paid-level domains and subdomains), and IPv4 address ranges from your inventory. Remove up to 500 certificates, domains, or IP ranges per request.
+        Remove certificates, domains (paid-level domains and subdomains), and IPv4 address ranges from your inventory. Remove up to 500 certificates, domains, or IP ranges per request.
 
-Removed assets appear the Asset Uploads/Removals table with the status **Removed**. Within 24 hours of submitting your request, assets are removed from the inventory. Within a few days, related incidents, alerts, and services are also removed.
-You cannot remove an asset that was uploaded in a previous upload request. 
+    Removed assets appear the Asset Uploads/Removals table with the status **Removed**. Within 24 hours of submitting your request, assets are removed from the inventory. Within a few days, related incidents, alerts, and services are also removed.
+    You cannot remove an asset that was uploaded in a previous upload request.
 
-When you remove a paid-level domain, related subdomains are also removed. When you remove an IPv4 range, the individual IPv4 addresses in that range are also removed.
+    When you remove a paid-level domain, related subdomains are also removed. When you remove an IPv4 range, the individual IPv4 addresses in that range are also removed.
 
-Required role: Instance Admin 
+    Required role: Instance Admin
 
-Required license: **Cortex XSIAM Premium** or **Cortex XSIAM with ASM add-on**
-    
-    Args:
-        authorization (str): {api-key} (required)
-        x_xdr_auth_id (str): {api-key-id} (required)
-        asset_type (str): The type of asset being removed. (required)
-        asset_identifiers (List[Any]): A list of one or more assets you want to add to the inventory. Note the following: - All assets in a request must be of the same asset type. - For IP ranges, the accepted format is first-last or CIDR format. - Individual IP addresses can be listed using either CIDR notation (for example, 8.8.8.8/32) or first-last format (for example, 8.8.8.8-8.8.8.8). (required)
-    
-    Returns:
-        List[types.TextContent]: OK
+    Required license: **Cortex XSIAM Premium** or **Cortex XSIAM with ASM add-on**
+
+        Args:
+            authorization (str): {api-key} (required)
+            x_xdr_auth_id (str): {api-key-id} (required)
+            asset_type (str): The type of asset being removed. (required)
+            asset_identifiers (List[Any]): A list of one or more assets you want to add to the inventory. Note the following: - All assets in a request must be of the same asset type. - For IP ranges, the accepted format is first-last or CIDR format. - Individual IP addresses can be listed using either CIDR notation (for example, 8.8.8.8/32) or first-last format (for example, 8.8.8.8-8.8.8.8). (required)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -10376,7 +11062,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM with ASM add-on**
     url = base_url + "/public_api/v1/asm_management/remove_asm_data"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -10404,7 +11090,7 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM with ASM add-on**
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -10420,9 +11106,13 @@ xsiam_asm_management_remove_asm_data_v1_schema = {
         "authorization": {"type": "str", "description": "{api-key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api-key-id}"},
         "asset_type": {"type": "str", "description": "The type of asset being removed."},
-        "asset_identifiers": {"type": "List[Any]", "description": "A list of one or more assets you want to add to the inventory. Note the following: - All assets in a request must be of the same asset type. - For IP ranges, the accepted format is first-last or CIDR format. - Individual IP addresses can be listed using either CIDR notation (for example, 8.8.8.8/32) or first-last format (for example, 8.8.8.8-8.8.8.8)."},
+        "asset_identifiers": {
+            "type": "List[Any]",
+            "description": "A list of one or more assets you want to add to the inventory. Note the following: - All assets in a request must be of the same asset type. - For IP ranges, the accepted format is first-last or CIDR format. - Individual IP addresses can be listed using either CIDR notation (for example, 8.8.8.8/32) or first-last format (for example, 8.8.8.8-8.8.8.8).",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_scheduled_queries_list_v1(
@@ -10433,29 +11123,29 @@ async def xsiam_scheduled_queries_list_v1(
     list_ids: List[Any] | None = None,
 ) -> List[types.TextContent]:
     """
-    Return a list of scheduled queries. You can return all scheduled queries or filter results. You can also return extended results with all details included.
+        Return a list of scheduled queries. You can return all scheduled queries or filter results. You can also return extended results with all details included.
 
-You must have **Instance Administrator** permissions to run this endpoint.
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        filters (List[Any]): An array of filter fields. (optional)
-        extended_view (bool): Display the extended view of the queries, which includes additional fields. If this is `false`, the response does not include `total_count ` or `result_count`. Extended fields may change in future versions. (optional)
-        list_ids (List[Any]): List of scheduled query IDs to retrieve. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    You must have **Instance Administrator** permissions to run this endpoint.
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            filters (List[Any]): An array of filter fields. (optional)
+            extended_view (bool): Display the extended view of the queries, which includes additional fields. If this is `false`, the response does not include `total_count ` or `result_count`. Extended fields may change in future versions. (optional)
+            list_ids (List[Any]): List of scheduled query IDs to retrieve. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -10476,7 +11166,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
     url = base_url + "/public_api/v1/scheduled_queries/list"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -10504,7 +11194,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -10520,10 +11210,17 @@ xsiam_scheduled_queries_list_v1_schema = {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
         "filters": {"type": "List[Any]", "description": "An array of filter fields."},
-        "extended_view": {"type": "bool", "description": "Display the extended view of the queries, which includes additional fields. If this is `false`, the response does not include `total_count ` or `result_count`. Extended fields may change in future versions."},
-        "list_ids": {"type": "List[Any]", "description": "List of scheduled query IDs to retrieve."},
+        "extended_view": {
+            "type": "bool",
+            "description": "Display the extended view of the queries, which includes additional fields. If this is `false`, the response does not include `total_count ` or `result_count`. Extended fields may change in future versions.",
+        },
+        "list_ids": {
+            "type": "List[Any]",
+            "description": "List of scheduled query IDs to retrieve.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_scheduled_queries_insert_v1(
@@ -10532,27 +11229,27 @@ async def xsiam_scheduled_queries_insert_v1(
     request_data: List[Any],
 ) -> List[types.TextContent]:
     """
-    Insert new scheduled queries or update existing scheduled queries. 
+        Insert new scheduled queries or update existing scheduled queries.
 
-You must have **Instance Administrator** permissions to run this endpoint.
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        request_data (List[Any]): No description provided (required)
-    
-    Returns:
-        List[types.TextContent]: OK
+    You must have **Instance Administrator** permissions to run this endpoint.
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            request_data (List[Any]): No description provided (required)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -10565,7 +11262,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
     url = base_url + "/public_api/v1/scheduled_queries/insert"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -10593,7 +11290,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -10612,6 +11309,7 @@ xsiam_scheduled_queries_insert_v1_schema = {
     },
 }
 
+
 @server.call_tool()
 async def xsiam_scheduled_queries_delete_v1(
     authorization: str,
@@ -10619,27 +11317,27 @@ async def xsiam_scheduled_queries_delete_v1(
     request_data: List[Any],
 ) -> List[types.TextContent]:
     """
-    Delete scheduled queries.
+        Delete scheduled queries.
 
-You must have **Instance Administrator** permissions to run this endpoint.
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        request_data (List[Any]): No description provided (required)
-    
-    Returns:
-        List[types.TextContent]: OK
+    You must have **Instance Administrator** permissions to run this endpoint.
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            request_data (List[Any]): No description provided (required)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -10652,7 +11350,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
     url = base_url + "/public_api/v1/scheduled_queries/delete"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -10680,7 +11378,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -10699,6 +11397,7 @@ xsiam_scheduled_queries_delete_v1_schema = {
     },
 }
 
+
 @server.call_tool()
 async def xsiam_xql_library_get(
     authorization: str,
@@ -10708,29 +11407,29 @@ async def xsiam_xql_library_get(
     xql_query_tags: List[Any] | None = None,
 ) -> List[types.TextContent]:
     """
-    Retrieve a detailed list of XQL query libraries. You can filter by list of query names or by list of query tags.
+        Retrieve a detailed list of XQL query libraries. You can filter by list of query names or by list of query tags.
 
-You must have **Instance Administrator** permissions to run this endpoint.
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        extended_view (bool): Whether to retrieve the detailed information on each XQL query. (optional)
-        xql_query_names (List[Any]): An array of XQL query names to search for. Note: If searching by `xql_query_names`, you cannot search by `xql_query_tags` in the same call. (optional)
-        xql_query_tags (List[Any]): An array of XQL tag names to search for. Note: If searching by `xql_query_tags`, you cannot search by `xql_query_names` in the same call. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    You must have **Instance Administrator** permissions to run this endpoint.
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            extended_view (bool): Whether to retrieve the detailed information on each XQL query. (optional)
+            xql_query_names (List[Any]): An array of XQL query names to search for. Note: If searching by `xql_query_names`, you cannot search by `xql_query_tags` in the same call. (optional)
+            xql_query_tags (List[Any]): An array of XQL tag names to search for. Note: If searching by `xql_query_tags`, you cannot search by `xql_query_names` in the same call. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -10751,7 +11450,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
     url = base_url + "/public_api/xql_library/get"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -10779,7 +11478,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -10794,11 +11493,21 @@ xsiam_xql_library_get_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "extended_view": {"type": "bool", "description": "Whether to retrieve the detailed information on each XQL query."},
-        "xql_query_names": {"type": "List[Any]", "description": "An array of XQL query names to search for. Note: If searching by `xql_query_names`, you cannot search by `xql_query_tags` in the same call."},
-        "xql_query_tags": {"type": "List[Any]", "description": "An array of XQL tag names to search for. Note: If searching by `xql_query_tags`, you cannot search by `xql_query_names` in the same call."},
+        "extended_view": {
+            "type": "bool",
+            "description": "Whether to retrieve the detailed information on each XQL query.",
+        },
+        "xql_query_names": {
+            "type": "List[Any]",
+            "description": "An array of XQL query names to search for. Note: If searching by `xql_query_names`, you cannot search by `xql_query_tags` in the same call.",
+        },
+        "xql_query_tags": {
+            "type": "List[Any]",
+            "description": "An array of XQL tag names to search for. Note: If searching by `xql_query_tags`, you cannot search by `xql_query_names` in the same call.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_xql_library_insert(
@@ -10809,31 +11518,31 @@ async def xsiam_xql_library_insert(
     xql_query_tags: List[Any] | None = None,
 ) -> List[types.TextContent]:
     """
-    Insert new XQL queries or update existing XQL queries.
+        Insert new XQL queries or update existing XQL queries.
 
-**Note:** You should use unique `xql_query_name` for each XQL query on a given tenant.
+    **Note:** You should use unique `xql_query_name` for each XQL query on a given tenant.
 
-You must have **Instance Administrator** permissions to run this endpoint.
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        xql_queries_override (bool): When the `xql_query_name` already exists on the tenant, this field defines whether or not to overwrite the existing XQL query with the new content. When `true`, the query will be overwritten. When `false`, the query will not be updated and an error will be returned. (optional)
-        xql_queries (List[Any]): No description provided (required)
-        xql_query_tags (List[Any]): XQL query tags are optional (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    You must have **Instance Administrator** permissions to run this endpoint.
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            xql_queries_override (bool): When the `xql_query_name` already exists on the tenant, this field defines whether or not to overwrite the existing XQL query with the new content. When `true`, the query will be overwritten. When `false`, the query will not be updated and an error will be returned. (optional)
+            xql_queries (List[Any]): No description provided (required)
+            xql_query_tags (List[Any]): XQL query tags are optional (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -10854,7 +11563,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
     url = base_url + "/public_api/xql_library/insert"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -10882,7 +11591,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -10897,11 +11606,15 @@ xsiam_xql_library_insert_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "xql_queries_override": {"type": "bool", "description": "When the `xql_query_name` already exists on the tenant, this field defines whether or not to overwrite the existing XQL query with the new content. When `true`, the query will be overwritten. When `false`, the query will not be updated and an error will be returned."},
+        "xql_queries_override": {
+            "type": "bool",
+            "description": "When the `xql_query_name` already exists on the tenant, this field defines whether or not to overwrite the existing XQL query with the new content. When `true`, the query will be overwritten. When `false`, the query will not be updated and an error will be returned.",
+        },
         "xql_queries": {"type": "List[Any]", "description": ""},
         "xql_query_tags": {"type": "List[Any]", "description": "XQL query tags are optional"},
     },
 }
+
 
 @server.call_tool()
 async def xsiam_xql_library_delete(
@@ -10911,28 +11624,28 @@ async def xsiam_xql_library_delete(
     xql_query_tags: List[Any] | None = None,
 ) -> List[types.TextContent]:
     """
-    Delete XQL queries. You can filter by list of query names or by list of query tags.
+        Delete XQL queries. You can filter by list of query names or by list of query tags.
 
-You must have **Instance Administrator** permissions to run this endpoint.
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        xql_query_names (List[Any]): List of XQL query names to delete. Note: If searching by `xql_query_names`, you cannot search by `xql_query_tags` in the same call. (optional)
-        xql_query_tags (List[Any]): List of XQL query tags. Note: If searching by `xql_query_tags`, you cannot search by `xql_query_names` in the same call. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    You must have **Instance Administrator** permissions to run this endpoint.
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            xql_query_names (List[Any]): List of XQL query names to delete. Note: If searching by `xql_query_names`, you cannot search by `xql_query_tags` in the same call. (optional)
+            xql_query_tags (List[Any]): List of XQL query tags. Note: If searching by `xql_query_tags`, you cannot search by `xql_query_names` in the same call. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -10951,7 +11664,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
     url = base_url + "/public_api/xql_library/delete"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -10979,7 +11692,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -10994,10 +11707,17 @@ xsiam_xql_library_delete_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "xql_query_names": {"type": "List[Any]", "description": "List of XQL query names to delete. Note: If searching by `xql_query_names`, you cannot search by `xql_query_tags` in the same call."},
-        "xql_query_tags": {"type": "List[Any]", "description": "List of XQL query tags. Note: If searching by `xql_query_tags`, you cannot search by `xql_query_names` in the same call."},
+        "xql_query_names": {
+            "type": "List[Any]",
+            "description": "List of XQL query names to delete. Note: If searching by `xql_query_names`, you cannot search by `xql_query_tags` in the same call.",
+        },
+        "xql_query_tags": {
+            "type": "List[Any]",
+            "description": "List of XQL query tags. Note: If searching by `xql_query_tags`, you cannot search by `xql_query_names` in the same call.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_indicators_get_v1(
@@ -11009,36 +11729,36 @@ async def xsiam_indicators_get_v1(
     search_to: int | None = None,
 ) -> List[types.TextContent]:
     """
-    Get a list of IOCs. You can return all IOCs or filter results. You can also return extended results with all details included.
-- The response is concatenated using AND condition (OR is not supported).
-- The maximum result set size is >100.
-- Offset is the zero-based number of incidents from the start of the result set.
+        Get a list of IOCs. You can return all IOCs or filter results. You can also return extended results with all details included.
+    - The response is concatenated using AND condition (OR is not supported).
+    - The maximum result set size is >100.
+    - Offset is the zero-based number of incidents from the start of the result set.
 
-UI navigation: **XSIAM** > **Detection & Threat Intel** > **Detection Rules** > **IOC**.
+    UI navigation: **XSIAM** > **Detection & Threat Intel** > **Detection Rules** > **IOC**.
 
-You must have **Instance Administrator** permissions to run this endpoint.
+    You must have **Instance Administrator** permissions to run this endpoint.
 
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        extended_view (bool): No description provided (optional)
-        filters (List[Any]): An array of filter fields. (optional)
-        search_from (int): Integer representing the starting offset within the query result set from which you want indicators returned. Indicators are returned as a zero-based list. Any indicator indexed less than this value is not returned in the final result set and defaults to zero. (optional)
-        search_to (int): Integer representing the end offset within the result set after which you do not want indicators returned. Indicators in the indicator list that are indexed higher than this value are not returned in the final results set. Defaults to >100, which returns all indicators to the end of the list. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            extended_view (bool): No description provided (optional)
+            filters (List[Any]): An array of filter fields. (optional)
+            search_from (int): Integer representing the starting offset within the query result set from which you want indicators returned. Indicators are returned as a zero-based list. Any indicator indexed less than this value is not returned in the final result set and defaults to zero. (optional)
+            search_to (int): Integer representing the end offset within the result set after which you do not want indicators returned. Indicators in the indicator list that are indexed higher than this value are not returned in the final results set. Defaults to >100, which returns all indicators to the end of the list. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -11061,7 +11781,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
     url = base_url + "/public_api/v1/indicators/get"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -11089,7 +11809,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -11106,10 +11826,17 @@ xsiam_indicators_get_v1_schema = {
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
         "extended_view": {"type": "bool", "description": ""},
         "filters": {"type": "List[Any]", "description": "An array of filter fields."},
-        "search_from": {"type": "int", "description": "Integer representing the starting offset within the query result set from which you want indicators returned. Indicators are returned as a zero-based list. Any indicator indexed less than this value is not returned in the final result set and defaults to zero."},
-        "search_to": {"type": "int", "description": "Integer representing the end offset within the result set after which you do not want indicators returned. Indicators in the indicator list that are indexed higher than this value are not returned in the final results set. Defaults to >100, which returns all indicators to the end of the list."},
+        "search_from": {
+            "type": "int",
+            "description": "Integer representing the starting offset within the query result set from which you want indicators returned. Indicators are returned as a zero-based list. Any indicator indexed less than this value is not returned in the final result set and defaults to zero.",
+        },
+        "search_to": {
+            "type": "int",
+            "description": "Integer representing the end offset within the result set after which you do not want indicators returned. Indicators in the indicator list that are indexed higher than this value are not returned in the final results set. Defaults to >100, which returns all indicators to the end of the list.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_indicators_insert_v1(
@@ -11118,29 +11845,29 @@ async def xsiam_indicators_insert_v1(
     request_data: List[Any],
 ) -> List[types.TextContent]:
     """
-    Insert new IOCs or update existing IOCs.
+        Insert new IOCs or update existing IOCs.
 
-**Note:** The IOC `rule_id` is tenant specific and can't be used across tenants. Inserting IOCs with the same `rule_id` as an existing IOC on that tenant will overwrite the existing IOC.
+    **Note:** The IOC `rule_id` is tenant specific and can't be used across tenants. Inserting IOCs with the same `rule_id` as an existing IOC on that tenant will overwrite the existing IOC.
 
-You must have **Instance Administrator** permissions to run this endpoint.
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        request_data (List[Any]): No description provided (required)
-    
-    Returns:
-        List[types.TextContent]: OK
+    You must have **Instance Administrator** permissions to run this endpoint.
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            request_data (List[Any]): No description provided (required)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -11153,7 +11880,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
     url = base_url + "/public_api/v1/indicators/insert"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -11181,7 +11908,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -11200,6 +11927,7 @@ xsiam_indicators_insert_v1_schema = {
     },
 }
 
+
 @server.call_tool()
 async def xsiam_indicators_delete_v1(
     authorization: str,
@@ -11207,27 +11935,27 @@ async def xsiam_indicators_delete_v1(
     filters: List[Any] | None = None,
 ) -> List[types.TextContent]:
     """
-    Delete IOCs selected by filter.
+        Delete IOCs selected by filter.
 
-You must have **Instance Administrator** permissions to run this endpoint.
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        filters (List[Any]): An array of filter fields. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    You must have **Instance Administrator** permissions to run this endpoint.
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            filters (List[Any]): An array of filter fields. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -11244,7 +11972,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
     url = base_url + "/public_api/v1/indicators/delete"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -11272,7 +12000,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -11291,6 +12019,7 @@ xsiam_indicators_delete_v1_schema = {
     },
 }
 
+
 @server.call_tool()
 async def xsiam_bioc_get_v1(
     authorization: str,
@@ -11301,33 +12030,33 @@ async def xsiam_bioc_get_v1(
     search_to: int | None = None,
 ) -> List[types.TextContent]:
     """
-    Return a list of BIOCs. You can return all BIOCs or filter results. You can also return extended results with all details included.- The response is concatenated using AND condition (OR is not supported).
-- The maximum result set size is >100.
-- Offset is the zero-based number of incidents from the start of the result set.
+        Return a list of BIOCs. You can return all BIOCs or filter results. You can also return extended results with all details included.- The response is concatenated using AND condition (OR is not supported).
+    - The maximum result set size is >100.
+    - Offset is the zero-based number of incidents from the start of the result set.
 
-You must have **Instance Administrator** permissions to run this endpoint.
+    You must have **Instance Administrator** permissions to run this endpoint.
 
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        extended_view (bool): No description provided (optional)
-        filters (List[Any]): An array of filter fields. (optional)
-        search_from (int): Integer representing the starting offset within the query result set from which you want BIOCs returned. BIOCs are returned as a zero-based list. Any BIOC indexed less than this value is not returned in the final result set and defaults to zero. (optional)
-        search_to (int): Integer representing the end offset within the result set after which you do not want BIOCs returned. BIOCs in the BIOC list that are indexed higher than this value are not returned in the final results set. Defaults to >100, which returns all BIOCs to the end of the list. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            extended_view (bool): No description provided (optional)
+            filters (List[Any]): An array of filter fields. (optional)
+            search_from (int): Integer representing the starting offset within the query result set from which you want BIOCs returned. BIOCs are returned as a zero-based list. Any BIOC indexed less than this value is not returned in the final result set and defaults to zero. (optional)
+            search_to (int): Integer representing the end offset within the result set after which you do not want BIOCs returned. BIOCs in the BIOC list that are indexed higher than this value are not returned in the final results set. Defaults to >100, which returns all BIOCs to the end of the list. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -11350,7 +12079,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
     url = base_url + "/public_api/v1/bioc/get"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -11378,7 +12107,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -11395,10 +12124,17 @@ xsiam_bioc_get_v1_schema = {
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
         "extended_view": {"type": "bool", "description": ""},
         "filters": {"type": "List[Any]", "description": "An array of filter fields."},
-        "search_from": {"type": "int", "description": "Integer representing the starting offset within the query result set from which you want BIOCs returned. BIOCs are returned as a zero-based list. Any BIOC indexed less than this value is not returned in the final result set and defaults to zero."},
-        "search_to": {"type": "int", "description": "Integer representing the end offset within the result set after which you do not want BIOCs returned. BIOCs in the BIOC list that are indexed higher than this value are not returned in the final results set. Defaults to >100, which returns all BIOCs to the end of the list."},
+        "search_from": {
+            "type": "int",
+            "description": "Integer representing the starting offset within the query result set from which you want BIOCs returned. BIOCs are returned as a zero-based list. Any BIOC indexed less than this value is not returned in the final result set and defaults to zero.",
+        },
+        "search_to": {
+            "type": "int",
+            "description": "Integer representing the end offset within the result set after which you do not want BIOCs returned. BIOCs in the BIOC list that are indexed higher than this value are not returned in the final results set. Defaults to >100, which returns all BIOCs to the end of the list.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_bioc_insert_v1(
@@ -11407,29 +12143,29 @@ async def xsiam_bioc_insert_v1(
     request_data: List[Any],
 ) -> List[types.TextContent]:
     """
-    Insert new BIOCs or update existing BIOCs.
+        Insert new BIOCs or update existing BIOCs.
 
-**Note:** The BIOC `rule_id` is tenant specific and can't be used across tenants. Inserting BIOCs with the same `rule_id` as an existing BIOC on that tenant will overwrite the existing BIOC.
+    **Note:** The BIOC `rule_id` is tenant specific and can't be used across tenants. Inserting BIOCs with the same `rule_id` as an existing BIOC on that tenant will overwrite the existing BIOC.
 
-You must have **Instance Administrator** permissions to run this endpoint.
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        request_data (List[Any]): No description provided (required)
-    
-    Returns:
-        List[types.TextContent]: OK
+    You must have **Instance Administrator** permissions to run this endpoint.
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            request_data (List[Any]): No description provided (required)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -11442,7 +12178,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
     url = base_url + "/public_api/v1/bioc/insert"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -11470,7 +12206,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -11489,6 +12225,7 @@ xsiam_bioc_insert_v1_schema = {
     },
 }
 
+
 @server.call_tool()
 async def xsiam_bioc_delete_v1(
     authorization: str,
@@ -11496,27 +12233,27 @@ async def xsiam_bioc_delete_v1(
     filters: List[Any] | None = None,
 ) -> List[types.TextContent]:
     """
-    Delete BIOCs selected by filter.
+        Delete BIOCs selected by filter.
 
-You must have **Instance Administrator** permissions to run this endpoint.
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        filters (List[Any]): An array of filter fields. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    You must have **Instance Administrator** permissions to run this endpoint.
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            filters (List[Any]): An array of filter fields. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -11533,7 +12270,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
     url = base_url + "/public_api/v1/bioc/delete"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -11561,7 +12298,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -11580,6 +12317,7 @@ xsiam_bioc_delete_v1_schema = {
     },
 }
 
+
 @server.call_tool()
 async def xsiam_correlations_get_v1(
     authorization: str,
@@ -11590,34 +12328,34 @@ async def xsiam_correlations_get_v1(
     search_to: int | None = None,
 ) -> List[types.TextContent]:
     """
-    Return a list of correlation rules. You can return all correlation rules or filter results. You can also return extended results with all details included.
-- The response is concatenated using AND condition (OR is not supported).
-- The maximum result set size is >100.
-- Offset is the zero-based number of incidents from the start of the result set.
+        Return a list of correlation rules. You can return all correlation rules or filter results. You can also return extended results with all details included.
+    - The response is concatenated using AND condition (OR is not supported).
+    - The maximum result set size is >100.
+    - Offset is the zero-based number of incidents from the start of the result set.
 
-You must have **Instance Administrator** permissions to run this endpoint.
+    You must have **Instance Administrator** permissions to run this endpoint.
 
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        extended_view (bool): No description provided (optional)
-        filters (List[Any]): An array of filter fields. (optional)
-        search_from (int): Integer representing the starting offset within the query result set from which you want correlation rules returned. Correlation rules are returned as a zero-based list. Any correlation rule indexed less than this value is not returned in the final result set and defaults to zero. (optional)
-        search_to (int): Integer representing the end offset within the result set after which you do not want BIOCs returned. BIOCs in the BIOC list that are indexed higher than this value are not returned in the final results set. Defaults to >100, which returns all BIOCs to the end of the list. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            extended_view (bool): No description provided (optional)
+            filters (List[Any]): An array of filter fields. (optional)
+            search_from (int): Integer representing the starting offset within the query result set from which you want correlation rules returned. Correlation rules are returned as a zero-based list. Any correlation rule indexed less than this value is not returned in the final result set and defaults to zero. (optional)
+            search_to (int): Integer representing the end offset within the result set after which you do not want BIOCs returned. BIOCs in the BIOC list that are indexed higher than this value are not returned in the final results set. Defaults to >100, which returns all BIOCs to the end of the list. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -11640,7 +12378,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
     url = base_url + "/public_api/v1/correlations/get"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -11668,7 +12406,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -11685,10 +12423,17 @@ xsiam_correlations_get_v1_schema = {
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
         "extended_view": {"type": "bool", "description": ""},
         "filters": {"type": "List[Any]", "description": "An array of filter fields."},
-        "search_from": {"type": "int", "description": "Integer representing the starting offset within the query result set from which you want correlation rules returned. Correlation rules are returned as a zero-based list. Any correlation rule indexed less than this value is not returned in the final result set and defaults to zero."},
-        "search_to": {"type": "int", "description": "Integer representing the end offset within the result set after which you do not want BIOCs returned. BIOCs in the BIOC list that are indexed higher than this value are not returned in the final results set. Defaults to >100, which returns all BIOCs to the end of the list."},
+        "search_from": {
+            "type": "int",
+            "description": "Integer representing the starting offset within the query result set from which you want correlation rules returned. Correlation rules are returned as a zero-based list. Any correlation rule indexed less than this value is not returned in the final result set and defaults to zero.",
+        },
+        "search_to": {
+            "type": "int",
+            "description": "Integer representing the end offset within the result set after which you do not want BIOCs returned. BIOCs in the BIOC list that are indexed higher than this value are not returned in the final results set. Defaults to >100, which returns all BIOCs to the end of the list.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_correlations_insert_v1(
@@ -11697,29 +12442,29 @@ async def xsiam_correlations_insert_v1(
     request_data: List[Any],
 ) -> List[types.TextContent]:
     """
-    Insert new Correlation Rules or update existing Correlation Rules.
+        Insert new Correlation Rules or update existing Correlation Rules.
 
-**Note:** The Correlation Rule `id` is tenant specific and can't be used across tenants. Inserting Correlation Rules with the same `id` as an existing Correlation Rule on that tenant will overwrite the existing Correlation Rule.
+    **Note:** The Correlation Rule `id` is tenant specific and can't be used across tenants. Inserting Correlation Rules with the same `id` as an existing Correlation Rule on that tenant will overwrite the existing Correlation Rule.
 
-You must have **Instance Administrator** permissions to run this endpoint.
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        request_data (List[Any]): No description provided (required)
-    
-    Returns:
-        List[types.TextContent]: OK
+    You must have **Instance Administrator** permissions to run this endpoint.
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            request_data (List[Any]): No description provided (required)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -11732,7 +12477,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
     url = base_url + "/public_api/v1/correlations/insert"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -11760,7 +12505,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -11779,6 +12524,7 @@ xsiam_correlations_insert_v1_schema = {
     },
 }
 
+
 @server.call_tool()
 async def xsiam_correlations_delete_v1(
     authorization: str,
@@ -11786,27 +12532,27 @@ async def xsiam_correlations_delete_v1(
     filters: List[Any] | None = None,
 ) -> List[types.TextContent]:
     """
-    Delete correlation rules selected by filter.
+        Delete correlation rules selected by filter.
 
-You must have **Instance Administrator** permissions to run this endpoint.
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        filters (List[Any]): An array of filter fields. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    You must have **Instance Administrator** permissions to run this endpoint.
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            filters (List[Any]): An array of filter fields. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -11823,7 +12569,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
     url = base_url + "/public_api/v1/correlations/delete"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -11851,7 +12597,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -11870,6 +12616,7 @@ xsiam_correlations_delete_v1_schema = {
     },
 }
 
+
 @server.call_tool()
 async def xsiam_playbooks_get_v1(
     authorization: str,
@@ -11878,28 +12625,28 @@ async def xsiam_playbooks_get_v1(
     value: str | None = None,
 ) -> List[types.TextContent]:
     """
-     Get a playbook by filtering based on its name or ID. The playbook's YAML is returned in a ZIP file.
+        Get a playbook by filtering based on its name or ID. The playbook's YAML is returned in a ZIP file.
 
- You must have **Instance Administrator** permissions to run this endpoint.
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        field (str): Identifies the playbook field the filter is matching. Filters are based on the following keywords: - `name`: Playbook name - `id`: Playbook ID (optional)
-        value (str): Value that this filter must match. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    You must have **Instance Administrator** permissions to run this endpoint.
+
+       Args:
+           authorization (str): {api_key} (required)
+           x_xdr_auth_id (str): {api_key_id} (required)
+           field (str): Identifies the playbook field the filter is matching. Filters are based on the following keywords: - `name`: Playbook name - `id`: Playbook ID (optional)
+           value (str): Value that this filter must match. (optional)
+
+       Returns:
+           List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -11922,7 +12669,7 @@ async def xsiam_playbooks_get_v1(
     url = base_url + "/public_api/v1/playbooks/get"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -11950,7 +12697,7 @@ async def xsiam_playbooks_get_v1(
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -11965,10 +12712,14 @@ xsiam_playbooks_get_v1_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "field": {"type": "str", "description": "Identifies the playbook field the filter is matching. Filters are based on the following keywords: - `name`: Playbook name - `id`: Playbook ID"},
+        "field": {
+            "type": "str",
+            "description": "Identifies the playbook field the filter is matching. Filters are based on the following keywords: - `name`: Playbook name - `id`: Playbook ID",
+        },
         "value": {"type": "str", "description": "Value that this filter must match."},
     },
 }
+
 
 @server.call_tool()
 async def xsiam_playbooks_insert_v1(
@@ -11976,26 +12727,26 @@ async def xsiam_playbooks_insert_v1(
     x_xdr_auth_id: str,
 ) -> List[types.TextContent]:
     """
-    Add or update a playbook by passing the YAML in a ZIP file.
+        Add or update a playbook by passing the YAML in a ZIP file.
 
-You must have **Instance Administrator** permissions to run this endpoint.
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-    
-    Returns:
-        List[types.TextContent]: OK
+    You must have **Instance Administrator** permissions to run this endpoint.
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -12006,7 +12757,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
     url = base_url + "/public_api/v1/playbooks/insert"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -12034,7 +12785,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -12052,6 +12803,7 @@ xsiam_playbooks_insert_v1_schema = {
     },
 }
 
+
 @server.call_tool()
 async def xsiam_playbooks_delete_v1(
     authorization: str,
@@ -12060,28 +12812,28 @@ async def xsiam_playbooks_delete_v1(
     value: str | None = None,
 ) -> List[types.TextContent]:
     """
-    Delete a playbook by filtering based on its name or ID.
+        Delete a playbook by filtering based on its name or ID.
 
-You must have **Instance Administrator** permissions to run this endpoint.
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        field (str): Identifies the playbook field the filter is matching. Filters are based on the following keywords: - `name`: Playbook name - `id`: Playbook ID (optional)
-        value (str): Value that this filter must match. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    You must have **Instance Administrator** permissions to run this endpoint.
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            field (str): Identifies the playbook field the filter is matching. Filters are based on the following keywords: - `name`: Playbook name - `id`: Playbook ID (optional)
+            value (str): Value that this filter must match. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -12104,7 +12856,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
     url = base_url + "/public_api/v1/playbooks/delete"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -12132,7 +12884,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -12147,10 +12899,14 @@ xsiam_playbooks_delete_v1_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "field": {"type": "str", "description": "Identifies the playbook field the filter is matching. Filters are based on the following keywords: - `name`: Playbook name - `id`: Playbook ID"},
+        "field": {
+            "type": "str",
+            "description": "Identifies the playbook field the filter is matching. Filters are based on the following keywords: - `name`: Playbook name - `id`: Playbook ID",
+        },
         "value": {"type": "str", "description": "Value that this filter must match."},
     },
 }
+
 
 @server.call_tool()
 async def xsiam_scripts_get_v1(
@@ -12160,28 +12916,28 @@ async def xsiam_scripts_get_v1(
     value: str | None = None,
 ) -> List[types.TextContent]:
     """
-     Get a script by filtering based on its name or ID. The script's YAML is returned in a ZIP file.
+        Get a script by filtering based on its name or ID. The script's YAML is returned in a ZIP file.
 
- You must have **Instance Administrator** permissions to run this endpoint.
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        field (str): Identifies the script field the filter is matching. Filters are based on the following keywords: - `name`: Script name - `id`: Script ID (optional)
-        value (str): Value that this filter must match. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    You must have **Instance Administrator** permissions to run this endpoint.
+
+       Args:
+           authorization (str): {api_key} (required)
+           x_xdr_auth_id (str): {api_key_id} (required)
+           field (str): Identifies the script field the filter is matching. Filters are based on the following keywords: - `name`: Script name - `id`: Script ID (optional)
+           value (str): Value that this filter must match. (optional)
+
+       Returns:
+           List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -12204,7 +12960,7 @@ async def xsiam_scripts_get_v1(
     url = base_url + "/public_api/v1/scripts/get"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -12232,7 +12988,7 @@ async def xsiam_scripts_get_v1(
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -12247,10 +13003,14 @@ xsiam_scripts_get_v1_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "field": {"type": "str", "description": "Identifies the script field the filter is matching. Filters are based on the following keywords: - `name`: Script name - `id`: Script ID"},
+        "field": {
+            "type": "str",
+            "description": "Identifies the script field the filter is matching. Filters are based on the following keywords: - `name`: Script name - `id`: Script ID",
+        },
         "value": {"type": "str", "description": "Value that this filter must match."},
     },
 }
+
 
 @server.call_tool()
 async def xsiam_scripts_insert_v1(
@@ -12258,26 +13018,26 @@ async def xsiam_scripts_insert_v1(
     x_xdr_auth_id: str,
 ) -> List[types.TextContent]:
     """
-    Update or add a script by passing the YAML in a ZIP file.
+        Update or add a script by passing the YAML in a ZIP file.
 
-You must have **Instance Administrator** permissions to run this endpoint.
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-    
-    Returns:
-        List[types.TextContent]: OK
+    You must have **Instance Administrator** permissions to run this endpoint.
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -12288,7 +13048,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
     url = base_url + "/public_api/v1/scripts/insert"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -12316,7 +13076,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -12334,6 +13094,7 @@ xsiam_scripts_insert_v1_schema = {
     },
 }
 
+
 @server.call_tool()
 async def xsiam_scripts_delete_v1(
     authorization: str,
@@ -12342,28 +13103,28 @@ async def xsiam_scripts_delete_v1(
     value: str | None = None,
 ) -> List[types.TextContent]:
     """
-    Delete a script by filtering based on its name or ID.
+        Delete a script by filtering based on its name or ID.
 
-You must have **Instance Administrator** permissions to run this endpoint.
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        field (str): Identifies the playbook field the filter is matching. Filters are based on the following keywords: - `name`: Playbook name - `id`: Playbook ID (optional)
-        value (str): Value that this filter must match. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    You must have **Instance Administrator** permissions to run this endpoint.
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            field (str): Identifies the playbook field the filter is matching. Filters are based on the following keywords: - `name`: Playbook name - `id`: Playbook ID (optional)
+            value (str): Value that this filter must match. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -12386,7 +13147,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
     url = base_url + "/public_api/v1/scripts/delete"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -12414,7 +13175,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -12429,10 +13190,14 @@ xsiam_scripts_delete_v1_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "field": {"type": "str", "description": "Identifies the playbook field the filter is matching. Filters are based on the following keywords: - `name`: Playbook name - `id`: Playbook ID"},
+        "field": {
+            "type": "str",
+            "description": "Identifies the playbook field the filter is matching. Filters are based on the following keywords: - `name`: Playbook name - `id`: Playbook ID",
+        },
         "value": {"type": "str", "description": "Value that this filter must match."},
     },
 }
+
 
 @server.call_tool()
 async def xsiam_dashboards_get_v1(
@@ -12441,28 +13206,28 @@ async def xsiam_dashboards_get_v1(
     filters: List[Any] | None = None,
 ) -> List[types.TextContent]:
     """
-    Get dashboard details by filtering based on the dashboard name, dashboard ID, time the dashboard was generated, or dashboard source.
+        Get dashboard details by filtering based on the dashboard name, dashboard ID, time the dashboard was generated, or dashboard source.
 
-You must have **Instance Administrator** permissions to run this endpoint.
+    You must have **Instance Administrator** permissions to run this endpoint.
 
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        filters (List[Any]): An array of filter fields. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            filters (List[Any]): An array of filter fields. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -12479,7 +13244,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
     url = base_url + "/public_api/v1/dashboards/get"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -12507,7 +13272,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -12526,6 +13291,7 @@ xsiam_dashboards_get_v1_schema = {
     },
 }
 
+
 @server.call_tool()
 async def xsiam_dashboards_insert_v1(
     authorization: str,
@@ -12534,28 +13300,28 @@ async def xsiam_dashboards_insert_v1(
     widgets_data: List[Any] | None = None,
 ) -> List[types.TextContent]:
     """
-    Add or update the dashboards retrieved by the Get dashboards API.
+        Add or update the dashboards retrieved by the Get dashboards API.
 
-You must have **Instance Administrator** permissions to run this endpoint.
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        dashboards_data (List[Any]): An array of dashboard details as retrieved by the Get dashboards API. (optional)
-        widgets_data (List[Any]): An array of relevant XQL widget details as retrieved by the Get dashboards API. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    You must have **Instance Administrator** permissions to run this endpoint.
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            dashboards_data (List[Any]): An array of dashboard details as retrieved by the Get dashboards API. (optional)
+            widgets_data (List[Any]): An array of relevant XQL widget details as retrieved by the Get dashboards API. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -12574,7 +13340,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
     url = base_url + "/public_api/v1/dashboards/insert"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -12602,7 +13368,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -12617,10 +13383,17 @@ xsiam_dashboards_insert_v1_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "dashboards_data": {"type": "List[Any]", "description": "An array of dashboard details as retrieved by the Get dashboards API."},
-        "widgets_data": {"type": "List[Any]", "description": "An array of relevant XQL widget details as retrieved by the Get dashboards API."},
+        "dashboards_data": {
+            "type": "List[Any]",
+            "description": "An array of dashboard details as retrieved by the Get dashboards API.",
+        },
+        "widgets_data": {
+            "type": "List[Any]",
+            "description": "An array of relevant XQL widget details as retrieved by the Get dashboards API.",
+        },
     },
 }
+
 
 @server.call_tool()
 async def xsiam_dashboards_delete_v1(
@@ -12629,27 +13402,27 @@ async def xsiam_dashboards_delete_v1(
     filters: List[Any] | None = None,
 ) -> List[types.TextContent]:
     """
-    Delete the dashboards retrieved by the Get dashboards API.
+        Delete the dashboards retrieved by the Get dashboards API.
 
-You must have **Instance Administrator** permissions to run this endpoint.
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        filters (List[Any]): An array of filter fields. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    You must have **Instance Administrator** permissions to run this endpoint.
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            filters (List[Any]): An array of filter fields. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -12666,7 +13439,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
     url = base_url + "/public_api/v1/dashboards/delete"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -12694,7 +13467,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -12713,6 +13486,7 @@ xsiam_dashboards_delete_v1_schema = {
     },
 }
 
+
 @server.call_tool()
 async def xsiam_widgets_get_v1(
     authorization: str,
@@ -12720,29 +13494,29 @@ async def xsiam_widgets_get_v1(
     filters: List[Any] | None = None,
 ) -> List[types.TextContent]:
     """
-    Get widget details by filtering based on the widget title and widget creator.
+        Get widget details by filtering based on the widget title and widget creator.
 
-**Note:** The endpoint only returns XQL widgets and not predefined widgets.
+    **Note:** The endpoint only returns XQL widgets and not predefined widgets.
 
-You must have **Instance Administrator** permissions to run this endpoint.
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        filters (List[Any]): An array of filter fields. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    You must have **Instance Administrator** permissions to run this endpoint.
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            filters (List[Any]): An array of filter fields. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -12759,7 +13533,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
     url = base_url + "/public_api/v1/widgets/get"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -12787,7 +13561,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -12806,6 +13580,7 @@ xsiam_widgets_get_v1_schema = {
     },
 }
 
+
 @server.call_tool()
 async def xsiam_widgets_insert_v1(
     authorization: str,
@@ -12813,27 +13588,27 @@ async def xsiam_widgets_insert_v1(
     request_data: List[Any] | None = None,
 ) -> List[types.TextContent]:
     """
-    Update or add the widgets retrieved by the Get widgets API.
+        Update or add the widgets retrieved by the Get widgets API.
 
-You must have **Instance Administrator** permissions to run this endpoint.
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        request_data (List[Any]): No description provided (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    You must have **Instance Administrator** permissions to run this endpoint.
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            request_data (List[Any]): No description provided (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -12846,7 +13621,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
     url = base_url + "/public_api/v1/widgets/insert"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -12874,7 +13649,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
@@ -12893,6 +13668,7 @@ xsiam_widgets_insert_v1_schema = {
     },
 }
 
+
 @server.call_tool()
 async def xsiam_widgets_delete_v1(
     authorization: str,
@@ -12900,27 +13676,27 @@ async def xsiam_widgets_delete_v1(
     filters: List[Any] | None = None,
 ) -> List[types.TextContent]:
     """
-    Delete the widgets retrieved by the Get widgets API.
+        Delete the widgets retrieved by the Get widgets API.
 
-You must have **Instance Administrator** permissions to run this endpoint.
-    
-    Args:
-        authorization (str): {api_key} (required)
-        x_xdr_auth_id (str): {api_key_id} (required)
-        filters (List[Any]): An array of filter fields. (optional)
-    
-    Returns:
-        List[types.TextContent]: OK
+    You must have **Instance Administrator** permissions to run this endpoint.
+
+        Args:
+            authorization (str): {api_key} (required)
+            x_xdr_auth_id (str): {api_key_id} (required)
+            filters (List[Any]): An array of filter fields. (optional)
+
+        Returns:
+            List[types.TextContent]: OK
     """
     # Input validation
     validate_inputs(locals())
-    
+
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-    
+
     if authorization is not None:
         headers["Authorization"] = sanitize_input(authorization)
     if x_xdr_auth_id is not None:
@@ -12937,7 +13713,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
     url = base_url + "/public_api/v1/widgets/delete"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-    
+
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -12965,7 +13741,7 @@ You must have **Instance Administrator** permissions to run this endpoint.
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-    
+
     return [
         types.TextContent(
             type="text",
