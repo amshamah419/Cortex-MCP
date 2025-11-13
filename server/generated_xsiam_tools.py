@@ -83,9 +83,9 @@ async def xsiam_start_xql_query(
     x_xdr_auth_id: str,
     query: str,
     tenants: List[Any] | None = None,
-    timeframe_from: int | None = None,
-    timeframe_to: int | None = None,
-    timeframe_relative_time: int | None = None,
+    from: int | None = None,
+    to: int | None = None,
+    relative_time: int | None = None,
 ) -> List[types.TextContent]:
     """
     Execute an XQL query.
@@ -105,9 +105,9 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
         x_xdr_auth_id (str): {api_key_id} (required)
         query (str): String of the XQL query. (required)
         tenants (List[Any]): Note: This is only used when querying tenants managed by Managed Security Services Providers (MSSP). List of strings used for running APIs on local and Managed Security tenants. Valid values: - For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default). - For multi-tenant investigations (Managed Security parent who investigate children and/or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. (optional)
-        timeframe_from (int): Use for an absolute timeframe in Unix timestamp. (optional)
-        timeframe_to (int): Use for an absolute timeframe in Unix timestamp. (optional)
-        timeframe_relative_time (int): Use for a relative Unix timestamp. (optional)
+        from (int): Use for an absolute timeframe in Unix timestamp. (optional)
+        to (int): Use for an absolute timeframe in Unix timestamp. (optional)
+        relative_time (int): Use for a relative Unix timestamp. (optional)
     
     Returns:
         List[types.TextContent]: Successful response
@@ -133,12 +133,12 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
         request_data_obj["tenants"] = tenants
     # Build timeframe nested object
     timeframe_obj = {}
-    if timeframe_from is not None:
-        timeframe_obj["from"] = timeframe_from
-    if timeframe_to is not None:
-        timeframe_obj["to"] = timeframe_to
-    if timeframe_relative_time is not None:
-        timeframe_obj["relativeTime"] = timeframe_relative_time
+    if from is not None:
+        timeframe_obj["from"] = from
+    if to is not None:
+        timeframe_obj["to"] = to
+    if relative_time is not None:
+        timeframe_obj["relativeTime"] = relative_time
     if timeframe_obj:
         request_data_obj["timeframe"] = timeframe_obj
     if request_data_obj:
@@ -194,9 +194,9 @@ xsiam_start_xql_query_schema = {
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
         "query": {"type": "str", "description": "String of the XQL query."},
         "tenants": {"type": "List[Any]", "description": "Note: This is only used when querying tenants managed by Managed Security Services Providers (MSSP). List of strings used for running APIs on local and Managed Security tenants. Valid values: - For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default). - For multi-tenant investigations (Managed Security parent who investigate children and/or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children."},
-        "timeframe_from": {"type": "int", "description": "Use for an absolute timeframe in Unix timestamp."},
-        "timeframe_to": {"type": "int", "description": "Use for an absolute timeframe in Unix timestamp."},
-        "timeframe_relative_time": {"type": "int", "description": "Use for a relative Unix timestamp."},
+        "from": {"type": "int", "description": "Use for an absolute timeframe in Unix timestamp."},
+        "to": {"type": "int", "description": "Use for an absolute timeframe in Unix timestamp."},
+        "relative_time": {"type": "int", "description": "Use for a relative Unix timestamp."},
     },
 }
 
@@ -520,8 +520,8 @@ xsiam_get_query_results_stream_schema = {
 async def xsiam_get_incidents(
     authorization: str,
     x_xdr_auth_id: str,
-    sort_field: str,
-    sort_keyword: str,
+    field: str,
+    keyword: str,
     filters: List[Any] | None = None,
     search_from: int | None = None,
     search_to: int | None = None,
@@ -542,8 +542,8 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
         filters (List[Any]): Array of filter fields. (optional)
         search_from (int): Integer representing the starting offset within the query result set from which you want incidents returned. Incidents are returned as a zero-based list. Any incident indexed less than this value is not returned in the final result set and defaults to zero. (optional)
         search_to (int): Integer representing the end offset within the result set after which you do not want incidents returned. Incidents in the incident list that are indexed higher than this value are not returned in the final results set. Defaults to >100, which returns all incidents to the end of the list. (optional)
-        sort_field (str): Sort according to this field. Valid options are: - `creation_time` - `incident_id` - `modification_time` (required)
-        sort_keyword (str): Sort in ascending or descending order. (required)
+        field (str): Sort according to this field. Valid options are: - `creation_time` - `incident_id` - `modification_time` (required)
+        keyword (str): Sort in ascending or descending order. (required)
     
     Returns:
         List[types.TextContent]: Successful response
@@ -571,10 +571,10 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
         request_data_obj["search_to"] = search_to
     # Build sort nested object
     sort_obj = {}
-    if sort_field is not None:
-        sort_obj["field"] = sort_field
-    if sort_keyword is not None:
-        sort_obj["keyword"] = sort_keyword
+    if field is not None:
+        sort_obj["field"] = field
+    if keyword is not None:
+        sort_obj["keyword"] = keyword
     if sort_obj:
         request_data_obj["sort"] = sort_obj
     if request_data_obj:
@@ -631,8 +631,8 @@ xsiam_get_incidents_schema = {
         "filters": {"type": "List[Any]", "description": "Array of filter fields."},
         "search_from": {"type": "int", "description": "Integer representing the starting offset within the query result set from which you want incidents returned. Incidents are returned as a zero-based list. Any incident indexed less than this value is not returned in the final result set and defaults to zero."},
         "search_to": {"type": "int", "description": "Integer representing the end offset within the result set after which you do not want incidents returned. Incidents in the incident list that are indexed higher than this value are not returned in the final results set. Defaults to >100, which returns all incidents to the end of the list."},
-        "sort_field": {"type": "str", "description": "Sort according to this field. Valid options are: - `creation_time` - `incident_id` - `modification_time`"},
-        "sort_keyword": {"type": "str", "description": "Sort in ascending or descending order."},
+        "field": {"type": "str", "description": "Sort according to this field. Valid options are: - `creation_time` - `incident_id` - `modification_time`"},
+        "keyword": {"type": "str", "description": "Sort in ascending or descending order."},
     },
 }
 
@@ -640,11 +640,11 @@ xsiam_get_incidents_schema = {
 async def xsiam_alerts_get_alerts_v1(
     authorization: str,
     x_xdr_auth_id: str,
-    sort_keyword: str,
+    keyword: str,
     filters: List[Any] | None = None,
     search_from: int | None = None,
     search_to: int | None = None,
-    sort_field: str | None = None,
+    field: str | None = None,
 ) -> List[types.TextContent]:
     """
     Get a list of all or filtered alerts.  The alerts listed are what remains after alert exclusions are applied by Cortex XSIAM.
@@ -662,8 +662,8 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
         filters (List[Any]): An array of filter fields. (optional)
         search_from (int): An integer representing the starting offset within the query result set from which you want alerts returned. Alerts are returned as a zero-based list. Any alert indexed less than this value is not returned in the final result set and defaults to zero. (optional)
         search_to (int): An integer representing the end offset within the result set after which you do not want alerts returned. Alerts in the alerts list that are indexed higher than this value are not returned in the final results set. Defaults to 100, which returns all alerts to the end of the list. (optional)
-        sort_field (str): Identifies how to sort the result set, either according to severity or creation time. (optional)
-        sort_keyword (str): Defines whether to sort the results in ascending (asc) or descending (desc) order. (required)
+        field (str): Identifies how to sort the result set, either according to severity or creation time. (optional)
+        keyword (str): Defines whether to sort the results in ascending (asc) or descending (desc) order. (required)
     
     Returns:
         List[types.TextContent]: Successful response
@@ -691,10 +691,10 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
         request_data_obj["search_to"] = search_to
     # Build sort nested object
     sort_obj = {}
-    if sort_field is not None:
-        sort_obj["field"] = sort_field
-    if sort_keyword is not None:
-        sort_obj["keyword"] = sort_keyword
+    if field is not None:
+        sort_obj["field"] = field
+    if keyword is not None:
+        sort_obj["keyword"] = keyword
     if sort_obj:
         request_data_obj["sort"] = sort_obj
     if request_data_obj:
@@ -751,8 +751,8 @@ xsiam_alerts_get_alerts_v1_schema = {
         "filters": {"type": "List[Any]", "description": "An array of filter fields."},
         "search_from": {"type": "int", "description": "An integer representing the starting offset within the query result set from which you want alerts returned. Alerts are returned as a zero-based list. Any alert indexed less than this value is not returned in the final result set and defaults to zero."},
         "search_to": {"type": "int", "description": "An integer representing the end offset within the result set after which you do not want alerts returned. Alerts in the alerts list that are indexed higher than this value are not returned in the final results set. Defaults to 100, which returns all alerts to the end of the list."},
-        "sort_field": {"type": "str", "description": "Identifies how to sort the result set, either according to severity or creation time."},
-        "sort_keyword": {"type": "str", "description": "Defines whether to sort the results in ascending (asc) or descending (desc) order."},
+        "field": {"type": "str", "description": "Identifies how to sort the result set, either according to severity or creation time."},
+        "keyword": {"type": "str", "description": "Defines whether to sort the results in ascending (asc) or descending (desc) order."},
     },
 }
 
@@ -858,11 +858,11 @@ xsiam_alerts_get_alerts_multi_events_v2_schema = {
 async def xsiam_get_alerts_multi_events(
     authorization: str,
     x_xdr_auth_id: str,
-    sort_keyword: str,
+    keyword: str,
     filters: List[Any] | None = None,
     search_from: int | None = None,
     search_to: int | None = None,
-    sort_field: str | None = None,
+    field: str | None = None,
 ) -> List[types.TextContent]:
     """
     **Note: ** This endpoint is legacy. Use the [Get Alerts Multi-Events v2](https://cortex-panw.stoplight.io/docs/cortex-xsiam-1/guxcmlw6h3y8v-get-alerts-multi-events-v2) endpoint.
@@ -883,8 +883,8 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
         filters (List[Any]): List of filter fields. (optional)
         search_from (int): An integer representing the starting offset within the query result set from which you want alerts returned. Alerts are returned as a zero-based list. Any alert indexed less than this value is not returned in the final result set and defaults to zero. (optional)
         search_to (int): An integer representing the end offset within the result set after which you do not want alerts returned. Alerts in the alerts list that are indexed higher than this value are not returned in the final results set. Defaults to 100, which returns all alerts to the end of the list. (optional)
-        sort_field (str): Identifies how to sort the result set, either according to severity or creation time. (optional)
-        sort_keyword (str): Defines whether to sort the results in ascending (asc) or descending (desc) order. (required)
+        field (str): Identifies how to sort the result set, either according to severity or creation time. (optional)
+        keyword (str): Defines whether to sort the results in ascending (asc) or descending (desc) order. (required)
     
     Returns:
         List[types.TextContent]: Successful response
@@ -912,10 +912,10 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
         request_data_obj["search_to"] = search_to
     # Build sort nested object
     sort_obj = {}
-    if sort_field is not None:
-        sort_obj["field"] = sort_field
-    if sort_keyword is not None:
-        sort_obj["keyword"] = sort_keyword
+    if field is not None:
+        sort_obj["field"] = field
+    if keyword is not None:
+        sort_obj["keyword"] = keyword
     if sort_obj:
         request_data_obj["sort"] = sort_obj
     if request_data_obj:
@@ -972,8 +972,8 @@ xsiam_get_alerts_multi_events_schema = {
         "filters": {"type": "List[Any]", "description": "List of filter fields."},
         "search_from": {"type": "int", "description": "An integer representing the starting offset within the query result set from which you want alerts returned. Alerts are returned as a zero-based list. Any alert indexed less than this value is not returned in the final result set and defaults to zero."},
         "search_to": {"type": "int", "description": "An integer representing the end offset within the result set after which you do not want alerts returned. Alerts in the alerts list that are indexed higher than this value are not returned in the final results set. Defaults to 100, which returns all alerts to the end of the list."},
-        "sort_field": {"type": "str", "description": "Identifies how to sort the result set, either according to severity or creation time."},
-        "sort_keyword": {"type": "str", "description": "Defines whether to sort the results in ascending (asc) or descending (desc) order."},
+        "field": {"type": "str", "description": "Identifies how to sort the result set, either according to severity or creation time."},
+        "keyword": {"type": "str", "description": "Defines whether to sort the results in ascending (asc) or descending (desc) order."},
     },
 }
 
@@ -982,14 +982,14 @@ async def xsiam_update_incident(
     authorization: str,
     x_xdr_auth_id: str,
     incident_id: str,
-    update_data_comment_comment_action: str,
-    update_data_comment_value: str,
-    update_data_assigned_user_mail: str | None = None,
-    update_data_manual_severity: str | None = None,
-    update_data_status: str | None = None,
-    update_data_resolve_comment: str | None = None,
-    update_data_custom_fields: str | None = None,
-    update_data_notes: str | None = None,
+    comment_action: str,
+    value: str,
+    assigned_user_mail: str | None = None,
+    manual_severity: str | None = None,
+    status: str | None = None,
+    resolve_comment: str | None = None,
+    custom_fields: str | None = None,
+    notes: str | None = None,
 ) -> List[types.TextContent]:
     """
     Update one or more fields of a specific incident. Missing fields are ignored.
@@ -1002,14 +1002,14 @@ async def xsiam_update_incident(
         authorization (str): {api_key} (required)
         x_xdr_auth_id (str): {api_key_id} (required)
         incident_id (str): A string representing the incident ID you want to update. (required)
-        update_data_assigned_user_mail (str): Updated email address of the incident assignee. (optional)
-        update_data_manual_severity (str): Administrator-defined severity. (optional)
-        update_data_status (str): Updated incident status. (optional)
-        update_data_resolve_comment (str): Descriptive comment explaining the incident change. This can be set only for resolved incidents. (optional)
-        update_data_comment_comment_action (str): The comment action must be 'add'. (required)
-        update_data_comment_value (str): The comment text. (required)
-        update_data_custom_fields (str): You can include custom incident fields in the request. The names of the custom fields are standardized into lowercase with no white spaces. or example, `Single Select` would be included as `singleselect`. (optional)
-        update_data_notes (str): Notes for the incident. If there are already notes, these notes will replace existing notes. (optional)
+        assigned_user_mail (str): Updated email address of the incident assignee. (optional)
+        manual_severity (str): Administrator-defined severity. (optional)
+        status (str): Updated incident status. (optional)
+        resolve_comment (str): Descriptive comment explaining the incident change. This can be set only for resolved incidents. (optional)
+        comment_action (str): The comment action must be 'add'. (required)
+        value (str): The comment text. (required)
+        custom_fields (str): You can include custom incident fields in the request. The names of the custom fields are standardized into lowercase with no white spaces. or example, `Single Select` would be included as `singleselect`. (optional)
+        notes (str): Notes for the incident. If there are already notes, these notes will replace existing notes. (optional)
     
     Returns:
         List[types.TextContent]: Successful response
@@ -1033,26 +1033,26 @@ async def xsiam_update_incident(
         request_data_obj["incident_id"] = incident_id
     # Build update_data nested object
     update_data_obj = {}
-    if update_data_assigned_user_mail is not None:
-        update_data_obj["assigned_user_mail"] = update_data_assigned_user_mail
-    if update_data_manual_severity is not None:
-        update_data_obj["manual_severity"] = update_data_manual_severity
-    if update_data_status is not None:
-        update_data_obj["status"] = update_data_status
-    if update_data_resolve_comment is not None:
-        update_data_obj["resolve_comment"] = update_data_resolve_comment
+    if assigned_user_mail is not None:
+        update_data_obj["assigned_user_mail"] = assigned_user_mail
+    if manual_severity is not None:
+        update_data_obj["manual_severity"] = manual_severity
+    if status is not None:
+        update_data_obj["status"] = status
+    if resolve_comment is not None:
+        update_data_obj["resolve_comment"] = resolve_comment
     # Build comment nested object
     comment_obj = {}
-    if update_data_comment_comment_action is not None:
-        comment_obj["comment_action"] = update_data_comment_comment_action
-    if update_data_comment_value is not None:
-        comment_obj["value"] = update_data_comment_value
+    if comment_action is not None:
+        comment_obj["comment_action"] = comment_action
+    if value is not None:
+        comment_obj["value"] = value
     if comment_obj:
         update_data_obj["comment"] = comment_obj
-    if update_data_custom_fields is not None:
-        update_data_obj["<custom_fields>"] = update_data_custom_fields
-    if update_data_notes is not None:
-        update_data_obj["notes"] = update_data_notes
+    if custom_fields is not None:
+        update_data_obj["<custom_fields>"] = custom_fields
+    if notes is not None:
+        update_data_obj["notes"] = notes
     if update_data_obj:
         request_data_obj["update_data"] = update_data_obj
     if request_data_obj:
@@ -1107,14 +1107,14 @@ xsiam_update_incident_schema = {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
         "incident_id": {"type": "str", "description": "A string representing the incident ID you want to update."},
-        "update_data_assigned_user_mail": {"type": "str", "description": "Updated email address of the incident assignee."},
-        "update_data_manual_severity": {"type": "str", "description": "Administrator-defined severity."},
-        "update_data_status": {"type": "str", "description": "Updated incident status."},
-        "update_data_resolve_comment": {"type": "str", "description": "Descriptive comment explaining the incident change. This can be set only for resolved incidents."},
-        "update_data_comment_comment_action": {"type": "str", "description": "The comment action must be 'add'."},
-        "update_data_comment_value": {"type": "str", "description": "The comment text."},
-        "update_data_custom_fields": {"type": "str", "description": "You can include custom incident fields in the request. The names of the custom fields are standardized into lowercase with no white spaces. or example, `Single Select` would be included as `singleselect`."},
-        "update_data_notes": {"type": "str", "description": "Notes for the incident. If there are already notes, these notes will replace existing notes."},
+        "assigned_user_mail": {"type": "str", "description": "Updated email address of the incident assignee."},
+        "manual_severity": {"type": "str", "description": "Administrator-defined severity."},
+        "status": {"type": "str", "description": "Updated incident status."},
+        "resolve_comment": {"type": "str", "description": "Descriptive comment explaining the incident change. This can be set only for resolved incidents."},
+        "comment_action": {"type": "str", "description": "The comment action must be 'add'."},
+        "value": {"type": "str", "description": "The comment text."},
+        "custom_fields": {"type": "str", "description": "You can include custom incident fields in the request. The names of the custom fields are standardized into lowercase with no white spaces. or example, `Single Select` would be included as `singleselect`."},
+        "notes": {"type": "str", "description": "Notes for the incident. If there are already notes, these notes will replace existing notes."},
     },
 }
 
@@ -1123,9 +1123,9 @@ async def xsiam_update_alerts(
     authorization: str,
     x_xdr_auth_id: str,
     alert_id_list: List[Any] | None = None,
-    update_data_severity: str | None = None,
-    update_data_status: str | None = None,
-    update_data_comment: str | None = None,
+    severity: str | None = None,
+    status: str | None = None,
+    comment: str | None = None,
 ) -> List[types.TextContent]:
     """
     Update one or more alerts. You can update up to 100 alerts per request. Missing fields are ignored.
@@ -1136,9 +1136,9 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
         authorization (str): {api_key} (required)
         x_xdr_auth_id (str): {api_key_id} (required)
         alert_id_list (List[Any]): A list representing the alert IDs you want to update. (optional)
-        update_data_severity (str): Administrator-defined severity. (optional)
-        update_data_status (str): Valid values are: - `new` - `resolved_threat_handled` - `under_investigation` - `resolved_security_testing` - `resolved_auto` - `resolved_known_issue` - `resolved_duplicate` - `resolved_other` - `resolved_false_positive` - `resolved_true_positive` (optional)
-        update_data_comment (str): Updated text that appears in the Resolution Comment field of the Alerts table. (optional)
+        severity (str): Administrator-defined severity. (optional)
+        status (str): Valid values are: - `new` - `resolved_threat_handled` - `under_investigation` - `resolved_security_testing` - `resolved_auto` - `resolved_known_issue` - `resolved_duplicate` - `resolved_other` - `resolved_false_positive` - `resolved_true_positive` (optional)
+        comment (str): Updated text that appears in the Resolution Comment field of the Alerts table. (optional)
     
     Returns:
         List[types.TextContent]: Successful response
@@ -1162,12 +1162,12 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
         request_data_obj["alert_id_list"] = alert_id_list
     # Build update_data nested object
     update_data_obj = {}
-    if update_data_severity is not None:
-        update_data_obj["severity"] = update_data_severity
-    if update_data_status is not None:
-        update_data_obj["status"] = update_data_status
-    if update_data_comment is not None:
-        update_data_obj["comment"] = update_data_comment
+    if severity is not None:
+        update_data_obj["severity"] = severity
+    if status is not None:
+        update_data_obj["status"] = status
+    if comment is not None:
+        update_data_obj["comment"] = comment
     if update_data_obj:
         request_data_obj["update_data"] = update_data_obj
     if request_data_obj:
@@ -1222,9 +1222,9 @@ xsiam_update_alerts_schema = {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
         "alert_id_list": {"type": "List[Any]", "description": "A list representing the alert IDs you want to update."},
-        "update_data_severity": {"type": "str", "description": "Administrator-defined severity."},
-        "update_data_status": {"type": "str", "description": "Valid values are: - `new` - `resolved_threat_handled` - `under_investigation` - `resolved_security_testing` - `resolved_auto` - `resolved_known_issue` - `resolved_duplicate` - `resolved_other` - `resolved_false_positive` - `resolved_true_positive`"},
-        "update_data_comment": {"type": "str", "description": "Updated text that appears in the Resolution Comment field of the Alerts table."},
+        "severity": {"type": "str", "description": "Administrator-defined severity."},
+        "status": {"type": "str", "description": "Valid values are: - `new` - `resolved_threat_handled` - `under_investigation` - `resolved_security_testing` - `resolved_auto` - `resolved_known_issue` - `resolved_duplicate` - `resolved_other` - `resolved_false_positive` - `resolved_true_positive`"},
+        "comment": {"type": "str", "description": "Updated text that appears in the Resolution Comment field of the Alerts table."},
     },
 }
 
@@ -1416,8 +1416,8 @@ xsiam_insert_parsed_alerts_schema = {
 async def xsiam_get_alerts_pcap(
     authorization: str,
     x_xdr_auth_id: str,
-    sort_field: str,
-    sort_keyword: str,
+    field: str,
+    keyword: str,
     filters: List[Any] | None = None,
     search_from: int | None = None,
     search_to: int | None = None,
@@ -1434,8 +1434,8 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
         filters (List[Any]): An array of filter fields. (optional)
         search_from (int): An integer representing the starting offset within the query result set from which you want alerts returned. Alerts are returned as a zero-based list. Any alert indexed less than this value is not returned in the final result set and defaults to zero. (optional)
         search_to (int): An integer representing the end offset within the result set after which you do not want alerts returned. Alerts in the alerts list that are indexed higher than this value are not returned in the final results set. Defaults to 100, which returns all alerts to the end of the list. (optional)
-        sort_field (str): The field you want to sort by. (required)
-        sort_keyword (str): Whether to sort in ascending or descending order. (required)
+        field (str): The field you want to sort by. (required)
+        keyword (str): Whether to sort in ascending or descending order. (required)
     
     Returns:
         List[types.TextContent]: Successful response
@@ -1463,10 +1463,10 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
         request_data_obj["search_to"] = search_to
     # Build sort nested object
     sort_obj = {}
-    if sort_field is not None:
-        sort_obj["field"] = sort_field
-    if sort_keyword is not None:
-        sort_obj["keyword"] = sort_keyword
+    if field is not None:
+        sort_obj["field"] = field
+    if keyword is not None:
+        sort_obj["keyword"] = keyword
     if sort_obj:
         request_data_obj["sort"] = sort_obj
     if request_data_obj:
@@ -1523,8 +1523,8 @@ xsiam_get_alerts_pcap_schema = {
         "filters": {"type": "List[Any]", "description": "An array of filter fields."},
         "search_from": {"type": "int", "description": "An integer representing the starting offset within the query result set from which you want alerts returned. Alerts are returned as a zero-based list. Any alert indexed less than this value is not returned in the final result set and defaults to zero."},
         "search_to": {"type": "int", "description": "An integer representing the end offset within the result set after which you do not want alerts returned. Alerts in the alerts list that are indexed higher than this value are not returned in the final results set. Defaults to 100, which returns all alerts to the end of the list."},
-        "sort_field": {"type": "str", "description": "The field you want to sort by."},
-        "sort_keyword": {"type": "str", "description": "Whether to sort in ascending or descending order."},
+        "field": {"type": "str", "description": "The field you want to sort by."},
+        "keyword": {"type": "str", "description": "Whether to sort in ascending or descending order."},
     },
 }
 
@@ -1532,11 +1532,11 @@ xsiam_get_alerts_pcap_schema = {
 async def xsiam_create_alert(
     authorization: str,
     x_xdr_auth_id: str,
-    alert_vendor: str,
-    alert_product: str,
-    alert_severity: str,
-    alert_category: str,
-    alert_mitre_defs: Dict[str, Any] | None = None,
+    vendor: str,
+    product: str,
+    severity: str,
+    category: str,
+    mitre_defs: Dict[str, Any] | None = None,
 ) -> List[types.TextContent]:
     """
     Create a custom alert.
@@ -1565,11 +1565,11 @@ Required licenses: **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus
     Args:
         authorization (str): {api_key} (required)
         x_xdr_auth_id (str): {api_key_id} (required)
-        alert_vendor (str): The vendor name. (required)
-        alert_product (str): The product name. (required)
-        alert_severity (str): The severity level of the alert. (required)
-        alert_category (str): Can be one of the predefined options: `Collection`, `Credential Access`, `Discovery`, `Dropper`, `Evasion`, `Execution`, `Exfiltration`, `File Privilege Manipulation`, `File Type Obfuscation`, `Infiltration`, `Lateral Movement`, `Other`, `Persistence`, `Privilege Escalation`, `Reconnaissance`, `Tampering`, or any string value. (required)
-        alert_mitre_defs (Dict[str, Any]): This dictionary represents the relationship between MITRE attack tactics and techniques. Each tactic is as a key and the value is a list of associated techniques or sub-techniques. For example: \"mitre_defs\": {\"TA0007\": [\"T1007\", \"T1033\"], \"TA0002\": [\"T1037.001\"]} (optional)
+        vendor (str): The vendor name. (required)
+        product (str): The product name. (required)
+        severity (str): The severity level of the alert. (required)
+        category (str): Can be one of the predefined options: `Collection`, `Credential Access`, `Discovery`, `Dropper`, `Evasion`, `Execution`, `Exfiltration`, `File Privilege Manipulation`, `File Type Obfuscation`, `Infiltration`, `Lateral Movement`, `Other`, `Persistence`, `Privilege Escalation`, `Reconnaissance`, `Tampering`, or any string value. (required)
+        mitre_defs (Dict[str, Any]): This dictionary represents the relationship between MITRE attack tactics and techniques. Each tactic is as a key and the value is a list of associated techniques or sub-techniques. For example: \"mitre_defs\": {\"TA0007\": [\"T1007\", \"T1033\"], \"TA0002\": [\"T1037.001\"]} (optional)
     
     Returns:
         List[types.TextContent]: Successful response
@@ -1591,16 +1591,16 @@ Required licenses: **Cortex XSIAM Enterprise** or **Cortex XSIAM Enterprise Plus
     request_data_obj = {}
     # Build alert nested object
     alert_obj = {}
-    if alert_vendor is not None:
-        alert_obj["vendor"] = alert_vendor
-    if alert_product is not None:
-        alert_obj["product"] = alert_product
-    if alert_severity is not None:
-        alert_obj["severity"] = alert_severity
-    if alert_category is not None:
-        alert_obj["category"] = alert_category
-    if alert_mitre_defs is not None:
-        alert_obj["mitre_defs"] = alert_mitre_defs
+    if vendor is not None:
+        alert_obj["vendor"] = vendor
+    if product is not None:
+        alert_obj["product"] = product
+    if severity is not None:
+        alert_obj["severity"] = severity
+    if category is not None:
+        alert_obj["category"] = category
+    if mitre_defs is not None:
+        alert_obj["mitre_defs"] = mitre_defs
     if alert_obj:
         request_data_obj["alert"] = alert_obj
     if request_data_obj:
@@ -1654,11 +1654,11 @@ xsiam_create_alert_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "alert_vendor": {"type": "str", "description": "The vendor name."},
-        "alert_product": {"type": "str", "description": "The product name."},
-        "alert_severity": {"type": "str", "description": "The severity level of the alert."},
-        "alert_category": {"type": "str", "description": "Can be one of the predefined options: `Collection`, `Credential Access`, `Discovery`, `Dropper`, `Evasion`, `Execution`, `Exfiltration`, `File Privilege Manipulation`, `File Type Obfuscation`, `Infiltration`, `Lateral Movement`, `Other`, `Persistence`, `Privilege Escalation`, `Reconnaissance`, `Tampering`, or any string value."},
-        "alert_mitre_defs": {"type": "Dict[str, Any]", "description": "This dictionary represents the relationship between MITRE attack tactics and techniques. Each tactic is as a key and the value is a list of associated techniques or sub-techniques. For example: \"mitre_defs\": {\"TA0007\": [\"T1007\", \"T1033\"], \"TA0002\": [\"T1037.001\"]}"},
+        "vendor": {"type": "str", "description": "The vendor name."},
+        "product": {"type": "str", "description": "The product name."},
+        "severity": {"type": "str", "description": "The severity level of the alert."},
+        "category": {"type": "str", "description": "Can be one of the predefined options: `Collection`, `Credential Access`, `Discovery`, `Dropper`, `Evasion`, `Execution`, `Exfiltration`, `File Privilege Manipulation`, `File Type Obfuscation`, `Infiltration`, `Lateral Movement`, `Other`, `Persistence`, `Privilege Escalation`, `Reconnaissance`, `Tampering`, or any string value."},
+        "mitre_defs": {"type": "Dict[str, Any]", "description": "This dictionary represents the relationship between MITRE attack tactics and techniques. Each tactic is as a key and the value is a list of associated techniques or sub-techniques. For example: \"mitre_defs\": {\"TA0007\": [\"T1007\", \"T1033\"], \"TA0002\": [\"T1037.001\"]}"},
     },
 }
 
@@ -2547,8 +2547,8 @@ xsiam_create_schema = {
 async def xsiam_get_violations(
     authorization: str,
     x_xdr_auth_id: str,
-    sort_field: str,
-    sort_value: str,
+    field: str,
+    value: str,
     filters: List[Any] | None = None,
     search_from: int | None = None,
     search_to: int | None = None,
@@ -2569,8 +2569,8 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
         filters (List[Any]): Provides an array of filter fields. (optional)
         search_from (int): Integer representing the starting offset within the query result set from which you want violations returned. Violations are returned as a zero-based list. Any violation indexed less than this value is not returned in the final result set and defaults to zero. (optional)
         search_to (int): An integer representing the end of offset within the result set after which you do not want violations returned. Violations in the violation list that are indexed higher than this value are not returned in the final results set. Defaults to zero, which returns all alerts to the end of the list. (optional)
-        sort_field (str): The field you want to sort by. (required)
-        sort_value (str): Can be either `asc` (ascending) or `desc` (descending). (required)
+        field (str): The field you want to sort by. (required)
+        value (str): Can be either `asc` (ascending) or `desc` (descending). (required)
     
     Returns:
         List[types.TextContent]: Successful response
@@ -2598,10 +2598,10 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
         request_data_obj["search_to"] = search_to
     # Build sort nested object
     sort_obj = {}
-    if sort_field is not None:
-        sort_obj["field"] = sort_field
-    if sort_value is not None:
-        sort_obj["value"] = sort_value
+    if field is not None:
+        sort_obj["field"] = field
+    if value is not None:
+        sort_obj["value"] = value
     if sort_obj:
         request_data_obj["sort"] = sort_obj
     if request_data_obj:
@@ -2658,8 +2658,8 @@ xsiam_get_violations_schema = {
         "filters": {"type": "List[Any]", "description": "Provides an array of filter fields."},
         "search_from": {"type": "int", "description": "Integer representing the starting offset within the query result set from which you want violations returned. Violations are returned as a zero-based list. Any violation indexed less than this value is not returned in the final result set and defaults to zero."},
         "search_to": {"type": "int", "description": "An integer representing the end of offset within the result set after which you do not want violations returned. Violations in the violation list that are indexed higher than this value are not returned in the final results set. Defaults to zero, which returns all alerts to the end of the list."},
-        "sort_field": {"type": "str", "description": "The field you want to sort by."},
-        "sort_value": {"type": "str", "description": "Can be either `asc` (ascending) or `desc` (descending)."},
+        "field": {"type": "str", "description": "The field you want to sort by."},
+        "value": {"type": "str", "description": "Can be either `asc` (ascending) or `desc` (descending)."},
     },
 }
 
@@ -4252,8 +4252,8 @@ async def xsiam_run_script(
     x_xdr_auth_id: str,
     filters: List[Any],
     script_uid: str,
-    parameters_values_x: str,
-    parameters_values_y: int,
+    x: str,
+    y: int,
     timeout: int | None = None,
     incident_id: str | None = None,
 ) -> List[types.TextContent]:
@@ -4267,8 +4267,8 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
         x_xdr_auth_id (str): {api_key_id} (required)
         filters (List[Any]): Array of filter fields for running the script on a number of endpoints at once. (required)
         script_uid (str): GUID, unique identifier of the script, returned by the **Get Scripts** API per script. (required)
-        parameters_values_x (str): No description provided (required)
-        parameters_values_y (int): No description provided (required)
+        x (str): No description provided (required)
+        y (int): No description provided (required)
         timeout (int): Timeout in seconds for this execution. Default value is 600. (optional)
         incident_id (str): Incident ID. When included in the request, the **Run Script** action will appear in the **Cortex XDR Incident View Timeline** tab. (optional)
     
@@ -4296,10 +4296,10 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
         request_data_obj["script_uid"] = script_uid
     # Build parameters_values nested object
     parameters_values_obj = {}
-    if parameters_values_x is not None:
-        parameters_values_obj["x"] = parameters_values_x
-    if parameters_values_y is not None:
-        parameters_values_obj["y"] = parameters_values_y
+    if x is not None:
+        parameters_values_obj["x"] = x
+    if y is not None:
+        parameters_values_obj["y"] = y
     if parameters_values_obj:
         request_data_obj["parameters_values"] = parameters_values_obj
     if timeout is not None:
@@ -4359,8 +4359,8 @@ xsiam_run_script_schema = {
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
         "filters": {"type": "List[Any]", "description": "Array of filter fields for running the script on a number of endpoints at once."},
         "script_uid": {"type": "str", "description": "GUID, unique identifier of the script, returned by the **Get Scripts** API per script."},
-        "parameters_values_x": {"type": "str", "description": ""},
-        "parameters_values_y": {"type": "int", "description": ""},
+        "x": {"type": "str", "description": ""},
+        "y": {"type": "int", "description": ""},
         "timeout": {"type": "int", "description": "Timeout in seconds for this execution. Default value is 600."},
         "incident_id": {"type": "str", "description": "Incident ID. When included in the request, the **Run Script** action will appear in the **Cortex XDR Incident View Timeline** tab."},
     },
@@ -5109,8 +5109,8 @@ xsiam_insert_jsons_schema = {
 async def xsiam_management_logs(
     authorization: str,
     x_xdr_auth_id: str,
-    sort_field: str,
-    sort_keyword: str,
+    field: str,
+    keyword: str,
     filters: List[Any] | None = None,
     search_from: int | None = None,
     search_to: int | None = None,
@@ -5127,8 +5127,8 @@ async def xsiam_management_logs(
         filters (List[Any]): Array of filter fields. (optional)
         search_from (int): An integer representing the starting offset within the query result set from which you want management logs returned. Management logs are returned as a zero-based list. Any log indexed less than this value is not returned in the final result set and defaults to zero. (optional)
         search_to (int): An integer representing the end offset within the result set after which you do not want management logs returned. Logs in the management log list that are indexed higher than this value are not returned in the final results set. Defaults to 100, which returns all logs to the end of the list. (optional)
-        sort_field (str): The field you want to sort by. (required)
-        sort_keyword (str): Whether to sort in ascending or descending order. (required)
+        field (str): The field you want to sort by. (required)
+        keyword (str): Whether to sort in ascending or descending order. (required)
     
     Returns:
         List[types.TextContent]: Successful response
@@ -5156,10 +5156,10 @@ async def xsiam_management_logs(
         request_data_obj["search_to"] = search_to
     # Build sort nested object
     sort_obj = {}
-    if sort_field is not None:
-        sort_obj["field"] = sort_field
-    if sort_keyword is not None:
-        sort_obj["keyword"] = sort_keyword
+    if field is not None:
+        sort_obj["field"] = field
+    if keyword is not None:
+        sort_obj["keyword"] = keyword
     if sort_obj:
         request_data_obj["sort"] = sort_obj
     if request_data_obj:
@@ -5216,8 +5216,8 @@ xsiam_management_logs_schema = {
         "filters": {"type": "List[Any]", "description": "Array of filter fields."},
         "search_from": {"type": "int", "description": "An integer representing the starting offset within the query result set from which you want management logs returned. Management logs are returned as a zero-based list. Any log indexed less than this value is not returned in the final result set and defaults to zero."},
         "search_to": {"type": "int", "description": "An integer representing the end offset within the result set after which you do not want management logs returned. Logs in the management log list that are indexed higher than this value are not returned in the final results set. Defaults to 100, which returns all logs to the end of the list."},
-        "sort_field": {"type": "str", "description": "The field you want to sort by."},
-        "sort_keyword": {"type": "str", "description": "Whether to sort in ascending or descending order."},
+        "field": {"type": "str", "description": "The field you want to sort by."},
+        "keyword": {"type": "str", "description": "Whether to sort in ascending or descending order."},
     },
 }
 
@@ -5855,8 +5855,8 @@ xsiam_rbac_set_user_role_v1_schema = {
 async def xsiam_endpoints_get_endpoint_v1(
     authorization: str,
     x_xdr_auth_id: str,
-    sort_field: str,
-    sort_keyword: str,
+    field: str,
+    keyword: str,
     filters: List[Any] | None = None,
     search_from: int | None = None,
     search_to: int | None = None,
@@ -5875,8 +5875,8 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
         filters (List[Any]): Array of filter fields. (optional)
         search_from (int): Represents the start offset within the query result set from which you want endpoints returned. Endpoints are returned as a zero-based list. Any endpoint indexed less than this value is not returned in the final result set and defaults to zero. (optional)
         search_to (int): Represents the end offset within the result set after which you do not want endpoints returned. Endpoint in the endpoint list that is indexed higher than this value is not returned in the final results set. Defaults to 100, which returns all endpoints to the end of the list. (optional)
-        sort_field (str): Identifies the field you want to sort by. Case-sensitive. (required)
-        sort_keyword (str): Whether you want to sort in ascending (`ASC`) or descending (`DESC`) order. Case-sensitive. (required)
+        field (str): Identifies the field you want to sort by. Case-sensitive. (required)
+        keyword (str): Whether you want to sort in ascending (`ASC`) or descending (`DESC`) order. Case-sensitive. (required)
     
     Returns:
         List[types.TextContent]: OK
@@ -5904,10 +5904,10 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
         request_data_obj["search_to"] = search_to
     # Build sort nested object
     sort_obj = {}
-    if sort_field is not None:
-        sort_obj["field"] = sort_field
-    if sort_keyword is not None:
-        sort_obj["keyword"] = sort_keyword
+    if field is not None:
+        sort_obj["field"] = field
+    if keyword is not None:
+        sort_obj["keyword"] = keyword
     if sort_obj:
         request_data_obj["sort"] = sort_obj
     if request_data_obj:
@@ -5964,8 +5964,8 @@ xsiam_endpoints_get_endpoint_v1_schema = {
         "filters": {"type": "List[Any]", "description": "Array of filter fields."},
         "search_from": {"type": "int", "description": "Represents the start offset within the query result set from which you want endpoints returned. Endpoints are returned as a zero-based list. Any endpoint indexed less than this value is not returned in the final result set and defaults to zero."},
         "search_to": {"type": "int", "description": "Represents the end offset within the result set after which you do not want endpoints returned. Endpoint in the endpoint list that is indexed higher than this value is not returned in the final results set. Defaults to 100, which returns all endpoints to the end of the list."},
-        "sort_field": {"type": "str", "description": "Identifies the field you want to sort by. Case-sensitive."},
-        "sort_keyword": {"type": "str", "description": "Whether you want to sort in ascending (`ASC`) or descending (`DESC`) order. Case-sensitive."},
+        "field": {"type": "str", "description": "Identifies the field you want to sort by. Case-sensitive."},
+        "keyword": {"type": "str", "description": "Whether you want to sort in ascending (`ASC`) or descending (`DESC`) order. Case-sensitive."},
     },
 }
 
@@ -6229,9 +6229,9 @@ async def xsiam_endpoints_file_retrieval_v1(
     authorization: str,
     x_xdr_auth_id: str,
     filters: List[Any],
-    files_windows: List[Any] | None = None,
-    files_linux: List[Any] | None = None,
-    files_macos: List[Any] | None = None,
+    windows: List[Any] | None = None,
+    linux: List[Any] | None = None,
+    macos: List[Any] | None = None,
     incident_id: str | None = None,
 ) -> List[types.TextContent]:
     """
@@ -6245,9 +6245,9 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
         authorization (str): {api_key} (required)
         x_xdr_auth_id (str): {api_key_id} (required)
         filters (List[Any]): An array of filter fields. (required)
-        files_windows (List[Any]): No description provided (optional)
-        files_linux (List[Any]): No description provided (optional)
-        files_macos (List[Any]): No description provided (optional)
+        windows (List[Any]): No description provided (optional)
+        linux (List[Any]): No description provided (optional)
+        macos (List[Any]): No description provided (optional)
         incident_id (str): Incident ID. When included in the request, the Retrieve File action will appear in the Cortex XDR Incident View Timeline tab. (optional)
     
     Returns:
@@ -6272,12 +6272,12 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
         request_data_obj["filters"] = filters
     # Build files nested object
     files_obj = {}
-    if files_windows is not None:
-        files_obj["windows"] = files_windows
-    if files_linux is not None:
-        files_obj["linux"] = files_linux
-    if files_macos is not None:
-        files_obj["macos"] = files_macos
+    if windows is not None:
+        files_obj["windows"] = windows
+    if linux is not None:
+        files_obj["linux"] = linux
+    if macos is not None:
+        files_obj["macos"] = macos
     if files_obj:
         request_data_obj["files"] = files_obj
     if incident_id is not None:
@@ -6334,9 +6334,9 @@ xsiam_endpoints_file_retrieval_v1_schema = {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
         "filters": {"type": "List[Any]", "description": "An array of filter fields."},
-        "files_windows": {"type": "List[Any]", "description": ""},
-        "files_linux": {"type": "List[Any]", "description": ""},
-        "files_macos": {"type": "List[Any]", "description": ""},
+        "windows": {"type": "List[Any]", "description": ""},
+        "linux": {"type": "List[Any]", "description": ""},
+        "macos": {"type": "List[Any]", "description": ""},
         "incident_id": {"type": "str", "description": "Incident ID. When included in the request, the Retrieve File action will appear in the Cortex XDR Incident View Timeline tab."},
     },
 }
@@ -6446,8 +6446,8 @@ xsiam_endpoints_isolate_v1_schema = {
 async def xsiam_audits_agents_reports_v1(
     authorization: str,
     x_xdr_auth_id: str,
-    sort_field: str,
-    sort_keyword: str,
+    field: str,
+    keyword: str,
     filters: List[Any] | None = None,
     search_from: int | None = None,
     search_to: int | None = None,
@@ -6466,8 +6466,8 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
         filters (List[Any]): An array of filter fields. (optional)
         search_from (int): An integer representing the starting offset within the query result set from which you want agent reports returned. Reports are returned as a zero-based list. Any report indexed less than this value is not returned in the final result set and defaults to zero. (optional)
         search_to (int): An integer representing the end offset within the result set after which you do not want agent reports returned. Reports in the agent report list that are indexed higher than this value are not returned in the final results set. Defaults to 100, which returns all reports to the end ofthe list. (optional)
-        sort_field (str): The field you want to sort by. (required)
-        sort_keyword (str): Whether to sort in ascending or descending order. (required)
+        field (str): The field you want to sort by. (required)
+        keyword (str): Whether to sort in ascending or descending order. (required)
     
     Returns:
         List[types.TextContent]: OK
@@ -6495,10 +6495,10 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
         request_data_obj["search_to"] = search_to
     # Build sort nested object
     sort_obj = {}
-    if sort_field is not None:
-        sort_obj["field"] = sort_field
-    if sort_keyword is not None:
-        sort_obj["keyword"] = sort_keyword
+    if field is not None:
+        sort_obj["field"] = field
+    if keyword is not None:
+        sort_obj["keyword"] = keyword
     if sort_obj:
         request_data_obj["sort"] = sort_obj
     if request_data_obj:
@@ -6555,8 +6555,8 @@ xsiam_audits_agents_reports_v1_schema = {
         "filters": {"type": "List[Any]", "description": "An array of filter fields."},
         "search_from": {"type": "int", "description": "An integer representing the starting offset within the query result set from which you want agent reports returned. Reports are returned as a zero-based list. Any report indexed less than this value is not returned in the final result set and defaults to zero."},
         "search_to": {"type": "int", "description": "An integer representing the end offset within the result set after which you do not want agent reports returned. Reports in the agent report list that are indexed higher than this value are not returned in the final results set. Defaults to 100, which returns all reports to the end ofthe list."},
-        "sort_field": {"type": "str", "description": "The field you want to sort by."},
-        "sort_keyword": {"type": "str", "description": "Whether to sort in ascending or descending order."},
+        "field": {"type": "str", "description": "The field you want to sort by."},
+        "keyword": {"type": "str", "description": "Whether to sort in ascending or descending order."},
     },
 }
 
@@ -6656,12 +6656,12 @@ async def xsiam_assets_get_external_services_v1(
     authorization: str,
     x_xdr_auth_id: str,
     filters_field: str | None = None,
-    filters_operator: str | None = None,
-    filters_value: str | None = None,
+    operator: str | None = None,
+    value: str | None = None,
     vulnerability_test_results: str | None = None,
     search_from: int | None = None,
     search_to: int | None = None,
-    sort_keyword: str | None = None,
+    keyword: str | None = None,
     sort_field: str | None = None,
 ) -> List[types.TextContent]:
     """
@@ -6675,12 +6675,12 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise**, **Cor
         authorization (str): api-key (required)
         x_xdr_auth_id (str): api-key-id (required)
         filters_field (str): String that identifies the service field the filter is matching. Filters are based on the following case-sensitive keywords: - active_classifications - business_units_list - discovery_type - domain - externally_detected_providers - externally_inferred_cves - inactive_classifications - ip_address - ipv6_address - is_active - protocol - service_name - service_type - service_type_list - tags (optional)
-        filters_operator (str): String that identifies the comparison operator you want to use for this filter. Valid keywords and values are: - **contains** / **not_contains**— use with `externally_detected_providers`, `domain`, `externally_inferred_cves`, `active_classifications`, `inactive_classifications`, service_name, `service_type`, `protocol` - **eq** / **neq**— use with `service_name`, `service_type`, `protocol`, `ip_address` - **in** — use with `is_active`, `discovery_type`, `business_units_list`, `tags` (optional)
-        filters_value (str): Value that this filter must match. The contents of this field will differ depending on the services field that you specified for this filter: - active_classifications — String - business_units_list — String or list of strings in the format \"BU name\" or \"BU:BU name\", for example “Acme & Co, Inc.” or “BU:Acme & Co, Inc.” - discovery_type — String. Values are: `colocated_on_ip`, `directly_discovered`, `unknown`. - domain — String - externally_detected_providers — String - externally_inferred_cves — String - inactive_classifications — String - ip_address — String - ipv6_address— String - is_active — String. Values are:`yes`, `no` - protocol — string - service_name — String - service_type — String - service_type_list — String - tags — List of strings indicating the tags to filter on in the format `\"tag-family:tag-name\"`, for example `\"AR:registered to you\"`. (optional)
+        operator (str): String that identifies the comparison operator you want to use for this filter. Valid keywords and values are: - **contains** / **not_contains**— use with `externally_detected_providers`, `domain`, `externally_inferred_cves`, `active_classifications`, `inactive_classifications`, service_name, `service_type`, `protocol` - **eq** / **neq**— use with `service_name`, `service_type`, `protocol`, `ip_address` - **in** — use with `is_active`, `discovery_type`, `business_units_list`, `tags` (optional)
+        value (str): Value that this filter must match. The contents of this field will differ depending on the services field that you specified for this filter: - active_classifications — String - business_units_list — String or list of strings in the format \"BU name\" or \"BU:BU name\", for example “Acme & Co, Inc.” or “BU:Acme & Co, Inc.” - discovery_type — String. Values are: `colocated_on_ip`, `directly_discovered`, `unknown`. - domain — String - externally_detected_providers — String - externally_inferred_cves — String - inactive_classifications — String - ip_address — String - ipv6_address— String - is_active — String. Values are:`yes`, `no` - protocol — string - service_name — String - service_type — String - service_type_list — String - tags — List of strings indicating the tags to filter on in the format `\"tag-family:tag-name\"`, for example `\"AR:registered to you\"`. (optional)
         vulnerability_test_results (str): Use this field with the value `true` to get vulnerability test results for the last 14 days for each service. Using this field will slow down the endpoint. (optional)
         search_from (int): An integer representing the start offset index of results. (optional)
         search_to (int): An integer representing the start offset index of results. Use this field to specify the number of results on a page when using page token pagination. (optional)
-        sort_keyword (str): Can be either ASC (ascending order) or DESC (descending order). Default is ASC. Values are case sensitive. (optional)
+        keyword (str): Can be either ASC (ascending order) or DESC (descending order). Default is ASC. Values are case sensitive. (optional)
         sort_field (str): Values are: - service_name - first_observed - last_observed By default, case-sensitive, sort is defined as service_name. (optional)
     
     Returns:
@@ -6705,10 +6705,10 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise**, **Cor
     filters_obj = {}
     if filters_field is not None:
         filters_obj["field"] = filters_field
-    if filters_operator is not None:
-        filters_obj["operator"] = filters_operator
-    if filters_value is not None:
-        filters_obj["value"] = filters_value
+    if operator is not None:
+        filters_obj["operator"] = operator
+    if value is not None:
+        filters_obj["value"] = value
     if filters_obj:
         request_data_obj["filters"] = filters_obj
     if vulnerability_test_results is not None:
@@ -6719,8 +6719,8 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise**, **Cor
         request_data_obj["search_to"] = search_to
     # Build sort nested object
     sort_obj = {}
-    if sort_keyword is not None:
-        sort_obj["keyword"] = sort_keyword
+    if keyword is not None:
+        sort_obj["keyword"] = keyword
     if sort_field is not None:
         sort_obj["field"] = sort_field
     if sort_obj:
@@ -6777,12 +6777,12 @@ xsiam_assets_get_external_services_v1_schema = {
         "authorization": {"type": "str", "description": "api-key"},
         "x_xdr_auth_id": {"type": "str", "description": "api-key-id"},
         "filters_field": {"type": "str", "description": "String that identifies the service field the filter is matching. Filters are based on the following case-sensitive keywords: - active_classifications - business_units_list - discovery_type - domain - externally_detected_providers - externally_inferred_cves - inactive_classifications - ip_address - ipv6_address - is_active - protocol - service_name - service_type - service_type_list - tags"},
-        "filters_operator": {"type": "str", "description": "String that identifies the comparison operator you want to use for this filter. Valid keywords and values are: - **contains** / **not_contains**— use with `externally_detected_providers`, `domain`, `externally_inferred_cves`, `active_classifications`, `inactive_classifications`, service_name, `service_type`, `protocol` - **eq** / **neq**— use with `service_name`, `service_type`, `protocol`, `ip_address` - **in** — use with `is_active`, `discovery_type`, `business_units_list`, `tags`"},
-        "filters_value": {"type": "str", "description": "Value that this filter must match. The contents of this field will differ depending on the services field that you specified for this filter: - active_classifications — String - business_units_list — String or list of strings in the format \"BU name\" or \"BU:BU name\", for example “Acme & Co, Inc.” or “BU:Acme & Co, Inc.” - discovery_type — String. Values are: `colocated_on_ip`, `directly_discovered`, `unknown`. - domain — String - externally_detected_providers — String - externally_inferred_cves — String - inactive_classifications — String - ip_address — String - ipv6_address— String - is_active — String. Values are:`yes`, `no` - protocol — string - service_name — String - service_type — String - service_type_list — String - tags — List of strings indicating the tags to filter on in the format `\"tag-family:tag-name\"`, for example `\"AR:registered to you\"`."},
+        "operator": {"type": "str", "description": "String that identifies the comparison operator you want to use for this filter. Valid keywords and values are: - **contains** / **not_contains**— use with `externally_detected_providers`, `domain`, `externally_inferred_cves`, `active_classifications`, `inactive_classifications`, service_name, `service_type`, `protocol` - **eq** / **neq**— use with `service_name`, `service_type`, `protocol`, `ip_address` - **in** — use with `is_active`, `discovery_type`, `business_units_list`, `tags`"},
+        "value": {"type": "str", "description": "Value that this filter must match. The contents of this field will differ depending on the services field that you specified for this filter: - active_classifications — String - business_units_list — String or list of strings in the format \"BU name\" or \"BU:BU name\", for example “Acme & Co, Inc.” or “BU:Acme & Co, Inc.” - discovery_type — String. Values are: `colocated_on_ip`, `directly_discovered`, `unknown`. - domain — String - externally_detected_providers — String - externally_inferred_cves — String - inactive_classifications — String - ip_address — String - ipv6_address— String - is_active — String. Values are:`yes`, `no` - protocol — string - service_name — String - service_type — String - service_type_list — String - tags — List of strings indicating the tags to filter on in the format `\"tag-family:tag-name\"`, for example `\"AR:registered to you\"`."},
         "vulnerability_test_results": {"type": "str", "description": "Use this field with the value `true` to get vulnerability test results for the last 14 days for each service. Using this field will slow down the endpoint."},
         "search_from": {"type": "int", "description": "An integer representing the start offset index of results."},
         "search_to": {"type": "int", "description": "An integer representing the start offset index of results. Use this field to specify the number of results on a page when using page token pagination."},
-        "sort_keyword": {"type": "str", "description": "Can be either ASC (ascending order) or DESC (descending order). Default is ASC. Values are case sensitive."},
+        "keyword": {"type": "str", "description": "Can be either ASC (ascending order) or DESC (descending order). Default is ASC. Values are case sensitive."},
         "sort_field": {"type": "str", "description": "Values are: - service_name - first_observed - last_observed By default, case-sensitive, sort is defined as service_name."},
     },
 }
@@ -6791,8 +6791,8 @@ xsiam_assets_get_external_services_v1_schema = {
 async def xsiam_assets_get_assets_internet_exposure_v1(
     authorization: str,
     x_xdr_auth_id: str,
-    sort_field: str,
-    sort_keyword: str,
+    field: str,
+    keyword: str,
     filters: List[Any] | None = None,
     search_from: int | None = None,
     search_to: int | None = None,
@@ -6812,8 +6812,8 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
         filters (List[Any]): An array of filter fields. (optional)
         search_from (int): Represents the start offset index of results. (optional)
         search_to (int): Represents the end offset index of results. (optional)
-        sort_field (str): The field you want to sort by. Case-sensitive. (required)
-        sort_keyword (str): Whether you want to sort in ascending or descending order. (required)
+        field (str): The field you want to sort by. Case-sensitive. (required)
+        keyword (str): Whether you want to sort in ascending or descending order. (required)
     
     Returns:
         List[types.TextContent]: OK
@@ -6841,10 +6841,10 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
         request_data_obj["search_to"] = search_to
     # Build sort nested object
     sort_obj = {}
-    if sort_field is not None:
-        sort_obj["field"] = sort_field
-    if sort_keyword is not None:
-        sort_obj["keyword"] = sort_keyword
+    if field is not None:
+        sort_obj["field"] = field
+    if keyword is not None:
+        sort_obj["keyword"] = keyword
     if sort_obj:
         request_data_obj["sort"] = sort_obj
     if request_data_obj:
@@ -6901,8 +6901,8 @@ xsiam_assets_get_assets_internet_exposure_v1_schema = {
         "filters": {"type": "List[Any]", "description": "An array of filter fields."},
         "search_from": {"type": "int", "description": "Represents the start offset index of results."},
         "search_to": {"type": "int", "description": "Represents the end offset index of results."},
-        "sort_field": {"type": "str", "description": "The field you want to sort by. Case-sensitive."},
-        "sort_keyword": {"type": "str", "description": "Whether you want to sort in ascending or descending order."},
+        "field": {"type": "str", "description": "The field you want to sort by. Case-sensitive."},
+        "keyword": {"type": "str", "description": "Whether you want to sort in ascending or descending order."},
     },
 }
 
@@ -7001,8 +7001,8 @@ xsiam_assets_get_asset_internet_exposure_v1_schema = {
 async def xsiam_assets_get_external_ip_address_ranges_v1(
     authorization: str,
     x_xdr_auth_id: str,
-    sort_field: str,
-    sort_keyword: str,
+    field: str,
+    keyword: str,
     filters: List[Any] | None = None,
     search_from: int | None = None,
     search_to: int | None = None,
@@ -7022,8 +7022,8 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
         filters (List[Any]): Array of filter fields. (optional)
         search_from (int): Represents the start offset index of results. (optional)
         search_to (int): Represents the end offset index of results. (optional)
-        sort_field (str): Identifies the field you want to sort by. Case-sensitive. (required)
-        sort_keyword (str): Whether you want to sort in ascending (`ASC`) or descending (`DESC`) order. Case-sensitive. (required)
+        field (str): Identifies the field you want to sort by. Case-sensitive. (required)
+        keyword (str): Whether you want to sort in ascending (`ASC`) or descending (`DESC`) order. Case-sensitive. (required)
     
     Returns:
         List[types.TextContent]: OK
@@ -7051,10 +7051,10 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
         request_data_obj["search_to"] = search_to
     # Build sort nested object
     sort_obj = {}
-    if sort_field is not None:
-        sort_obj["field"] = sort_field
-    if sort_keyword is not None:
-        sort_obj["keyword"] = sort_keyword
+    if field is not None:
+        sort_obj["field"] = field
+    if keyword is not None:
+        sort_obj["keyword"] = keyword
     if sort_obj:
         request_data_obj["sort"] = sort_obj
     if request_data_obj:
@@ -7111,8 +7111,8 @@ xsiam_assets_get_external_ip_address_ranges_v1_schema = {
         "filters": {"type": "List[Any]", "description": "Array of filter fields."},
         "search_from": {"type": "int", "description": "Represents the start offset index of results."},
         "search_to": {"type": "int", "description": "Represents the end offset index of results."},
-        "sort_field": {"type": "str", "description": "Identifies the field you want to sort by. Case-sensitive."},
-        "sort_keyword": {"type": "str", "description": "Whether you want to sort in ascending (`ASC`) or descending (`DESC`) order. Case-sensitive."},
+        "field": {"type": "str", "description": "Identifies the field you want to sort by. Case-sensitive."},
+        "keyword": {"type": "str", "description": "Whether you want to sort in ascending (`ASC`) or descending (`DESC`) order. Case-sensitive."},
     },
 }
 
@@ -8429,19 +8429,19 @@ async def xsiam_authentication_settings_create_v1(
     authorization: str,
     x_xdr_auth_id: str,
     name: str,
-    mappings_email: str,
-    mappings_firstname: str,
-    mappings_lastname: str,
-    mappings_group_name: str,
+    email: str,
+    firstname: str,
+    lastname: str,
+    group_name: str,
     default_role: str | None = None,
     is_account_role: bool | None = None,
     domain: str | None = None,
-    advanced_settings_relay_state: str | None = None,
-    advanced_settings_idp_single_logout_url: str | None = None,
-    advanced_settings_service_provider_public_cert: str | None = None,
-    advanced_settings_service_provider_private_key: str | None = None,
-    advanced_settings_authn_context_enabled: bool | None = None,
-    advanced_settings_force_authn: bool | None = None,
+    relay_state: str | None = None,
+    idp_single_logout_url: str | None = None,
+    service_provider_public_cert: str | None = None,
+    service_provider_private_key: str | None = None,
+    authn_context_enabled: bool | None = None,
+    force_authn: bool | None = None,
     idp_sso_url: str | None = None,
     idp_certificate: str | None = None,
     idp_issuer: str | None = None,
@@ -8459,16 +8459,16 @@ You must have **Instance Administrator** permissions to run this endpoint.
         default_role (str): The default role automatically assigned to every user who authenticates to Cortex using SAML. This is an inherited role and is not the same as a direct role assigned to the user. If a role with the same name exists on both Cortex Gateway and the tenant, the role will mapped to the role from the tenant. If you want to use specifically the role from Cortex Gateway, use the `is_account_role` parameter set to `true`. (optional)
         is_account_role (bool): Whether the role was created in Cortex Gateway or in the tenant. When the value is `true`, the role was created in Cortex Gateway. (optional)
         domain (str): When configuring the first SSO, this parameter should be included as empty because it is the default SSO and has a fixed, read-only value. For additional SSOs, specify this IdP with an email domain (user@<domain>). When logging in, users are redirected to the IdP associated with their email domain or to the default IdP if no association exists. (optional)
-        mappings_email (str): The IdP attribute mapped to the user's email address in the Syslog server. (required)
-        mappings_firstname (str): The IdP attribute mapped to the user's first name. (required)
-        mappings_lastname (str): The IdP attribute mapped to the user's last name. (required)
-        mappings_group_name (str): The IdP attribute mapped to the user's group membership for authorization. **Note:** Cortex requires the IdP to send the group membership as part of the SAML token. Some IdPs send values in a format that include a comma, which is not compatible with Cortex. In that case, you must configure your IdP to send a single value without a comma for each group membership. For example, if your IdP sends the Group DN (a comma-separated list), by default, you must configure IdP to send the Group CN (Common Name) instead. (required)
-        advanced_settings_relay_state (str): The URL for a specific page that you want users to be directed to after they've been authenticated by your organization's IdP and log in to Cortex. (optional)
-        advanced_settings_idp_single_logout_url (str): The URL of the IdP's Single Logout endpoint. This ensures that when a user initiates a logout from Cortex, the identity provider logs the user out of all applications in the current identity provider login session. (optional)
-        advanced_settings_service_provider_public_cert (str): The Syslog server's public X.509 certificate in PEM format for IdP validation. (optional)
-        advanced_settings_service_provider_private_key (str): The Syslog server's private key in PEM format for signing SAML responses. (This is mostly required for ADFS) (optional)
-        advanced_settings_authn_context_enabled (bool): Whether to remove the `RequestedAuthnContext` parameter from SAML requests. If `true`, allows users to log in by using additional authentication methods. (optional)
-        advanced_settings_force_authn (bool): Whether to force users to reauthenticate to access the Cortex tenant if requested by the IdP, even if they already authenticated to access other applications. (optional)
+        email (str): The IdP attribute mapped to the user's email address in the Syslog server. (required)
+        firstname (str): The IdP attribute mapped to the user's first name. (required)
+        lastname (str): The IdP attribute mapped to the user's last name. (required)
+        group_name (str): The IdP attribute mapped to the user's group membership for authorization. **Note:** Cortex requires the IdP to send the group membership as part of the SAML token. Some IdPs send values in a format that include a comma, which is not compatible with Cortex. In that case, you must configure your IdP to send a single value without a comma for each group membership. For example, if your IdP sends the Group DN (a comma-separated list), by default, you must configure IdP to send the Group CN (Common Name) instead. (required)
+        relay_state (str): The URL for a specific page that you want users to be directed to after they've been authenticated by your organization's IdP and log in to Cortex. (optional)
+        idp_single_logout_url (str): The URL of the IdP's Single Logout endpoint. This ensures that when a user initiates a logout from Cortex, the identity provider logs the user out of all applications in the current identity provider login session. (optional)
+        service_provider_public_cert (str): The Syslog server's public X.509 certificate in PEM format for IdP validation. (optional)
+        service_provider_private_key (str): The Syslog server's private key in PEM format for signing SAML responses. (This is mostly required for ADFS) (optional)
+        authn_context_enabled (bool): Whether to remove the `RequestedAuthnContext` parameter from SAML requests. If `true`, allows users to log in by using additional authentication methods. (optional)
+        force_authn (bool): Whether to force users to reauthenticate to access the Cortex tenant if requested by the IdP, even if they already authenticated to access other applications. (optional)
         idp_sso_url (str): The login URL of your IdP and should be copied from your SAML integration configuration on the IdP. For example: - Okta: https://cortex-test.okta.com/app/cortex-test/eacbt6b2jj08CasdUQ7sdf15d7/sso/SAML - Microsoft Azure: https://login.microsoftonline.com/6a5a9780-96a4-41ef-bf45-0535d8a70025/saml2 (optional)
         idp_certificate (str): The Idp's public X.509 digital certificate in PEM format for verification, which is copied from your organization's IdP. (optional)
         idp_issuer (str): The unique identifier of the IdP issuing SAML assertions, which is copied from your organization's IdP. (optional)
@@ -8502,30 +8502,30 @@ You must have **Instance Administrator** permissions to run this endpoint.
         request_data_obj["domain"] = domain
     # Build mappings nested object
     mappings_obj = {}
-    if mappings_email is not None:
-        mappings_obj["email"] = mappings_email
-    if mappings_firstname is not None:
-        mappings_obj["firstname"] = mappings_firstname
-    if mappings_lastname is not None:
-        mappings_obj["lastname"] = mappings_lastname
-    if mappings_group_name is not None:
-        mappings_obj["group_name"] = mappings_group_name
+    if email is not None:
+        mappings_obj["email"] = email
+    if firstname is not None:
+        mappings_obj["firstname"] = firstname
+    if lastname is not None:
+        mappings_obj["lastname"] = lastname
+    if group_name is not None:
+        mappings_obj["group_name"] = group_name
     if mappings_obj:
         request_data_obj["mappings"] = mappings_obj
     # Build advanced_settings nested object
     advanced_settings_obj = {}
-    if advanced_settings_relay_state is not None:
-        advanced_settings_obj["relay_state"] = advanced_settings_relay_state
-    if advanced_settings_idp_single_logout_url is not None:
-        advanced_settings_obj["idp_single_logout_url"] = advanced_settings_idp_single_logout_url
-    if advanced_settings_service_provider_public_cert is not None:
-        advanced_settings_obj["service_provider_public_cert"] = advanced_settings_service_provider_public_cert
-    if advanced_settings_service_provider_private_key is not None:
-        advanced_settings_obj["service_provider_private_key"] = advanced_settings_service_provider_private_key
-    if advanced_settings_authn_context_enabled is not None:
-        advanced_settings_obj["authn_context_enabled"] = advanced_settings_authn_context_enabled
-    if advanced_settings_force_authn is not None:
-        advanced_settings_obj["force_authn"] = advanced_settings_force_authn
+    if relay_state is not None:
+        advanced_settings_obj["relay_state"] = relay_state
+    if idp_single_logout_url is not None:
+        advanced_settings_obj["idp_single_logout_url"] = idp_single_logout_url
+    if service_provider_public_cert is not None:
+        advanced_settings_obj["service_provider_public_cert"] = service_provider_public_cert
+    if service_provider_private_key is not None:
+        advanced_settings_obj["service_provider_private_key"] = service_provider_private_key
+    if authn_context_enabled is not None:
+        advanced_settings_obj["authn_context_enabled"] = authn_context_enabled
+    if force_authn is not None:
+        advanced_settings_obj["force_authn"] = force_authn
     if advanced_settings_obj:
         request_data_obj["advanced_settings"] = advanced_settings_obj
     if idp_sso_url is not None:
@@ -8591,16 +8591,16 @@ xsiam_authentication_settings_create_v1_schema = {
         "default_role": {"type": "str", "description": "The default role automatically assigned to every user who authenticates to Cortex using SAML. This is an inherited role and is not the same as a direct role assigned to the user. If a role with the same name exists on both Cortex Gateway and the tenant, the role will mapped to the role from the tenant. If you want to use specifically the role from Cortex Gateway, use the `is_account_role` parameter set to `true`."},
         "is_account_role": {"type": "bool", "description": "Whether the role was created in Cortex Gateway or in the tenant. When the value is `true`, the role was created in Cortex Gateway."},
         "domain": {"type": "str", "description": "When configuring the first SSO, this parameter should be included as empty because it is the default SSO and has a fixed, read-only value. For additional SSOs, specify this IdP with an email domain (user@<domain>). When logging in, users are redirected to the IdP associated with their email domain or to the default IdP if no association exists."},
-        "mappings_email": {"type": "str", "description": "The IdP attribute mapped to the user's email address in the Syslog server."},
-        "mappings_firstname": {"type": "str", "description": "The IdP attribute mapped to the user's first name."},
-        "mappings_lastname": {"type": "str", "description": "The IdP attribute mapped to the user's last name."},
-        "mappings_group_name": {"type": "str", "description": "The IdP attribute mapped to the user's group membership for authorization. **Note:** Cortex requires the IdP to send the group membership as part of the SAML token. Some IdPs send values in a format that include a comma, which is not compatible with Cortex. In that case, you must configure your IdP to send a single value without a comma for each group membership. For example, if your IdP sends the Group DN (a comma-separated list), by default, you must configure IdP to send the Group CN (Common Name) instead."},
-        "advanced_settings_relay_state": {"type": "str", "description": "The URL for a specific page that you want users to be directed to after they've been authenticated by your organization's IdP and log in to Cortex."},
-        "advanced_settings_idp_single_logout_url": {"type": "str", "description": "The URL of the IdP's Single Logout endpoint. This ensures that when a user initiates a logout from Cortex, the identity provider logs the user out of all applications in the current identity provider login session."},
-        "advanced_settings_service_provider_public_cert": {"type": "str", "description": "The Syslog server's public X.509 certificate in PEM format for IdP validation."},
-        "advanced_settings_service_provider_private_key": {"type": "str", "description": "The Syslog server's private key in PEM format for signing SAML responses. (This is mostly required for ADFS)"},
-        "advanced_settings_authn_context_enabled": {"type": "bool", "description": "Whether to remove the `RequestedAuthnContext` parameter from SAML requests. If `true`, allows users to log in by using additional authentication methods."},
-        "advanced_settings_force_authn": {"type": "bool", "description": "Whether to force users to reauthenticate to access the Cortex tenant if requested by the IdP, even if they already authenticated to access other applications."},
+        "email": {"type": "str", "description": "The IdP attribute mapped to the user's email address in the Syslog server."},
+        "firstname": {"type": "str", "description": "The IdP attribute mapped to the user's first name."},
+        "lastname": {"type": "str", "description": "The IdP attribute mapped to the user's last name."},
+        "group_name": {"type": "str", "description": "The IdP attribute mapped to the user's group membership for authorization. **Note:** Cortex requires the IdP to send the group membership as part of the SAML token. Some IdPs send values in a format that include a comma, which is not compatible with Cortex. In that case, you must configure your IdP to send a single value without a comma for each group membership. For example, if your IdP sends the Group DN (a comma-separated list), by default, you must configure IdP to send the Group CN (Common Name) instead."},
+        "relay_state": {"type": "str", "description": "The URL for a specific page that you want users to be directed to after they've been authenticated by your organization's IdP and log in to Cortex."},
+        "idp_single_logout_url": {"type": "str", "description": "The URL of the IdP's Single Logout endpoint. This ensures that when a user initiates a logout from Cortex, the identity provider logs the user out of all applications in the current identity provider login session."},
+        "service_provider_public_cert": {"type": "str", "description": "The Syslog server's public X.509 certificate in PEM format for IdP validation."},
+        "service_provider_private_key": {"type": "str", "description": "The Syslog server's private key in PEM format for signing SAML responses. (This is mostly required for ADFS)"},
+        "authn_context_enabled": {"type": "bool", "description": "Whether to remove the `RequestedAuthnContext` parameter from SAML requests. If `true`, allows users to log in by using additional authentication methods."},
+        "force_authn": {"type": "bool", "description": "Whether to force users to reauthenticate to access the Cortex tenant if requested by the IdP, even if they already authenticated to access other applications."},
         "idp_sso_url": {"type": "str", "description": "The login URL of your IdP and should be copied from your SAML integration configuration on the IdP. For example: - Okta: https://cortex-test.okta.com/app/cortex-test/eacbt6b2jj08CasdUQ7sdf15d7/sso/SAML - Microsoft Azure: https://login.microsoftonline.com/6a5a9780-96a4-41ef-bf45-0535d8a70025/saml2"},
         "idp_certificate": {"type": "str", "description": "The Idp's public X.509 digital certificate in PEM format for verification, which is copied from your organization's IdP."},
         "idp_issuer": {"type": "str", "description": "The unique identifier of the IdP issuing SAML assertions, which is copied from your organization's IdP."},
@@ -8613,20 +8613,20 @@ async def xsiam_authentication_settings_update_v1(
     authorization: str,
     x_xdr_auth_id: str,
     name: str,
-    mappings_email: str,
-    mappings_firstname: str,
-    mappings_lastname: str,
-    mappings_group_name: str,
+    email: str,
+    firstname: str,
+    lastname: str,
+    group_name: str,
     default_role: str | None = None,
     is_account_role: bool | None = None,
     current_domain_value: str | None = None,
     new_domain_value: str | None = None,
-    advanced_settings_relay_state: str | None = None,
-    advanced_settings_idp_single_logout_url: str | None = None,
-    advanced_settings_service_provider_public_cert: str | None = None,
-    advanced_settings_service_provider_private_key: str | None = None,
-    advanced_settings_authn_context_enabled: bool | None = None,
-    advanced_settings_force_authn: bool | None = None,
+    relay_state: str | None = None,
+    idp_single_logout_url: str | None = None,
+    service_provider_public_cert: str | None = None,
+    service_provider_private_key: str | None = None,
+    authn_context_enabled: bool | None = None,
+    force_authn: bool | None = None,
     idp_sso_url: str | None = None,
     idp_certificate: str | None = None,
     idp_issuer: str | None = None,
@@ -8645,16 +8645,16 @@ You must have **Instance Administrator** permissions to run this endpoint.
         is_account_role (bool): Whether the role was created in Cortex Gateway or in the tenant. When the value is `true`, the role was created in Cortex Gateway. (optional)
         current_domain_value (str): The domain whose authentication settings you want to update. (optional)
         new_domain_value (str): If you want to update the domain value, include a new unique domain. (optional)
-        mappings_email (str): The IdP attribute mapped to the user's email address in the Syslog server. (required)
-        mappings_firstname (str): The IdP attribute mapped to the user's first name. (required)
-        mappings_lastname (str): The IdP attribute mapped to the user's last name. (required)
-        mappings_group_name (str): The IdP attribute mapped to the user's group membership for authorization. **Note:** Cortex requires the IdP to send the group membership as part of the SAML token. Some IdPs send values in a format that include a comma, which is not compatible with Cortex. In that case, you must configure your IdP to send a single value without a comma for each group membership. For example, if your IdP sends the Group DN (a comma-separated list), by default, you must configure IdP to send the Group CN (Common Name) instead. (required)
-        advanced_settings_relay_state (str): The URL for a specific page that you want users to be directed to after they've been authenticated by your organization's IdP and log in to Cortex. (optional)
-        advanced_settings_idp_single_logout_url (str): The URL of the IdP's Single Logout endpoint. This ensures that when a user initiates a logout from Cortex, the identity provider logs the user out of all applications in the current identity provider login session. (optional)
-        advanced_settings_service_provider_public_cert (str): The Syslog server's public X.509 certificate in PEM format for IdP validation. (optional)
-        advanced_settings_service_provider_private_key (str): The Syslog server's private key in PEM format for signing SAML responses. (This is mostly required for ADFS) (optional)
-        advanced_settings_authn_context_enabled (bool): Whether to remove the `RequestedAuthnContext` parameter from SAML requests. If `true`, allows users to log in by using additional authentication methods. (optional)
-        advanced_settings_force_authn (bool): Whether to force users to reauthenticate to access the Cortex tenant if requested by the IdP, even if they already authenticated to access other applications. (optional)
+        email (str): The IdP attribute mapped to the user's email address in the Syslog server. (required)
+        firstname (str): The IdP attribute mapped to the user's first name. (required)
+        lastname (str): The IdP attribute mapped to the user's last name. (required)
+        group_name (str): The IdP attribute mapped to the user's group membership for authorization. **Note:** Cortex requires the IdP to send the group membership as part of the SAML token. Some IdPs send values in a format that include a comma, which is not compatible with Cortex. In that case, you must configure your IdP to send a single value without a comma for each group membership. For example, if your IdP sends the Group DN (a comma-separated list), by default, you must configure IdP to send the Group CN (Common Name) instead. (required)
+        relay_state (str): The URL for a specific page that you want users to be directed to after they've been authenticated by your organization's IdP and log in to Cortex. (optional)
+        idp_single_logout_url (str): The URL of the IdP's Single Logout endpoint. This ensures that when a user initiates a logout from Cortex, the identity provider logs the user out of all applications in the current identity provider login session. (optional)
+        service_provider_public_cert (str): The Syslog server's public X.509 certificate in PEM format for IdP validation. (optional)
+        service_provider_private_key (str): The Syslog server's private key in PEM format for signing SAML responses. (This is mostly required for ADFS) (optional)
+        authn_context_enabled (bool): Whether to remove the `RequestedAuthnContext` parameter from SAML requests. If `true`, allows users to log in by using additional authentication methods. (optional)
+        force_authn (bool): Whether to force users to reauthenticate to access the Cortex tenant if requested by the IdP, even if they already authenticated to access other applications. (optional)
         idp_sso_url (str): The URL of your IdP's SSO, which is a fixed, read-only value based on your tenant's URL. If you are using this parameter, you must also specify: `idp_certificate` and `idp_issuer`. (optional)
         idp_certificate (str): The Idp's public X.509 digital certificate in PEM format for verification, which is copied from your organization's IdP. (optional)
         idp_issuer (str): The unique identifier of the IdP issuing SAML assertions, which is copied from your organization's IdP. (optional)
@@ -8690,30 +8690,30 @@ You must have **Instance Administrator** permissions to run this endpoint.
         request_data_obj["new_domain_value"] = new_domain_value
     # Build mappings nested object
     mappings_obj = {}
-    if mappings_email is not None:
-        mappings_obj["email"] = mappings_email
-    if mappings_firstname is not None:
-        mappings_obj["firstname"] = mappings_firstname
-    if mappings_lastname is not None:
-        mappings_obj["lastname"] = mappings_lastname
-    if mappings_group_name is not None:
-        mappings_obj["group_name"] = mappings_group_name
+    if email is not None:
+        mappings_obj["email"] = email
+    if firstname is not None:
+        mappings_obj["firstname"] = firstname
+    if lastname is not None:
+        mappings_obj["lastname"] = lastname
+    if group_name is not None:
+        mappings_obj["group_name"] = group_name
     if mappings_obj:
         request_data_obj["mappings"] = mappings_obj
     # Build advanced_settings nested object
     advanced_settings_obj = {}
-    if advanced_settings_relay_state is not None:
-        advanced_settings_obj["relay_state"] = advanced_settings_relay_state
-    if advanced_settings_idp_single_logout_url is not None:
-        advanced_settings_obj["idp_single_logout_url"] = advanced_settings_idp_single_logout_url
-    if advanced_settings_service_provider_public_cert is not None:
-        advanced_settings_obj["service_provider_public_cert"] = advanced_settings_service_provider_public_cert
-    if advanced_settings_service_provider_private_key is not None:
-        advanced_settings_obj["service_provider_private_key"] = advanced_settings_service_provider_private_key
-    if advanced_settings_authn_context_enabled is not None:
-        advanced_settings_obj["authn_context_enabled"] = advanced_settings_authn_context_enabled
-    if advanced_settings_force_authn is not None:
-        advanced_settings_obj["force_authn"] = advanced_settings_force_authn
+    if relay_state is not None:
+        advanced_settings_obj["relay_state"] = relay_state
+    if idp_single_logout_url is not None:
+        advanced_settings_obj["idp_single_logout_url"] = idp_single_logout_url
+    if service_provider_public_cert is not None:
+        advanced_settings_obj["service_provider_public_cert"] = service_provider_public_cert
+    if service_provider_private_key is not None:
+        advanced_settings_obj["service_provider_private_key"] = service_provider_private_key
+    if authn_context_enabled is not None:
+        advanced_settings_obj["authn_context_enabled"] = authn_context_enabled
+    if force_authn is not None:
+        advanced_settings_obj["force_authn"] = force_authn
     if advanced_settings_obj:
         request_data_obj["advanced_settings"] = advanced_settings_obj
     if idp_sso_url is not None:
@@ -8780,16 +8780,16 @@ xsiam_authentication_settings_update_v1_schema = {
         "is_account_role": {"type": "bool", "description": "Whether the role was created in Cortex Gateway or in the tenant. When the value is `true`, the role was created in Cortex Gateway."},
         "current_domain_value": {"type": "str", "description": "The domain whose authentication settings you want to update."},
         "new_domain_value": {"type": "str", "description": "If you want to update the domain value, include a new unique domain."},
-        "mappings_email": {"type": "str", "description": "The IdP attribute mapped to the user's email address in the Syslog server."},
-        "mappings_firstname": {"type": "str", "description": "The IdP attribute mapped to the user's first name."},
-        "mappings_lastname": {"type": "str", "description": "The IdP attribute mapped to the user's last name."},
-        "mappings_group_name": {"type": "str", "description": "The IdP attribute mapped to the user's group membership for authorization. **Note:** Cortex requires the IdP to send the group membership as part of the SAML token. Some IdPs send values in a format that include a comma, which is not compatible with Cortex. In that case, you must configure your IdP to send a single value without a comma for each group membership. For example, if your IdP sends the Group DN (a comma-separated list), by default, you must configure IdP to send the Group CN (Common Name) instead."},
-        "advanced_settings_relay_state": {"type": "str", "description": "The URL for a specific page that you want users to be directed to after they've been authenticated by your organization's IdP and log in to Cortex."},
-        "advanced_settings_idp_single_logout_url": {"type": "str", "description": "The URL of the IdP's Single Logout endpoint. This ensures that when a user initiates a logout from Cortex, the identity provider logs the user out of all applications in the current identity provider login session."},
-        "advanced_settings_service_provider_public_cert": {"type": "str", "description": "The Syslog server's public X.509 certificate in PEM format for IdP validation."},
-        "advanced_settings_service_provider_private_key": {"type": "str", "description": "The Syslog server's private key in PEM format for signing SAML responses. (This is mostly required for ADFS)"},
-        "advanced_settings_authn_context_enabled": {"type": "bool", "description": "Whether to remove the `RequestedAuthnContext` parameter from SAML requests. If `true`, allows users to log in by using additional authentication methods."},
-        "advanced_settings_force_authn": {"type": "bool", "description": "Whether to force users to reauthenticate to access the Cortex tenant if requested by the IdP, even if they already authenticated to access other applications."},
+        "email": {"type": "str", "description": "The IdP attribute mapped to the user's email address in the Syslog server."},
+        "firstname": {"type": "str", "description": "The IdP attribute mapped to the user's first name."},
+        "lastname": {"type": "str", "description": "The IdP attribute mapped to the user's last name."},
+        "group_name": {"type": "str", "description": "The IdP attribute mapped to the user's group membership for authorization. **Note:** Cortex requires the IdP to send the group membership as part of the SAML token. Some IdPs send values in a format that include a comma, which is not compatible with Cortex. In that case, you must configure your IdP to send a single value without a comma for each group membership. For example, if your IdP sends the Group DN (a comma-separated list), by default, you must configure IdP to send the Group CN (Common Name) instead."},
+        "relay_state": {"type": "str", "description": "The URL for a specific page that you want users to be directed to after they've been authenticated by your organization's IdP and log in to Cortex."},
+        "idp_single_logout_url": {"type": "str", "description": "The URL of the IdP's Single Logout endpoint. This ensures that when a user initiates a logout from Cortex, the identity provider logs the user out of all applications in the current identity provider login session."},
+        "service_provider_public_cert": {"type": "str", "description": "The Syslog server's public X.509 certificate in PEM format for IdP validation."},
+        "service_provider_private_key": {"type": "str", "description": "The Syslog server's private key in PEM format for signing SAML responses. (This is mostly required for ADFS)"},
+        "authn_context_enabled": {"type": "bool", "description": "Whether to remove the `RequestedAuthnContext` parameter from SAML requests. If `true`, allows users to log in by using additional authentication methods."},
+        "force_authn": {"type": "bool", "description": "Whether to force users to reauthenticate to access the Cortex tenant if requested by the IdP, even if they already authenticated to access other applications."},
         "idp_sso_url": {"type": "str", "description": "The URL of your IdP's SSO, which is a fixed, read-only value based on your tenant's URL. If you are using this parameter, you must also specify: `idp_certificate` and `idp_issuer`."},
         "idp_certificate": {"type": "str", "description": "The Idp's public X.509 digital certificate in PEM format for verification, which is copied from your organization's IdP."},
         "idp_issuer": {"type": "str", "description": "The unique identifier of the IdP issuing SAML assertions, which is copied from your organization's IdP."},
@@ -9271,8 +9271,8 @@ async def xsiam_assets_get_external_websites_v1(
     filters: List[Any] | None = None,
     search_from: int | None = None,
     search_to: int | None = None,
-    sort_field: str | None = None,
-    sort_keyword: str | None = None,
+    field: str | None = None,
+    keyword: str | None = None,
 ) -> List[types.TextContent]:
     """
     Get a complete or filtered list of your public-facing websites. 
@@ -9286,8 +9286,8 @@ Required license: **Cortex XSIAM Premium** or  Cortex XSIAM with ASM Add-on
         filters (List[Any]): Array of filter fields. Each JSON object must contain a field, operator, and value. (optional)
         search_from (int): An integer representing the start offset index of results Default value: 0 (optional)
         search_to (int): An integer representing the start offset index of results. Use this field to specify the number of results on a page when using page token pagination. Default value: 500 (optional)
-        sort_field (str): Valid values are: - `host` - `first_observed` - `last_observed` (optional)
-        sort_keyword (str): Valid values are: - `ASC` - ascending order - `DESC` - descending order `ASC` is the default. (optional)
+        field (str): Valid values are: - `host` - `first_observed` - `last_observed` (optional)
+        keyword (str): Valid values are: - `ASC` - ascending order - `DESC` - descending order `ASC` is the default. (optional)
     
     Returns:
         List[types.TextContent]: OK
@@ -9315,10 +9315,10 @@ Required license: **Cortex XSIAM Premium** or  Cortex XSIAM with ASM Add-on
         request_data_obj["search_to"] = search_to
     # Build sort nested object
     sort_obj = {}
-    if sort_field is not None:
-        sort_obj["field"] = sort_field
-    if sort_keyword is not None:
-        sort_obj["keyword"] = sort_keyword
+    if field is not None:
+        sort_obj["field"] = field
+    if keyword is not None:
+        sort_obj["keyword"] = keyword
     if sort_obj:
         request_data_obj["sort"] = sort_obj
     if request_data_obj:
@@ -9375,8 +9375,8 @@ xsiam_assets_get_external_websites_v1_schema = {
         "filters": {"type": "List[Any]", "description": "Array of filter fields. Each JSON object must contain a field, operator, and value."},
         "search_from": {"type": "int", "description": "An integer representing the start offset index of results Default value: 0"},
         "search_to": {"type": "int", "description": "An integer representing the start offset index of results. Use this field to specify the number of results on a page when using page token pagination. Default value: 500"},
-        "sort_field": {"type": "str", "description": "Valid values are: - `host` - `first_observed` - `last_observed`"},
-        "sort_keyword": {"type": "str", "description": "Valid values are: - `ASC` - ascending order - `DESC` - descending order `ASC` is the default."},
+        "field": {"type": "str", "description": "Valid values are: - `host` - `first_observed` - `last_observed`"},
+        "keyword": {"type": "str", "description": "Valid values are: - `ASC` - ascending order - `DESC` - descending order `ASC` is the default."},
     },
 }
 
@@ -9474,9 +9474,9 @@ async def xsiam_integrations_syslog_create_v1(
     port: int | None = None,
     protocol: str | None = None,
     facility: str | None = None,
-    security_info_certificate_name: str | None = None,
-    security_info_ignore_cert_errors: bool | None = None,
-    security_info_certificate_content: str | None = None,
+    certificate_name: str | None = None,
+    ignore_cert_errors: bool | None = None,
+    certificate_content: str | None = None,
 ) -> List[types.TextContent]:
     """
     Create a new syslog integration.
@@ -9491,9 +9491,9 @@ You must have **View/Edit Alert Notification** permissions to run this endpoint.
         port (int): The port number on which the syslog server listens for messages. (optional)
         protocol (str): Select a method of communication: - TCP: No validation is made on the connection with the syslog server. However, if an error occurred with the domain used to make the connection, the Test connection will fail. - UDP: No error checking, error correction, or acknowledgment. No validation is done for the connection or when sending data. - TLS: Cortex validates the syslog server certificate and uses the certificate signature and public key to encrypt the data sent over the connection. (optional)
         facility (str): Choose one of the syslog standard values. The value maps to how your syslog server uses the facility field to manage messages. For details on the facility field, see [RFC 5424](https://datatracker.ietf.org/doc/html/rfc5424). (optional)
-        security_info_certificate_name (str): When using TLS for communication between Cortex and the syslog server, Cortex validates that the syslog receiver has a certificate. Specify the certificate name here. (optional)
-        security_info_ignore_cert_errors (bool): Whether to ignore certificate errors. For security reasons, this is not recommended. If you set this to `true`, logs will be forwarded even if the certificate contains errors. (optional)
-        security_info_certificate_content (str): Binary string of the certificate. (optional)
+        certificate_name (str): When using TLS for communication between Cortex and the syslog server, Cortex validates that the syslog receiver has a certificate. Specify the certificate name here. (optional)
+        ignore_cert_errors (bool): Whether to ignore certificate errors. For security reasons, this is not recommended. If you set this to `true`, logs will be forwarded even if the certificate contains errors. (optional)
+        certificate_content (str): Binary string of the certificate. (optional)
     
     Returns:
         List[types.TextContent]: OK
@@ -9525,12 +9525,12 @@ You must have **View/Edit Alert Notification** permissions to run this endpoint.
         request_data_obj["facility"] = facility
     # Build security_info nested object
     security_info_obj = {}
-    if security_info_certificate_name is not None:
-        security_info_obj["certificate_name"] = security_info_certificate_name
-    if security_info_ignore_cert_errors is not None:
-        security_info_obj["ignore_cert_errors"] = security_info_ignore_cert_errors
-    if security_info_certificate_content is not None:
-        security_info_obj["certificate_content"] = security_info_certificate_content
+    if certificate_name is not None:
+        security_info_obj["certificate_name"] = certificate_name
+    if ignore_cert_errors is not None:
+        security_info_obj["ignore_cert_errors"] = ignore_cert_errors
+    if certificate_content is not None:
+        security_info_obj["certificate_content"] = certificate_content
     if security_info_obj:
         request_data_obj["security_info"] = security_info_obj
     if request_data_obj:
@@ -9589,9 +9589,9 @@ xsiam_integrations_syslog_create_v1_schema = {
         "port": {"type": "int", "description": "The port number on which the syslog server listens for messages."},
         "protocol": {"type": "str", "description": "Select a method of communication: - TCP: No validation is made on the connection with the syslog server. However, if an error occurred with the domain used to make the connection, the Test connection will fail. - UDP: No error checking, error correction, or acknowledgment. No validation is done for the connection or when sending data. - TLS: Cortex validates the syslog server certificate and uses the certificate signature and public key to encrypt the data sent over the connection."},
         "facility": {"type": "str", "description": "Choose one of the syslog standard values. The value maps to how your syslog server uses the facility field to manage messages. For details on the facility field, see [RFC 5424](https://datatracker.ietf.org/doc/html/rfc5424)."},
-        "security_info_certificate_name": {"type": "str", "description": "When using TLS for communication between Cortex and the syslog server, Cortex validates that the syslog receiver has a certificate. Specify the certificate name here."},
-        "security_info_ignore_cert_errors": {"type": "bool", "description": "Whether to ignore certificate errors. For security reasons, this is not recommended. If you set this to `true`, logs will be forwarded even if the certificate contains errors."},
-        "security_info_certificate_content": {"type": "str", "description": "Binary string of the certificate."},
+        "certificate_name": {"type": "str", "description": "When using TLS for communication between Cortex and the syslog server, Cortex validates that the syslog receiver has a certificate. Specify the certificate name here."},
+        "ignore_cert_errors": {"type": "bool", "description": "Whether to ignore certificate errors. For security reasons, this is not recommended. If you set this to `true`, logs will be forwarded even if the certificate contains errors."},
+        "certificate_content": {"type": "str", "description": "Binary string of the certificate."},
     },
 }
 
@@ -9696,9 +9696,9 @@ async def xsiam_integrations_syslog_update_v1(
     port: str | None = None,
     protocol: str | None = None,
     facility: str | None = None,
-    security_info_certificate_name: str | None = None,
-    security_info_ignore_cert_errors: bool | None = None,
-    security_info_certificate_content: str | None = None,
+    certificate_name: str | None = None,
+    ignore_cert_errors: bool | None = None,
+    certificate_content: str | None = None,
 ) -> List[types.TextContent]:
     """
     Update the details of the specified syslog integration.
@@ -9714,9 +9714,9 @@ You must have **View/Edit Alert Notification** permissions to run this endpoint.
         port (str): The port number on which the syslog server listens for messages. (optional)
         protocol (str): Select a method of communication: - `TCP`: No validation is made on the connection with the syslog server. However, if an error occurred with the domain used to make the connection, the Test connection will fail. - `UDP`: No error checking, error correction, or acknowledgment. No validation is done for the connection or when sending data. - `TLS`: Cortex validates the syslog server certificate and uses the certificate signature and public key to encrypt the data sent over the connection. (optional)
         facility (str): Choose one of the syslog standard values. The value maps to how your syslog server uses the facility field to manage messages. For details on the facility field, see [RFC 5424](https://datatracker.ietf.org/doc/html/rfc5424). (optional)
-        security_info_certificate_name (str): When using TLS for communication between Cortex and the syslog server, Cortex validates that the syslog receiver has a certificate. Specify the certificate name here. (optional)
-        security_info_ignore_cert_errors (bool): Whether to ignore certificate errors. For security reasons, this is not recommended. If you set this to `true`, logs will be forwarded even if the certificate contains errors. (optional)
-        security_info_certificate_content (str): Binary string of the certificate. (optional)
+        certificate_name (str): When using TLS for communication between Cortex and the syslog server, Cortex validates that the syslog receiver has a certificate. Specify the certificate name here. (optional)
+        ignore_cert_errors (bool): Whether to ignore certificate errors. For security reasons, this is not recommended. If you set this to `true`, logs will be forwarded even if the certificate contains errors. (optional)
+        certificate_content (str): Binary string of the certificate. (optional)
     
     Returns:
         List[types.TextContent]: OK
@@ -9750,12 +9750,12 @@ You must have **View/Edit Alert Notification** permissions to run this endpoint.
         request_data_obj["facility"] = facility
     # Build security_info nested object
     security_info_obj = {}
-    if security_info_certificate_name is not None:
-        security_info_obj["certificate_name"] = security_info_certificate_name
-    if security_info_ignore_cert_errors is not None:
-        security_info_obj["ignore_cert_errors"] = security_info_ignore_cert_errors
-    if security_info_certificate_content is not None:
-        security_info_obj["certificate_content"] = security_info_certificate_content
+    if certificate_name is not None:
+        security_info_obj["certificate_name"] = certificate_name
+    if ignore_cert_errors is not None:
+        security_info_obj["ignore_cert_errors"] = ignore_cert_errors
+    if certificate_content is not None:
+        security_info_obj["certificate_content"] = certificate_content
     if security_info_obj:
         request_data_obj["security_info"] = security_info_obj
     if request_data_obj:
@@ -9815,9 +9815,9 @@ xsiam_integrations_syslog_update_v1_schema = {
         "port": {"type": "str", "description": "The port number on which the syslog server listens for messages."},
         "protocol": {"type": "str", "description": "Select a method of communication: - `TCP`: No validation is made on the connection with the syslog server. However, if an error occurred with the domain used to make the connection, the Test connection will fail. - `UDP`: No error checking, error correction, or acknowledgment. No validation is done for the connection or when sending data. - `TLS`: Cortex validates the syslog server certificate and uses the certificate signature and public key to encrypt the data sent over the connection."},
         "facility": {"type": "str", "description": "Choose one of the syslog standard values. The value maps to how your syslog server uses the facility field to manage messages. For details on the facility field, see [RFC 5424](https://datatracker.ietf.org/doc/html/rfc5424)."},
-        "security_info_certificate_name": {"type": "str", "description": "When using TLS for communication between Cortex and the syslog server, Cortex validates that the syslog receiver has a certificate. Specify the certificate name here."},
-        "security_info_ignore_cert_errors": {"type": "bool", "description": "Whether to ignore certificate errors. For security reasons, this is not recommended. If you set this to `true`, logs will be forwarded even if the certificate contains errors."},
-        "security_info_certificate_content": {"type": "str", "description": "Binary string of the certificate."},
+        "certificate_name": {"type": "str", "description": "When using TLS for communication between Cortex and the syslog server, Cortex validates that the syslog receiver has a certificate. Specify the certificate name here."},
+        "ignore_cert_errors": {"type": "bool", "description": "Whether to ignore certificate errors. For security reasons, this is not recommended. If you set this to `true`, logs will be forwarded even if the certificate contains errors."},
+        "certificate_content": {"type": "str", "description": "Binary string of the certificate."},
     },
 }
 
@@ -9922,9 +9922,9 @@ async def xsiam_integrations_syslog_test_v1(
     port: str | None = None,
     protocol: str | None = None,
     facility: str | None = None,
-    security_info_certificate_name: str | None = None,
-    security_info_ignore_cert_errors: bool | None = None,
-    security_info_certificate_content: str | None = None,
+    certificate_name: str | None = None,
+    ignore_cert_errors: bool | None = None,
+    certificate_content: str | None = None,
 ) -> List[types.TextContent]:
     """
     Tests a syslog integration's validity.
@@ -9940,9 +9940,9 @@ You must have **View Alert Notification** permissions to run this endpoint.
         port (str): The port number on which the syslog server listens for messages. (optional)
         protocol (str): Select a method of communication: - `TCP`: No validation is made on the connection with the syslog server. However, if an error occurred with the domain used to make the connection, the Test connection will fail. - `UDP`: No error checking, error correction, or acknowledgment. No validation is done for the connection or when sending data. - `TLS`: Cortex validates the syslog server certificate and uses the certificate signature and public key to encrypt the data sent over the connection. (optional)
         facility (str): Choose one of the syslog standard values. The value maps to how your syslog server uses the facility field to manage messages. For details on the facility field, see [RFC 5424](https://datatracker.ietf.org/doc/html/rfc5424). (optional)
-        security_info_certificate_name (str): When using TLS for communication between Cortex and the syslog server, Cortex validates that the syslog receiver has a certificate. Specify the certificate name here. (optional)
-        security_info_ignore_cert_errors (bool): Whether to ignore certificate errors. For security reasons, this is not recommended. If you set this to `true`, logs will be forwarded even if the certificate contains errors. (optional)
-        security_info_certificate_content (str): Binary string of the certificate. (optional)
+        certificate_name (str): When using TLS for communication between Cortex and the syslog server, Cortex validates that the syslog receiver has a certificate. Specify the certificate name here. (optional)
+        ignore_cert_errors (bool): Whether to ignore certificate errors. For security reasons, this is not recommended. If you set this to `true`, logs will be forwarded even if the certificate contains errors. (optional)
+        certificate_content (str): Binary string of the certificate. (optional)
     
     Returns:
         List[types.TextContent]: OK
@@ -9976,12 +9976,12 @@ You must have **View Alert Notification** permissions to run this endpoint.
         request_data_obj["facility"] = facility
     # Build security_info nested object
     security_info_obj = {}
-    if security_info_certificate_name is not None:
-        security_info_obj["certificate_name"] = security_info_certificate_name
-    if security_info_ignore_cert_errors is not None:
-        security_info_obj["ignore_cert_errors"] = security_info_ignore_cert_errors
-    if security_info_certificate_content is not None:
-        security_info_obj["certificate_content"] = security_info_certificate_content
+    if certificate_name is not None:
+        security_info_obj["certificate_name"] = certificate_name
+    if ignore_cert_errors is not None:
+        security_info_obj["ignore_cert_errors"] = ignore_cert_errors
+    if certificate_content is not None:
+        security_info_obj["certificate_content"] = certificate_content
     if security_info_obj:
         request_data_obj["security_info"] = security_info_obj
     if request_data_obj:
@@ -10041,9 +10041,9 @@ xsiam_integrations_syslog_test_v1_schema = {
         "port": {"type": "str", "description": "The port number on which the syslog server listens for messages."},
         "protocol": {"type": "str", "description": "Select a method of communication: - `TCP`: No validation is made on the connection with the syslog server. However, if an error occurred with the domain used to make the connection, the Test connection will fail. - `UDP`: No error checking, error correction, or acknowledgment. No validation is done for the connection or when sending data. - `TLS`: Cortex validates the syslog server certificate and uses the certificate signature and public key to encrypt the data sent over the connection."},
         "facility": {"type": "str", "description": "Choose one of the syslog standard values. The value maps to how your syslog server uses the facility field to manage messages. For details on the facility field, see [RFC 5424](https://datatracker.ietf.org/doc/html/rfc5424)."},
-        "security_info_certificate_name": {"type": "str", "description": "When using TLS for communication between Cortex and the syslog server, Cortex validates that the syslog receiver has a certificate. Specify the certificate name here."},
-        "security_info_ignore_cert_errors": {"type": "bool", "description": "Whether to ignore certificate errors. For security reasons, this is not recommended. If you set this to `true`, logs will be forwarded even if the certificate contains errors."},
-        "security_info_certificate_content": {"type": "str", "description": "Binary string of the certificate."},
+        "certificate_name": {"type": "str", "description": "When using TLS for communication between Cortex and the syslog server, Cortex validates that the syslog receiver has a certificate. Specify the certificate name here."},
+        "ignore_cert_errors": {"type": "bool", "description": "Whether to ignore certificate errors. For security reasons, this is not recommended. If you set this to `true`, logs will be forwarded even if the certificate contains errors."},
+        "certificate_content": {"type": "str", "description": "Binary string of the certificate."},
     },
 }
 
@@ -11874,8 +11874,8 @@ xsiam_correlations_delete_v1_schema = {
 async def xsiam_playbooks_get_v1(
     authorization: str,
     x_xdr_auth_id: str,
-    filter_field: str | None = None,
-    filter_value: str | None = None,
+    field: str | None = None,
+    value: str | None = None,
 ) -> List[types.TextContent]:
     """
      Get a playbook by filtering based on its name or ID. The playbook's YAML is returned in a ZIP file.
@@ -11885,8 +11885,8 @@ async def xsiam_playbooks_get_v1(
     Args:
         authorization (str): {api_key} (required)
         x_xdr_auth_id (str): {api_key_id} (required)
-        filter_field (str): Identifies the playbook field the filter is matching. Filters are based on the following keywords: - `name`: Playbook name - `id`: Playbook ID (optional)
-        filter_value (str): Value that this filter must match. (optional)
+        field (str): Identifies the playbook field the filter is matching. Filters are based on the following keywords: - `name`: Playbook name - `id`: Playbook ID (optional)
+        value (str): Value that this filter must match. (optional)
     
     Returns:
         List[types.TextContent]: OK
@@ -11908,10 +11908,10 @@ async def xsiam_playbooks_get_v1(
     request_data_obj = {}
     # Build filter nested object
     filter_obj = {}
-    if filter_field is not None:
-        filter_obj["field"] = filter_field
-    if filter_value is not None:
-        filter_obj["value"] = filter_value
+    if field is not None:
+        filter_obj["field"] = field
+    if value is not None:
+        filter_obj["value"] = value
     if filter_obj:
         request_data_obj["filter"] = filter_obj
     if request_data_obj:
@@ -11965,8 +11965,8 @@ xsiam_playbooks_get_v1_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "filter_field": {"type": "str", "description": "Identifies the playbook field the filter is matching. Filters are based on the following keywords: - `name`: Playbook name - `id`: Playbook ID"},
-        "filter_value": {"type": "str", "description": "Value that this filter must match."},
+        "field": {"type": "str", "description": "Identifies the playbook field the filter is matching. Filters are based on the following keywords: - `name`: Playbook name - `id`: Playbook ID"},
+        "value": {"type": "str", "description": "Value that this filter must match."},
     },
 }
 
@@ -12056,8 +12056,8 @@ xsiam_playbooks_insert_v1_schema = {
 async def xsiam_playbooks_delete_v1(
     authorization: str,
     x_xdr_auth_id: str,
-    filter_field: str | None = None,
-    filter_value: str | None = None,
+    field: str | None = None,
+    value: str | None = None,
 ) -> List[types.TextContent]:
     """
     Delete a playbook by filtering based on its name or ID.
@@ -12067,8 +12067,8 @@ You must have **Instance Administrator** permissions to run this endpoint.
     Args:
         authorization (str): {api_key} (required)
         x_xdr_auth_id (str): {api_key_id} (required)
-        filter_field (str): Identifies the playbook field the filter is matching. Filters are based on the following keywords: - `name`: Playbook name - `id`: Playbook ID (optional)
-        filter_value (str): Value that this filter must match. (optional)
+        field (str): Identifies the playbook field the filter is matching. Filters are based on the following keywords: - `name`: Playbook name - `id`: Playbook ID (optional)
+        value (str): Value that this filter must match. (optional)
     
     Returns:
         List[types.TextContent]: OK
@@ -12090,10 +12090,10 @@ You must have **Instance Administrator** permissions to run this endpoint.
     request_data_obj = {}
     # Build filter nested object
     filter_obj = {}
-    if filter_field is not None:
-        filter_obj["field"] = filter_field
-    if filter_value is not None:
-        filter_obj["value"] = filter_value
+    if field is not None:
+        filter_obj["field"] = field
+    if value is not None:
+        filter_obj["value"] = value
     if filter_obj:
         request_data_obj["filter"] = filter_obj
     if request_data_obj:
@@ -12147,8 +12147,8 @@ xsiam_playbooks_delete_v1_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "filter_field": {"type": "str", "description": "Identifies the playbook field the filter is matching. Filters are based on the following keywords: - `name`: Playbook name - `id`: Playbook ID"},
-        "filter_value": {"type": "str", "description": "Value that this filter must match."},
+        "field": {"type": "str", "description": "Identifies the playbook field the filter is matching. Filters are based on the following keywords: - `name`: Playbook name - `id`: Playbook ID"},
+        "value": {"type": "str", "description": "Value that this filter must match."},
     },
 }
 
@@ -12156,8 +12156,8 @@ xsiam_playbooks_delete_v1_schema = {
 async def xsiam_scripts_get_v1(
     authorization: str,
     x_xdr_auth_id: str,
-    filter_field: str | None = None,
-    filter_value: str | None = None,
+    field: str | None = None,
+    value: str | None = None,
 ) -> List[types.TextContent]:
     """
      Get a script by filtering based on its name or ID. The script's YAML is returned in a ZIP file.
@@ -12167,8 +12167,8 @@ async def xsiam_scripts_get_v1(
     Args:
         authorization (str): {api_key} (required)
         x_xdr_auth_id (str): {api_key_id} (required)
-        filter_field (str): Identifies the script field the filter is matching. Filters are based on the following keywords: - `name`: Script name - `id`: Script ID (optional)
-        filter_value (str): Value that this filter must match. (optional)
+        field (str): Identifies the script field the filter is matching. Filters are based on the following keywords: - `name`: Script name - `id`: Script ID (optional)
+        value (str): Value that this filter must match. (optional)
     
     Returns:
         List[types.TextContent]: OK
@@ -12190,10 +12190,10 @@ async def xsiam_scripts_get_v1(
     request_data_obj = {}
     # Build filter nested object
     filter_obj = {}
-    if filter_field is not None:
-        filter_obj["field"] = filter_field
-    if filter_value is not None:
-        filter_obj["value"] = filter_value
+    if field is not None:
+        filter_obj["field"] = field
+    if value is not None:
+        filter_obj["value"] = value
     if filter_obj:
         request_data_obj["filter"] = filter_obj
     if request_data_obj:
@@ -12247,8 +12247,8 @@ xsiam_scripts_get_v1_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "filter_field": {"type": "str", "description": "Identifies the script field the filter is matching. Filters are based on the following keywords: - `name`: Script name - `id`: Script ID"},
-        "filter_value": {"type": "str", "description": "Value that this filter must match."},
+        "field": {"type": "str", "description": "Identifies the script field the filter is matching. Filters are based on the following keywords: - `name`: Script name - `id`: Script ID"},
+        "value": {"type": "str", "description": "Value that this filter must match."},
     },
 }
 
@@ -12338,8 +12338,8 @@ xsiam_scripts_insert_v1_schema = {
 async def xsiam_scripts_delete_v1(
     authorization: str,
     x_xdr_auth_id: str,
-    filter_field: str | None = None,
-    filter_value: str | None = None,
+    field: str | None = None,
+    value: str | None = None,
 ) -> List[types.TextContent]:
     """
     Delete a script by filtering based on its name or ID.
@@ -12349,8 +12349,8 @@ You must have **Instance Administrator** permissions to run this endpoint.
     Args:
         authorization (str): {api_key} (required)
         x_xdr_auth_id (str): {api_key_id} (required)
-        filter_field (str): Identifies the playbook field the filter is matching. Filters are based on the following keywords: - `name`: Playbook name - `id`: Playbook ID (optional)
-        filter_value (str): Value that this filter must match. (optional)
+        field (str): Identifies the playbook field the filter is matching. Filters are based on the following keywords: - `name`: Playbook name - `id`: Playbook ID (optional)
+        value (str): Value that this filter must match. (optional)
     
     Returns:
         List[types.TextContent]: OK
@@ -12372,10 +12372,10 @@ You must have **Instance Administrator** permissions to run this endpoint.
     request_data_obj = {}
     # Build filter nested object
     filter_obj = {}
-    if filter_field is not None:
-        filter_obj["field"] = filter_field
-    if filter_value is not None:
-        filter_obj["value"] = filter_value
+    if field is not None:
+        filter_obj["field"] = field
+    if value is not None:
+        filter_obj["value"] = value
     if filter_obj:
         request_data_obj["filter"] = filter_obj
     if request_data_obj:
@@ -12429,8 +12429,8 @@ xsiam_scripts_delete_v1_schema = {
     "properties": {
         "authorization": {"type": "str", "description": "{api_key}"},
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
-        "filter_field": {"type": "str", "description": "Identifies the playbook field the filter is matching. Filters are based on the following keywords: - `name`: Playbook name - `id`: Playbook ID"},
-        "filter_value": {"type": "str", "description": "Value that this filter must match."},
+        "field": {"type": "str", "description": "Identifies the playbook field the filter is matching. Filters are based on the following keywords: - `name`: Playbook name - `id`: Playbook ID"},
+        "value": {"type": "str", "description": "Value that this filter must match."},
     },
 }
 

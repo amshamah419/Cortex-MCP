@@ -396,23 +396,21 @@ def test_request_data_expansion():
         assert "request_data: Dict[str, Any]" not in content
         assert "request_data (Dict[str, Any])" not in content
 
-        # Verify that nested properties ARE parameters (top level)
+        # Verify that nested properties use simple names (no collisions in this test)
         assert "incident_id: str," in content
         assert "optional_field: str | None = None," in content
 
-        # Verify that nested update_data properties are expanded
-        assert "update_data_status: str | None = None," in content
-        assert "update_data_severity: str | None = None," in content
+        # Since there are no collisions, parameters should use simple names
+        assert "status: str | None = None," in content
+        assert "severity: str | None = None," in content
+        assert "comment_action: str," in content
+        assert "value: str," in content
 
-        # Verify deeply nested comment properties are expanded
-        assert "update_data_comment_comment_action: str," in content
-        assert "update_data_comment_value: str," in content
-
-        # Verify documentation shows the parameters
+        # Verify documentation shows the simple parameter names
         assert "incident_id (str): The incident ID (required)" in content
-        assert "update_data_status (str): Incident status (optional)" in content
-        assert "update_data_comment_comment_action (str): Action (required)" in content
-        assert "update_data_comment_value (str): Comment text (required)" in content
+        assert "status (str): Incident status (optional)" in content
+        assert "comment_action (str): Action (required)" in content
+        assert "value (str): Comment text (required)" in content
 
         # Verify the body building code handles nested structures
         assert "request_data_obj = {}" in content
@@ -420,7 +418,105 @@ def test_request_data_expansion():
 
         # Verify nested object building
         assert "update_data_obj = {}" in content
-        assert 'update_data_obj["status"] = update_data_status' in content
+        assert 'update_data_obj["status"] = status' in content
         assert "comment_obj = {}" in content
-        assert 'comment_obj["comment_action"] = update_data_comment_comment_action' in content
-        assert 'comment_obj["value"] = update_data_comment_value' in content
+        assert 'comment_obj["comment_action"] = comment_action' in content
+        assert 'comment_obj["value"] = value' in content
+
+
+def test_request_data_expansion_with_collisions():
+    """Test that naming collisions are handled properly with prefixes."""
+    # Create a spec with naming collisions
+    spec = {
+        "openapi": "3.0.0",
+        "info": {"title": "Test API", "version": "1.0.0"},
+        "servers": [{"url": "https://api.test.com"}],
+        "paths": {
+            "/test/collision": {
+                "post": {
+                    "operationId": "testCollision",
+                    "summary": "Test collision handling",
+                    "description": "Test collision handling",
+                    "requestBody": {
+                        "required": True,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "request_data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string",
+                                                    "description": "Top level name",
+                                                },
+                                                "user": {
+                                                    "type": "object",
+                                                    "description": "User object",
+                                                    "properties": {
+                                                        "name": {
+                                                            "type": "string",
+                                                            "description": "User name",
+                                                        },
+                                                        "email": {
+                                                            "type": "string",
+                                                            "description": "User email",
+                                                        },
+                                                    },
+                                                },
+                                                "product": {
+                                                    "type": "object",
+                                                    "description": "Product object",
+                                                    "properties": {
+                                                        "name": {
+                                                            "type": "string",
+                                                            "description": "Product name",
+                                                        },
+                                                        "price": {
+                                                            "type": "number",
+                                                            "description": "Product price",
+                                                        },
+                                                    },
+                                                },
+                                            },
+                                        }
+                                    },
+                                }
+                            }
+                        },
+                    },
+                    "responses": {"200": {"description": "Success"}},
+                }
+            }
+        },
+    }
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        spec_path = Path(tmpdir) / "test.yaml"
+        output_dir = Path(tmpdir) / "output"
+        output_dir.mkdir()
+
+        with open(spec_path, "w") as f:
+            yaml.dump(spec, f)
+
+        generate_tools_file(spec_path, output_dir)
+
+        output_file = output_dir / "generated_test_tools.py"
+        content = output_file.read_text()
+
+        # "name" appears 3 times (collision), so all should have prefixes
+        assert "name: str | None = None," in content  # Top level - simple name
+        assert "user_name: str | None = None," in content  # Collision - needs prefix
+        assert "product_name: str | None = None," in content  # Collision - needs prefix
+
+        # "email" and "price" appear only once (no collision), so use simple names
+        assert "email: str | None = None," in content
+        assert "price: float | None = None," in content
+
+        # Verify body building uses correct names
+        assert 'request_data_obj["name"] = name' in content
+        assert 'user_obj["name"] = user_name' in content
+        assert 'product_obj["name"] = product_name' in content
+        assert 'user_obj["email"] = email' in content
+        assert 'product_obj["price"] = price' in content

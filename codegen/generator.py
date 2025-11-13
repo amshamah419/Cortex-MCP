@@ -155,6 +155,7 @@ def generate_nested_assignments(
     target_var: str = "current_obj",
     prefix: str = "",
     indent: str = "    ",
+    collision_names: set = None,
 ) -> List[str]:
     """
     Generate code lines to assign flat parameters to a nested object structure.
@@ -164,10 +165,14 @@ def generate_nested_assignments(
         target_var: The variable name to assign to
         prefix: Prefix for parameter names
         indent: Indentation string
+        collision_names: Set of names that have collisions and need prefixes
 
     Returns:
         List of code lines
     """
+    if collision_names is None:
+        collision_names = set()
+
     lines = []
 
     for prop_name, prop_schema in properties.items():
@@ -188,6 +193,7 @@ def generate_nested_assignments(
                 target_var=nested_var,
                 prefix=f"{full_param_name}_",
                 indent=indent,
+                collision_names=collision_names,
             )
             lines.extend(nested_lines)
 
@@ -195,10 +201,51 @@ def generate_nested_assignments(
             lines.append(f'{indent}    {target_var}["{prop_name}"] = {nested_var}')
         else:
             # Leaf node - add assignment
-            lines.append(f"{indent}if {full_param_name} is not None:")
-            lines.append(f'{indent}    {target_var}["{prop_name}"] = {full_param_name}')
+            # Use simple name if no collision, otherwise use full path
+            param_name = full_param_name if snake_prop in collision_names else snake_prop
+
+            lines.append(f"{indent}if {param_name} is not None:")
+            lines.append(f'{indent}    {target_var}["{prop_name}"] = {param_name}')
 
     return lines
+
+
+def collect_all_parameter_names(
+    properties: Dict[str, Any], prefix: str = ""
+) -> Dict[str, List[str]]:
+    """
+    Collect all parameter names and their paths to detect naming collisions.
+
+    Args:
+        properties: The properties dictionary from the schema
+        prefix: Current path prefix
+
+    Returns:
+        Dictionary mapping simple names to list of full paths
+    """
+    name_to_paths = {}
+
+    for prop_name, prop_schema in properties.items():
+        snake_prop = to_snake_case(prop_name)
+        full_path = f"{prefix}{snake_prop}" if prefix else snake_prop
+        prop_type = prop_schema.get("type")
+        nested_properties = prop_schema.get("properties", {})
+
+        # If this is an object with properties, recurse
+        if prop_type == "object" and nested_properties:
+            nested_names = collect_all_parameter_names(nested_properties, prefix=f"{full_path}_")
+            # Merge nested names into our collection
+            for name, paths in nested_names.items():
+                if name not in name_to_paths:
+                    name_to_paths[name] = []
+                name_to_paths[name].extend(paths)
+        else:
+            # Leaf node - record this name
+            if snake_prop not in name_to_paths:
+                name_to_paths[snake_prop] = []
+            name_to_paths[snake_prop].append(full_path)
+
+    return name_to_paths
 
 
 def expand_nested_properties(
@@ -209,6 +256,7 @@ def expand_nested_properties(
     schema_props: List[str],
     param_info: List[Dict[str, Any]],
     prefix: str = "",
+    collision_names: set = None,
 ) -> None:
     """
     Recursively expand nested object properties into individual parameters.
@@ -221,7 +269,11 @@ def expand_nested_properties(
         schema_props: List to append schema property definitions to
         param_info: List to append parameter info dictionaries to
         prefix: Prefix for nested property names (e.g., "update_data_")
+        collision_names: Set of names that have collisions and need prefixes
     """
+    if collision_names is None:
+        collision_names = set()
+
     for prop_name, prop_schema in properties.items():
         snake_prop = to_snake_case(prop_name)
         full_param_name = f"{prefix}{snake_prop}" if prefix else snake_prop
@@ -242,29 +294,34 @@ def expand_nested_properties(
                 schema_props,
                 param_info,
                 prefix=f"{full_param_name}_",
+                collision_names=collision_names,
             )
         else:
             # Leaf node - add as a parameter
             param_type = get_parameter_type(prop_schema)
 
+            # Use simple name if no collision, otherwise use full path
+            param_name = full_param_name if snake_prop in collision_names else snake_prop
+
             if is_required:
-                param_defs_required.append(f"    {full_param_name}: {param_type},")
+                param_defs_required.append(f"    {param_name}: {param_type},")
             else:
-                param_defs_optional.append(f"    {full_param_name}: {param_type} | None = None,")
+                param_defs_optional.append(f"    {param_name}: {param_type} | None = None,")
 
             schema_props.append(
-                f'        "{full_param_name}": {{"type": "{param_type}", "description": "{prop_desc}"}},'
+                f'        "{param_name}": {{"type": "{param_type}", "description": "{prop_desc}"}},'
             )
 
             param_info.append(
                 {
-                    "name": full_param_name,
+                    "name": param_name,
                     "type": param_type,
                     "required": is_required,
                     "description": prop_desc if prop_desc else "No description provided",
                     "location": "body",
                     "original_name": prop_name,
                     "prefix": prefix,
+                    "full_path": full_param_name,
                 }
             )
 
@@ -335,6 +392,12 @@ def generate_parameter_schema(
                 nested_properties = request_data_schema.get("properties", {})
                 nested_required = request_data_schema.get("required", [])
 
+                # First, collect all parameter names to detect collisions
+                name_to_paths = collect_all_parameter_names(nested_properties, prefix="")
+
+                # Find names that appear more than once (collisions)
+                collision_names = {name for name, paths in name_to_paths.items() if len(paths) > 1}
+
                 # Use recursive expansion to handle nested objects
                 expand_nested_properties(
                     nested_properties,
@@ -344,6 +407,7 @@ def generate_parameter_schema(
                     schema_props,
                     param_info,
                     prefix="",
+                    collision_names=collision_names,
                 )
             else:
                 # Regular request body processing (no request_data wrapper)
@@ -500,6 +564,12 @@ async def {tool_name}(
                 request_data_schema = properties["request_data"]
                 nested_properties = request_data_schema.get("properties", {})
 
+                # First, collect all parameter names to detect collisions
+                name_to_paths = collect_all_parameter_names(nested_properties, prefix="")
+
+                # Find names that appear more than once (collisions)
+                collision_names = {name for name, paths in name_to_paths.items() if len(paths) > 1}
+
                 # Build the request_data object from expanded parameters (recursively)
                 function_code += """    # Build request_data object from parameters
     request_data_obj = {}
@@ -510,6 +580,7 @@ async def {tool_name}(
                     target_var="request_data_obj",
                     prefix="",
                     indent="    ",
+                    collision_names=collision_names,
                 )
                 function_code += "\n".join(assignment_lines) + "\n"
 
