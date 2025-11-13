@@ -520,3 +520,85 @@ def test_request_data_expansion_with_collisions():
         assert 'product_obj["name"] = product_name' in content
         assert 'user_obj["email"] = email' in content
         assert 'product_obj["price"] = price' in content
+
+
+def test_reserved_keyword_handling():
+    """Test that Python reserved keywords are properly handled in parameter names."""
+    spec = {
+        "openapi": "3.0.0",
+        "info": {"title": "Test API", "version": "1.0.0"},
+        "servers": [{"url": "https://api.test.com"}],
+        "paths": {
+            "/test/keywords": {
+                "post": {
+                    "operationId": "testKeywords",
+                    "summary": "Test reserved keyword handling",
+                    "description": "Test reserved keyword handling",
+                    "requestBody": {
+                        "required": True,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "request_data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "timeframe": {
+                                                    "type": "object",
+                                                    "description": "Time range",
+                                                    "properties": {
+                                                        "from": {
+                                                            "type": "integer",
+                                                            "description": "Start time",
+                                                        },
+                                                        "to": {
+                                                            "type": "integer",
+                                                            "description": "End time",
+                                                        },
+                                                        "for": {
+                                                            "type": "string",
+                                                            "description": "Purpose",
+                                                        },
+                                                    },
+                                                },
+                                            },
+                                        }
+                                    },
+                                }
+                            }
+                        },
+                    },
+                    "responses": {"200": {"description": "Success"}},
+                }
+            }
+        },
+    }
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        spec_path = Path(tmpdir) / "test.yaml"
+        output_dir = Path(tmpdir) / "output"
+        output_dir.mkdir()
+
+        with open(spec_path, "w") as f:
+            yaml.dump(spec, f)
+
+        generate_tools_file(spec_path, output_dir)
+
+        output_file = output_dir / "generated_test_tools.py"
+        content = output_file.read_text()
+
+        # Reserved keywords should be renamed
+        assert "from_time: int | None = None," in content
+        assert "to_time: int | None = None," in content
+        assert "for_value: str | None = None," in content
+
+        # Body building should still use original field names
+        assert 'timeframe_obj["from"] = from_time' in content
+        assert 'timeframe_obj["to"] = to_time' in content
+        assert 'timeframe_obj["for"] = for_value' in content
+
+        # Should NOT have the reserved keywords as parameters
+        assert "from: int" not in content
+        assert "to: int" not in content
+        assert "for: str" not in content

@@ -105,8 +105,8 @@ Required license: **Cortex XSIAM Premium** or **Cortex XSIAM Enterprise** or **C
         x_xdr_auth_id (str): {api_key_id} (required)
         query (str): String of the XQL query. (required)
         tenants (List[Any]): Note: This is only used when querying tenants managed by Managed Security Services Providers (MSSP). List of strings used for running APIs on local and Managed Security tenants. Valid values: - For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default). - For multi-tenant investigations (Managed Security parent who investigate children and/or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. (optional)
-        from (int): Use for an absolute timeframe in Unix timestamp. (optional)
-        to (int): Use for an absolute timeframe in Unix timestamp. (optional)
+        from_time (int): Use for an absolute timeframe in Unix timestamp. (optional)
+        to_time (int): Use for an absolute timeframe in Unix timestamp. (optional)
         relative_time (int): Use for a relative Unix timestamp. (optional)
     
     Returns:
@@ -194,8 +194,8 @@ xsiam_start_xql_query_schema = {
         "x_xdr_auth_id": {"type": "str", "description": "{api_key_id}"},
         "query": {"type": "str", "description": "String of the XQL query."},
         "tenants": {"type": "List[Any]", "description": "Note: This is only used when querying tenants managed by Managed Security Services Providers (MSSP). List of strings used for running APIs on local and Managed Security tenants. Valid values: - For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default). - For multi-tenant investigations (Managed Security parent who investigate children and/or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children."},
-        "from": {"type": "int", "description": "Use for an absolute timeframe in Unix timestamp."},
-        "to": {"type": "int", "description": "Use for an absolute timeframe in Unix timestamp."},
+        "from_time": {"type": "int", "description": "Use for an absolute timeframe in Unix timestamp."},
+        "to_time": {"type": "int", "description": "Use for an absolute timeframe in Unix timestamp."},
         "relative_time": {"type": "int", "description": "Use for a relative Unix timestamp."},
     },
 }

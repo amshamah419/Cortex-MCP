@@ -110,6 +110,54 @@ def to_snake_case(name: str, http_method: str = "") -> str:
     return re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
 
 
+def sanitize_python_identifier(name: str, original_field_name: str = "") -> str:
+    """
+    Ensure the identifier is not a Python reserved keyword.
+
+    Args:
+        name: The identifier to sanitize
+        original_field_name: The original field name from the spec (for context-aware suffixes)
+
+    Returns:
+        A safe Python identifier
+    """
+    import keyword
+
+    # Handle common problematic names that should be renamed for clarity
+    # even if they're not strictly reserved keywords (like 'to' paired with 'from')
+    if name in ["to", "from"] or name.startswith("from_") or name.startswith("to_"):
+        # These are often time-related or range-related fields
+        if "time" in original_field_name.lower() or "timeframe" in str(original_field_name).lower():
+            if name == "from" or name == "from_value":
+                return "from_time"
+            elif name == "to" or name == "to_value":
+                return "to_time"
+
+    if keyword.iskeyword(name):
+        # Use context-aware suffixes for common reserved words
+        if name == "from":
+            return "from_time" if "time" in original_field_name.lower() else "from_value"
+        elif name == "to":
+            return "to_time" if "time" in original_field_name.lower() else "to_value"
+        elif name == "id":
+            return "id_value"
+        elif name == "type":
+            return "type_value"
+        elif name == "in":
+            return "in_value"
+        elif name == "for":
+            return "for_value"
+        elif name == "class":
+            return "class_value"
+        elif name == "import":
+            return "import_value"
+        else:
+            # Generic fallback: append underscore suffix
+            return f"{name}_param"
+
+    return name
+
+
 def clean_description(description: str) -> str:
     """Clean and escape description text for use in Python strings."""
     if not description:
@@ -203,6 +251,10 @@ def generate_nested_assignments(
             # Leaf node - add assignment
             # Use simple name if no collision, otherwise use full path
             param_name = full_param_name if snake_prop in collision_names else snake_prop
+
+            # Sanitize to avoid Python reserved keywords
+            # Pass full path for context
+            param_name = sanitize_python_identifier(param_name, full_param_name)
 
             lines.append(f"{indent}if {param_name} is not None:")
             lines.append(f'{indent}    {target_var}["{prop_name}"] = {param_name}')
@@ -303,6 +355,10 @@ def expand_nested_properties(
             # Use simple name if no collision, otherwise use full path
             param_name = full_param_name if snake_prop in collision_names else snake_prop
 
+            # Sanitize to avoid Python reserved keywords
+            # Pass full path for context (e.g., "timeframe_from" helps identify time-related fields)
+            param_name = sanitize_python_identifier(param_name, full_param_name)
+
             if is_required:
                 param_defs_required.append(f"    {param_name}: {param_type},")
             else:
@@ -343,10 +399,14 @@ def generate_parameter_schema(
             # For OpenAPI 2.0 compatibility, skip them here
             continue
 
-        param_name = to_snake_case(param["name"])
+        original_name = param["name"]
+        param_name = to_snake_case(original_name)
         param_type = get_parameter_type(param.get("schema", {}))
         required = param.get("required", False)
         description = clean_description(param.get("description", ""))
+
+        # Sanitize to avoid Python reserved keywords
+        param_name = sanitize_python_identifier(param_name, original_name)
 
         # Add parameter definition - separate required from optional
         if required:
@@ -367,6 +427,7 @@ def generate_parameter_schema(
                 "required": required,
                 "description": description if description else "No description provided",
                 "location": param_in,
+                "original_name": original_name,
             }
         )
 
@@ -417,23 +478,27 @@ def generate_parameter_schema(
                     prop_desc = clean_description(prop_schema.get("description", ""))
                     is_required = prop_name in required_props
 
+                    # Sanitize to avoid Python reserved keywords
+                    param_name = sanitize_python_identifier(snake_prop, prop_name)
+
                     if is_required:
-                        required_param_defs.append(f"    {snake_prop}: {prop_type},")
+                        required_param_defs.append(f"    {param_name}: {prop_type},")
                     else:
-                        optional_param_defs.append(f"    {snake_prop}: {prop_type} | None = None,")
+                        optional_param_defs.append(f"    {param_name}: {prop_type} | None = None,")
 
                     schema_props.append(
-                        f'        "{snake_prop}": {{"type": "{prop_type}", "description": "{prop_desc}"}},'
+                        f'        "{param_name}": {{"type": "{prop_type}", "description": "{prop_desc}"}},'
                     )
 
                     # Add to param_info for docstring
                     param_info.append(
                         {
-                            "name": snake_prop,
+                            "name": param_name,
                             "type": prop_type,
                             "required": is_required,
                             "description": prop_desc if prop_desc else "No description provided",
                             "location": "body",
+                            "original_name": prop_name,
                         }
                     )
 
@@ -525,13 +590,16 @@ async def {tool_name}(
 
     # Add parameter building logic
     for param in parameters:
-        param_name = to_snake_case(param["name"])
         original_name = param["name"]
+        param_name = to_snake_case(original_name)
         param_in = param.get("in", "query")
 
         # Skip body and formData parameters - they're handled differently
         if param_in in ["body", "formData"]:
             continue
+
+        # Sanitize to avoid Python reserved keywords
+        param_name = sanitize_python_identifier(param_name, original_name)
 
         function_code += f"""    if {param_name} is not None:
 """
@@ -591,8 +659,9 @@ async def {tool_name}(
                 # Regular request body processing (no request_data wrapper)
                 for prop_name in properties.keys():
                     snake_prop = to_snake_case(prop_name)
-                    function_code += f"""    if {snake_prop} is not None:
-        body["{prop_name}"] = {snake_prop}
+                    param_name = sanitize_python_identifier(snake_prop, prop_name)
+                    function_code += f"""    if {param_name} is not None:
+        body["{prop_name}"] = {param_name}
 """
 
     # Build the URL with path parameters
