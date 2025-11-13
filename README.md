@@ -25,9 +25,10 @@ As a developer working with XSOAR and XSIAM, you need to frequently interact wit
 
 ## Key Features
 
-- **211 production-ready tools** - Auto-generated from official XSIAM/XSOAR OpenAPI specifications
-  - 129 XSIAM tools (XQL queries, incidents, alerts, endpoints, threat intelligence)
-  - 82 XSOAR tools (playbooks, investigations, automations, indicators)
+- **213 production-ready tools** - Auto-generated from official XSIAM/XSOAR OpenAPI specifications
+  - 128 XSIAM tools (XQL queries, incidents, alerts, endpoints, threat intelligence)
+  - 85 XSOAR tools (playbooks, investigations, automations, indicators)
+  - **[📚 Full Tool Documentation](docs/README.md)** - Comprehensive documentation for all tools organized by category
 - **Containerized deployment** - Docker support for easy integration with AI IDE workflows
 - **Live API integration** - Connect to your actual XSOAR/XSIAM instances
 - **Type-safe operations** - Full Python type hints for reliable AI agent interactions
@@ -115,49 +116,37 @@ python -m server.main
 
 ## Available Tools
 
-### XSIAM Tools (129 tools)
+All 213 tools are thoroughly documented with descriptions, parameters, and return values.
 
-**XQL Queries & Analytics**:
-- `xsiam_start_xql_query` - Execute XQL queries for threat hunting
-- `xsiam_get_query_results` - Retrieve query results
-- `xsiam_get_query_results_stream` - Stream large result sets
+**📚 [View Complete Tool Documentation](docs/README.md)**
 
-**Incident Management**:
-- `xsiam_get_incidents` - Query and filter security incidents
-- `xsiam_update_incident` - Update incident status and details
-- `xsiam_get_incident_extra_data` - Get detailed incident information
+### XSIAM Tools (128 tools)
 
-**Alert Operations**:
-- `xsiam_alerts_get_alerts_v1` - Retrieve security alerts
-- `xsiam_update_alerts` - Update alert status
-- `xsiam_get_alerts_multi_events` - Get alerts with event correlation
+Organized into categories:
+- **[XQL Queries](docs/xsiam/xql-queries.md)** (12 tools) - Execute and manage XQL queries for threat hunting
+- **[Incidents](docs/xsiam/incidents.md)** (3 tools) - Query, update, and manage security incidents
+- **[Alerts](docs/xsiam/alerts.md)** (8 tools) - Retrieve and manage security alerts
+- **[Endpoints](docs/xsiam/endpoints.md)** (7 tools) - Query and manage endpoint information
+- **[Response Actions](docs/xsiam/response-actions.md)** (3 tools) - Isolate endpoints and take response actions
+- **[Assets & Identity](docs/xsiam/assets-and-identity.md)** (11 tools) - Manage hosts, users, IPs, and AD groups
+- **[Threat Intelligence](docs/xsiam/threat-intelligence.md)** (3 tools) - Manage IOCs and reputation data
+- **[Policy & Compliance](docs/xsiam/policy-and-compliance.md)** (2 tools) - View policies and violations
+- **[Administration](docs/xsiam/administration.md)** (1 tool) - Audit logs and RBAC
+- **[Other Operations](docs/xsiam/other-operations.md)** (78 tools) - Additional XSIAM operations
 
-**Endpoint Management**:
-- `xsiam_endpoints_get_endpoint` - Query endpoint information
-- `xsiam_scan_endpoints` - Initiate endpoint scans
-- `xsiam_isolate_endpoint` - Isolate compromised endpoints
+### XSOAR Tools (85 tools)
 
-### XSOAR Tools (82 tools)
-
-**Automation & Scripts**:
-- `xsoar_save_or_update_script` - Create or update automation scripts
-- `xsoar_get_automation_scripts` - List available automations
-- `xsoar_import_script` - Import custom scripts
-
-**Investigation Management**:
-- `xsoar_investigation_add_entry_handler` - Add entries to investigations
-- `xsoar_get_all_investigations` - Query investigations
-- `xsoar_create_investigation` - Start new investigations
-
-**Playbook Operations**:
-- `xsoar_get_playbooks` - List available playbooks
-- `xsoar_execute_playbook` - Run playbooks programmatically
-
-**Indicator Management**:
-- `xsoar_save_or_update_indicators` - Manage threat indicators
-- `xsoar_search_indicators` - Query IOC database
-
-For a complete list of all 211 tools, see the generated files in `server/generated_xsiam_tools.py` and `server/generated_xsoar_tools.py`.
+Organized into categories:
+- **[Incidents & Investigations](docs/xsoar/incidents-and-investigations.md)** (17 tools) - Create, update, and manage incidents
+- **[Indicators](docs/xsoar/indicators.md)** (12 tools) - Manage threat indicators and IOCs
+- **[Dashboards & Widgets](docs/xsoar/dashboards-and-widgets.md)** (11 tools) - Manage dashboards and widgets
+- **[Evidence & Entries](docs/xsoar/evidence-and-entries.md)** (6 tools) - Add entries and manage evidence
+- **[Automations & Scripts](docs/xsoar/automations-and-scripts.md)** (5 tools) - Create and manage automation scripts
+- **[User Management](docs/xsoar/user-management.md)** (2 tools) - Manage API keys and users
+- **[Playbooks](docs/xsoar/playbooks.md)** (1 tool) - Manage playbooks
+- **[Integrations](docs/xsoar/integrations.md)** (1 tool) - Manage integrations
+- **[Content Management](docs/xsoar/content-management.md)** (1 tool) - Import classifiers and mappers
+- **[Other Operations](docs/xsoar/other-operations.md)** (29 tools) - Additional XSOAR operations
 
 ## Common Development Workflows
 
