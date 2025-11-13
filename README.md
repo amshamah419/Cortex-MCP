@@ -59,6 +59,20 @@ As a developer working with XSOAR and XSIAM, you need to frequently interact wit
 └── README.md                       # This file
 ```
 
+## Security
+
+🔒 Cortex-MCP implements enterprise-grade security controls. See [SECURITY.md](SECURITY.md) for detailed security documentation.
+
+**Key Security Features:**
+- ✅ Input validation and sanitization
+- ✅ Rate limiting (100 requests/60s default)
+- ✅ Error message sanitization to prevent information leakage
+- ✅ Non-root Docker container execution
+- ✅ Configurable SSL/TLS verification
+- ✅ Environment-based credential management (no hardcoded secrets)
+- ✅ Security headers on all requests
+- ✅ Automated security scanning in CI/CD
+
 ## Quick Start
 
 ### Using with AI IDEs
@@ -68,7 +82,16 @@ As a developer working with XSOAR and XSIAM, you need to frequently interact wit
 docker build -t cortex-mcp .
 ```
 
-2. **Configure your AI IDE** to use the MCP server:
+2. **Set up environment variables** (recommended for security):
+```bash
+export XSOAR_API_URL="https://your-xsoar-instance.com"
+export XSOAR_API_KEY="your-api-key"
+export XSIAM_API_URL="https://your-xsiam-instance.com"
+export XSIAM_API_KEY="your-xsiam-api-key"
+export XSIAM_API_KEY_ID="your-key-id"
+```
+
+3. **Configure your AI IDE** to use the MCP server:
 
 **For Windsurf/Cursor/Roo Code:**
 Add to your MCP settings (typically in `.windsurf/mcp.json`, `.cursor/mcp.json`, or IDE settings):
@@ -77,20 +100,28 @@ Add to your MCP settings (typically in `.windsurf/mcp.json`, `.cursor/mcp.json`,
   "mcpServers": {
     "cortex": {
       "command": "docker",
-      "args": ["run", "-i", "cortex-mcp"],
+      "args": [
+        "run", 
+        "-i", 
+        "--read-only",
+        "--security-opt=no-new-privileges",
+        "cortex-mcp"
+      ],
       "env": {
-        "XSOAR_API_URL": "https://your-xsoar-instance.com",
-        "XSOAR_API_KEY": "your-api-key",
-        "XSIAM_API_URL": "https://your-xsiam-instance.com",
-        "XSIAM_API_KEY": "your-xsiam-api-key",
-        "XSIAM_API_KEY_ID": "your-key-id"
+        "XSOAR_API_URL": "${XSOAR_API_URL}",
+        "XSOAR_API_KEY": "${XSOAR_API_KEY}",
+        "XSIAM_API_URL": "${XSIAM_API_URL}",
+        "XSIAM_API_KEY": "${XSIAM_API_KEY}",
+        "XSIAM_API_KEY_ID": "${XSIAM_API_KEY_ID}"
       }
     }
   }
 }
 ```
 
-3. **Start using AI assistance** for XSOAR/XSIAM development:
+**⚠️ Security Note:** Use environment variable references (`${VAR_NAME}`) instead of hardcoding credentials.
+
+4. **Start using AI assistance** for XSOAR/XSIAM development:
    - "Query all high-severity incidents from the last 24 hours"
    - "Create a new playbook for ransomware response"
    - "Run an XQL query to find suspicious login attempts"
@@ -337,6 +368,46 @@ ls -la specs/ codegen/ server/
 docker build -t cortex-mcp . --progress=plain
 ```
 
+## Security
+
+Security is a top priority for Cortex-MCP. We follow industry best practices to protect your credentials and data.
+
+### Security Features
+
+- **Input Validation**: All inputs are validated and sanitized to prevent injection attacks
+- **Rate Limiting**: Protects against API abuse (100 requests/60s default, configurable)
+- **Error Sanitization**: Error messages are sanitized to prevent information leakage
+- **Secure Credentials**: Environment-based configuration prevents hardcoded secrets
+- **Non-Root Execution**: Docker containers run as non-root user for defense in depth
+- **SSL/TLS Verification**: Enabled by default with configurable options
+- **Security Headers**: All requests include security-focused HTTP headers
+- **Automated Scanning**: CI/CD pipeline includes vulnerability and secret scanning
+
+### Security Configuration
+
+Configure security settings via environment variables:
+
+```bash
+# Request timeout (default: 30 seconds)
+export API_TIMEOUT=30
+
+# SSL/TLS verification (default: true)
+export VERIFY_SSL=true
+
+# Rate limiting
+export RATE_LIMIT_REQUESTS=100
+export RATE_LIMIT_WINDOW=60
+```
+
+### Reporting Security Issues
+
+Please report security vulnerabilities responsibly:
+- **Do NOT** open public issues for security vulnerabilities
+- Contact the repository maintainer directly
+- See [SECURITY.md](SECURITY.md) for detailed reporting guidelines
+
+For complete security documentation, see **[SECURITY.md](SECURITY.md)**.
+
 ## Contributing
 
 We welcome contributions! This project is focused on enabling AI-assisted XSOAR/XSIAM development.
@@ -346,12 +417,14 @@ We welcome contributions! This project is focused on enabling AI-assisted XSOAR/
 - Better error handling and debugging support
 - Enhanced integration examples for popular AI IDEs
 - Performance optimizations for large-scale deployments
+- Security enhancements
 
 **To contribute:**
 1. Fork the repository
 2. Create a feature branch focused on developer productivity
 3. Test with real XSOAR/XSIAM instances
-4. Submit a pull request with clear use case description
+4. Follow security best practices (see SECURITY.md)
+5. Submit a pull request with clear use case description
 
 ## License
 
@@ -361,6 +434,7 @@ MIT License - see LICENSE file for details
 
 For questions and issues:
 - **GitHub Issues**: Bug reports and feature requests
+- **Security Issues**: See [SECURITY.md](SECURITY.md) for reporting guidelines
 - **Discussions**: Best practices for AI-assisted XSOAR/XSIAM development
 - **Documentation**: Check `docs/` and `EXAMPLES.md` for detailed guides
 

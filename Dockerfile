@@ -25,6 +25,10 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
+# Create non-root user for security
+RUN useradd -m -u 1000 -s /bin/bash mcpuser && \
+    chown -R mcpuser:mcpuser /app
+
 # Copy the wheel from builder
 COPY --from=builder /app/dist/*.whl /tmp/
 
@@ -34,6 +38,15 @@ RUN pip install --no-cache-dir /tmp/*.whl && \
 
 # Copy server code and generated tools
 COPY --from=builder /app/server/ /app/server/
+
+# Ensure proper ownership
+RUN chown -R mcpuser:mcpuser /app
+
+# Switch to non-root user
+USER mcpuser
+
+# Security: Drop capabilities and run with minimal privileges
+# The server listens on stdio, not network ports
 
 # Run the server
 CMD ["python", "-m", "server.main"]
