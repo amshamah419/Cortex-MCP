@@ -223,5 +223,3 @@ For security-related questions, please:
 1. Check this document first
 2. Review the README.md for configuration guidance
 3. Contact the maintainer for clarification
-
-Thank you for helping keep Cortex-MCP secure!

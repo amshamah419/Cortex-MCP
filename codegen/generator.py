@@ -103,9 +103,59 @@ def to_snake_case(name: str, http_method: str = "") -> str:
     name = clean_public_api_name(name)
     # Replace hyphens with underscores first
     name = name.replace("-", "_")
+    # Remove angle brackets and other special characters that aren't valid in Python identifiers
+    name = re.sub(r"[<>]", "", name)
     # Insert underscore before uppercase letters and convert to lowercase
     s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
     return re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
+
+
+def sanitize_python_identifier(name: str, original_field_name: str = "") -> str:
+    """
+    Ensure the identifier is not a Python reserved keyword.
+
+    Args:
+        name: The identifier to sanitize
+        original_field_name: The original field name from the spec (for context-aware suffixes)
+
+    Returns:
+        A safe Python identifier
+    """
+    import keyword
+
+    # Handle common problematic names that should be renamed for clarity
+    # even if they're not strictly reserved keywords (like 'to' paired with 'from')
+    if name in ["to", "from"] or name.startswith("from_") or name.startswith("to_"):
+        # These are often time-related or range-related fields
+        if "time" in original_field_name.lower() or "timeframe" in str(original_field_name).lower():
+            if name == "from" or name == "from_value":
+                return "from_time"
+            elif name == "to" or name == "to_value":
+                return "to_time"
+
+    if keyword.iskeyword(name):
+        # Use context-aware suffixes for common reserved words
+        if name == "from":
+            return "from_time" if "time" in original_field_name.lower() else "from_value"
+        elif name == "to":
+            return "to_time" if "time" in original_field_name.lower() else "to_value"
+        elif name == "id":
+            return "id_value"
+        elif name == "type":
+            return "type_value"
+        elif name == "in":
+            return "in_value"
+        elif name == "for":
+            return "for_value"
+        elif name == "class":
+            return "class_value"
+        elif name == "import":
+            return "import_value"
+        else:
+            # Generic fallback: append underscore suffix
+            return f"{name}_param"
+
+    return name
 
 
 def clean_description(description: str) -> str:
@@ -133,7 +183,203 @@ def get_parameter_type(param_schema: Dict[str, Any]) -> str:
         "object": "Dict[str, Any]",
     }
     param_type = param_schema.get("type", "string")
+
+    # Handle case where type might be a list or None (e.g., enum fields without explicit type)
+    if isinstance(param_type, list):
+        # If type is a list, use the first non-null type
+        param_type = next((t for t in param_type if t != "null"), "string")
+    elif param_type is None or param_type == "":
+        # If no type specified but has enum, it's likely a string
+        if "enum" in param_schema:
+            param_type = "string"
+        else:
+            param_type = "string"
+
     return type_mapping.get(param_type, "Any")
+
+
+def generate_nested_assignments(
+    properties: Dict[str, Any],
+    target_var: str = "current_obj",
+    prefix: str = "",
+    indent: str = "    ",
+    collision_names: set = None,
+) -> List[str]:
+    """
+    Generate code lines to assign flat parameters to a nested object structure.
+
+    Args:
+        properties: The properties dictionary from the schema
+        target_var: The variable name to assign to
+        prefix: Prefix for parameter names
+        indent: Indentation string
+        collision_names: Set of names that have collisions and need prefixes
+
+    Returns:
+        List of code lines
+    """
+    if collision_names is None:
+        collision_names = set()
+
+    lines = []
+
+    for prop_name, prop_schema in properties.items():
+        snake_prop = to_snake_case(prop_name)
+        full_param_name = f"{prefix}{snake_prop}" if prefix else snake_prop
+        prop_type = prop_schema.get("type")
+        nested_properties = prop_schema.get("properties", {})
+
+        # If this is an object with properties, build it recursively
+        if prop_type == "object" and nested_properties:
+            nested_var = f"{snake_prop}_obj"
+            lines.append(f"{indent}# Build {prop_name} nested object")
+            lines.append(f"{indent}{nested_var} = {{}}")
+
+            # Recursively generate assignments for nested properties
+            nested_lines = generate_nested_assignments(
+                nested_properties,
+                target_var=nested_var,
+                prefix=f"{full_param_name}_",
+                indent=indent,
+                collision_names=collision_names,
+            )
+            lines.extend(nested_lines)
+
+            lines.append(f"{indent}if {nested_var}:")
+            lines.append(f'{indent}    {target_var}["{prop_name}"] = {nested_var}')
+        else:
+            # Leaf node - add assignment
+            # Use simple name if no collision, otherwise use full path
+            param_name = full_param_name if snake_prop in collision_names else snake_prop
+
+            # Sanitize to avoid Python reserved keywords
+            # Pass full path for context
+            param_name = sanitize_python_identifier(param_name, full_param_name)
+
+            lines.append(f"{indent}if {param_name} is not None:")
+            lines.append(f'{indent}    {target_var}["{prop_name}"] = {param_name}')
+
+    return lines
+
+
+def collect_all_parameter_names(
+    properties: Dict[str, Any], prefix: str = ""
+) -> Dict[str, List[str]]:
+    """
+    Collect all parameter names and their paths to detect naming collisions.
+
+    Args:
+        properties: The properties dictionary from the schema
+        prefix: Current path prefix
+
+    Returns:
+        Dictionary mapping simple names to list of full paths
+    """
+    name_to_paths = {}
+
+    for prop_name, prop_schema in properties.items():
+        snake_prop = to_snake_case(prop_name)
+        full_path = f"{prefix}{snake_prop}" if prefix else snake_prop
+        prop_type = prop_schema.get("type")
+        nested_properties = prop_schema.get("properties", {})
+
+        # If this is an object with properties, recurse
+        if prop_type == "object" and nested_properties:
+            nested_names = collect_all_parameter_names(nested_properties, prefix=f"{full_path}_")
+            # Merge nested names into our collection
+            for name, paths in nested_names.items():
+                if name not in name_to_paths:
+                    name_to_paths[name] = []
+                name_to_paths[name].extend(paths)
+        else:
+            # Leaf node - record this name
+            if snake_prop not in name_to_paths:
+                name_to_paths[snake_prop] = []
+            name_to_paths[snake_prop].append(full_path)
+
+    return name_to_paths
+
+
+def expand_nested_properties(
+    properties: Dict[str, Any],
+    required_props: List[str],
+    param_defs_required: List[str],
+    param_defs_optional: List[str],
+    schema_props: List[str],
+    param_info: List[Dict[str, Any]],
+    prefix: str = "",
+    collision_names: set = None,
+) -> None:
+    """
+    Recursively expand nested object properties into individual parameters.
+
+    Args:
+        properties: The properties dictionary from the schema
+        required_props: List of required property names
+        param_defs_required: List to append required parameter definitions to
+        param_defs_optional: List to append optional parameter definitions to
+        schema_props: List to append schema property definitions to
+        param_info: List to append parameter info dictionaries to
+        prefix: Prefix for nested property names (e.g., "update_data_")
+        collision_names: Set of names that have collisions and need prefixes
+    """
+    if collision_names is None:
+        collision_names = set()
+
+    for prop_name, prop_schema in properties.items():
+        snake_prop = to_snake_case(prop_name)
+        full_param_name = f"{prefix}{snake_prop}" if prefix else snake_prop
+        prop_type = prop_schema.get("type")
+        prop_desc = clean_description(prop_schema.get("description", ""))
+        is_required = prop_name in required_props
+
+        # If this is an object with properties, expand it recursively
+        # But only if it has defined properties (not a free-form object)
+        nested_properties = prop_schema.get("properties", {})
+        if prop_type == "object" and nested_properties:
+            nested_required = prop_schema.get("required", [])
+            expand_nested_properties(
+                nested_properties,
+                nested_required,
+                param_defs_required,
+                param_defs_optional,
+                schema_props,
+                param_info,
+                prefix=f"{full_param_name}_",
+                collision_names=collision_names,
+            )
+        else:
+            # Leaf node - add as a parameter
+            param_type = get_parameter_type(prop_schema)
+
+            # Use simple name if no collision, otherwise use full path
+            param_name = full_param_name if snake_prop in collision_names else snake_prop
+
+            # Sanitize to avoid Python reserved keywords
+            # Pass full path for context (e.g., "timeframe_from" helps identify time-related fields)
+            param_name = sanitize_python_identifier(param_name, full_param_name)
+
+            if is_required:
+                param_defs_required.append(f"    {param_name}: {param_type},")
+            else:
+                param_defs_optional.append(f"    {param_name}: {param_type} | None = None,")
+
+            schema_props.append(
+                f'        "{param_name}": {{"type": "{param_type}", "description": "{prop_desc}"}},'
+            )
+
+            param_info.append(
+                {
+                    "name": param_name,
+                    "type": param_type,
+                    "required": is_required,
+                    "description": prop_desc if prop_desc else "No description provided",
+                    "location": "body",
+                    "original_name": prop_name,
+                    "prefix": prefix,
+                    "full_path": full_param_name,
+                }
+            )
 
 
 def generate_parameter_schema(
@@ -153,10 +399,14 @@ def generate_parameter_schema(
             # For OpenAPI 2.0 compatibility, skip them here
             continue
 
-        param_name = to_snake_case(param["name"])
+        original_name = param["name"]
+        param_name = to_snake_case(original_name)
         param_type = get_parameter_type(param.get("schema", {}))
         required = param.get("required", False)
         description = clean_description(param.get("description", ""))
+
+        # Sanitize to avoid Python reserved keywords
+        param_name = sanitize_python_identifier(param_name, original_name)
 
         # Add parameter definition - separate required from optional
         if required:
@@ -177,6 +427,7 @@ def generate_parameter_schema(
                 "required": required,
                 "description": description if description else "No description provided",
                 "location": param_in,
+                "original_name": original_name,
             }
         )
 
@@ -190,31 +441,66 @@ def generate_parameter_schema(
             properties = body_schema.get("properties", {})
             required_props = body_schema.get("required", [])
 
-            for prop_name, prop_schema in properties.items():
-                snake_prop = to_snake_case(prop_name)
-                prop_type = get_parameter_type(prop_schema)
-                prop_desc = clean_description(prop_schema.get("description", ""))
-                is_required = prop_name in required_props
+            # Check if this is a request_data wrapper pattern
+            # If there's only one property named "request_data" that is an object,
+            # expand its nested properties instead (recursively)
+            if (
+                len(properties) == 1
+                and "request_data" in properties
+                and properties["request_data"].get("type") == "object"
+            ):
+                request_data_schema = properties["request_data"]
+                nested_properties = request_data_schema.get("properties", {})
+                nested_required = request_data_schema.get("required", [])
 
-                if is_required:
-                    required_param_defs.append(f"    {snake_prop}: {prop_type},")
-                else:
-                    optional_param_defs.append(f"    {snake_prop}: {prop_type} | None = None,")
+                # First, collect all parameter names to detect collisions
+                name_to_paths = collect_all_parameter_names(nested_properties, prefix="")
 
-                schema_props.append(
-                    f'        "{snake_prop}": {{"type": "{prop_type}", "description": "{prop_desc}"}},'
+                # Find names that appear more than once (collisions)
+                collision_names = {name for name, paths in name_to_paths.items() if len(paths) > 1}
+
+                # Use recursive expansion to handle nested objects
+                expand_nested_properties(
+                    nested_properties,
+                    nested_required,
+                    required_param_defs,
+                    optional_param_defs,
+                    schema_props,
+                    param_info,
+                    prefix="",
+                    collision_names=collision_names,
                 )
+            else:
+                # Regular request body processing (no request_data wrapper)
+                for prop_name, prop_schema in properties.items():
+                    snake_prop = to_snake_case(prop_name)
+                    prop_type = get_parameter_type(prop_schema)
+                    prop_desc = clean_description(prop_schema.get("description", ""))
+                    is_required = prop_name in required_props
 
-                # Add to param_info for docstring
-                param_info.append(
-                    {
-                        "name": snake_prop,
-                        "type": prop_type,
-                        "required": is_required,
-                        "description": prop_desc if prop_desc else "No description provided",
-                        "location": "body",
-                    }
-                )
+                    # Sanitize to avoid Python reserved keywords
+                    param_name = sanitize_python_identifier(snake_prop, prop_name)
+
+                    if is_required:
+                        required_param_defs.append(f"    {param_name}: {prop_type},")
+                    else:
+                        optional_param_defs.append(f"    {param_name}: {prop_type} | None = None,")
+
+                    schema_props.append(
+                        f'        "{param_name}": {{"type": "{prop_type}", "description": "{prop_desc}"}},'
+                    )
+
+                    # Add to param_info for docstring
+                    param_info.append(
+                        {
+                            "name": param_name,
+                            "type": prop_type,
+                            "required": is_required,
+                            "description": prop_desc if prop_desc else "No description provided",
+                            "location": "body",
+                            "original_name": prop_name,
+                        }
+                    )
 
     # Combine required params first, then optional (Python requirement)
     param_defs = required_param_defs + optional_param_defs
@@ -304,13 +590,16 @@ async def {tool_name}(
 
     # Add parameter building logic
     for param in parameters:
-        param_name = to_snake_case(param["name"])
         original_name = param["name"]
+        param_name = to_snake_case(original_name)
         param_in = param.get("in", "query")
 
         # Skip body and formData parameters - they're handled differently
         if param_in in ["body", "formData"]:
             continue
+
+        # Sanitize to avoid Python reserved keywords
+        param_name = sanitize_python_identifier(param_name, original_name)
 
         function_code += f"""    if {param_name} is not None:
 """
@@ -332,10 +621,47 @@ async def {tool_name}(
 
         if body_schema:
             properties = body_schema.get("properties", {})
-            for prop_name in properties.keys():
-                snake_prop = to_snake_case(prop_name)
-                function_code += f"""    if {snake_prop} is not None:
-        body["{prop_name}"] = {snake_prop}
+
+            # Check if this is a request_data wrapper pattern
+            if (
+                len(properties) == 1
+                and "request_data" in properties
+                and properties["request_data"].get("type") == "object"
+            ):
+                # Expand request_data properties
+                request_data_schema = properties["request_data"]
+                nested_properties = request_data_schema.get("properties", {})
+
+                # First, collect all parameter names to detect collisions
+                name_to_paths = collect_all_parameter_names(nested_properties, prefix="")
+
+                # Find names that appear more than once (collisions)
+                collision_names = {name for name, paths in name_to_paths.items() if len(paths) > 1}
+
+                # Build the request_data object from expanded parameters (recursively)
+                function_code += """    # Build request_data object from parameters
+    request_data_obj = {}
+"""
+                # Generate nested assignment code
+                assignment_lines = generate_nested_assignments(
+                    nested_properties,
+                    target_var="request_data_obj",
+                    prefix="",
+                    indent="    ",
+                    collision_names=collision_names,
+                )
+                function_code += "\n".join(assignment_lines) + "\n"
+
+                function_code += """    if request_data_obj:
+        body["request_data"] = request_data_obj
+"""
+            else:
+                # Regular request body processing (no request_data wrapper)
+                for prop_name in properties.keys():
+                    snake_prop = to_snake_case(prop_name)
+                    param_name = sanitize_python_identifier(snake_prop, prop_name)
+                    function_code += f"""    if {param_name} is not None:
+        body["{prop_name}"] = {param_name}
 """
 
     # Build the URL with path parameters

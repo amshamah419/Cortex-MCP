@@ -291,3 +291,314 @@ def test_docstring_parameter_documentation():
 
         # Verify return documentation includes response description
         assert "User updated successfully" in content
+
+
+def test_request_data_expansion():
+    """Test that request_data wrapper is properly expanded into individual parameters."""
+    # Create a spec with request_data wrapper pattern (like XSIAM update_incident)
+    spec = {
+        "openapi": "3.0.0",
+        "info": {"title": "Test API", "version": "1.0.0"},
+        "servers": [{"url": "https://api.test.com"}],
+        "paths": {
+            "/incidents/update": {
+                "post": {
+                    "operationId": "updateIncident",
+                    "summary": "Update an incident",
+                    "description": "Updates incident information",
+                    "parameters": [
+                        {
+                            "name": "Authorization",
+                            "in": "header",
+                            "required": True,
+                            "schema": {"type": "string"},
+                            "description": "API key",
+                        }
+                    ],
+                    "requestBody": {
+                        "required": True,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "request_data": {
+                                            "type": "object",
+                                            "required": ["incident_id", "update_data"],
+                                            "properties": {
+                                                "incident_id": {
+                                                    "type": "string",
+                                                    "description": "The incident ID",
+                                                },
+                                                "update_data": {
+                                                    "type": "object",
+                                                    "description": "Data to update",
+                                                    "properties": {
+                                                        "status": {
+                                                            "type": "string",
+                                                            "description": "Incident status",
+                                                        },
+                                                        "severity": {
+                                                            "type": "string",
+                                                            "description": "Incident severity",
+                                                        },
+                                                        "comment": {
+                                                            "type": "object",
+                                                            "description": "Comment object",
+                                                            "required": [
+                                                                "comment_action",
+                                                                "value",
+                                                            ],
+                                                            "properties": {
+                                                                "comment_action": {
+                                                                    "type": "string",
+                                                                    "description": "Action",
+                                                                },
+                                                                "value": {
+                                                                    "type": "string",
+                                                                    "description": "Comment text",
+                                                                },
+                                                            },
+                                                        },
+                                                    },
+                                                },
+                                                "optional_field": {
+                                                    "type": "string",
+                                                    "description": "Optional field",
+                                                },
+                                            },
+                                        }
+                                    },
+                                }
+                            }
+                        },
+                    },
+                    "responses": {"200": {"description": "Success"}},
+                }
+            }
+        },
+    }
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        spec_path = Path(tmpdir) / "test.yaml"
+        output_dir = Path(tmpdir) / "output"
+        output_dir.mkdir()
+
+        with open(spec_path, "w") as f:
+            yaml.dump(spec, f)
+
+        generate_tools_file(spec_path, output_dir)
+
+        output_file = output_dir / "generated_test_tools.py"
+        content = output_file.read_text()
+
+        # Verify that request_data is NOT a parameter
+        assert "request_data: Dict[str, Any]" not in content
+        assert "request_data (Dict[str, Any])" not in content
+
+        # Verify that nested properties use simple names (no collisions in this test)
+        assert "incident_id: str," in content
+        assert "optional_field: str | None = None," in content
+
+        # Since there are no collisions, parameters should use simple names
+        assert "status: str | None = None," in content
+        assert "severity: str | None = None," in content
+        assert "comment_action: str," in content
+        assert "value: str," in content
+
+        # Verify documentation shows the simple parameter names
+        assert "incident_id (str): The incident ID (required)" in content
+        assert "status (str): Incident status (optional)" in content
+        assert "comment_action (str): Action (required)" in content
+        assert "value (str): Comment text (required)" in content
+
+        # Verify the body building code handles nested structures
+        assert "request_data_obj = {}" in content
+        assert 'request_data_obj["incident_id"] = incident_id' in content
+
+        # Verify nested object building
+        assert "update_data_obj = {}" in content
+        assert 'update_data_obj["status"] = status' in content
+        assert "comment_obj = {}" in content
+        assert 'comment_obj["comment_action"] = comment_action' in content
+        assert 'comment_obj["value"] = value' in content
+
+
+def test_request_data_expansion_with_collisions():
+    """Test that naming collisions are handled properly with prefixes."""
+    # Create a spec with naming collisions
+    spec = {
+        "openapi": "3.0.0",
+        "info": {"title": "Test API", "version": "1.0.0"},
+        "servers": [{"url": "https://api.test.com"}],
+        "paths": {
+            "/test/collision": {
+                "post": {
+                    "operationId": "testCollision",
+                    "summary": "Test collision handling",
+                    "description": "Test collision handling",
+                    "requestBody": {
+                        "required": True,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "request_data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string",
+                                                    "description": "Top level name",
+                                                },
+                                                "user": {
+                                                    "type": "object",
+                                                    "description": "User object",
+                                                    "properties": {
+                                                        "name": {
+                                                            "type": "string",
+                                                            "description": "User name",
+                                                        },
+                                                        "email": {
+                                                            "type": "string",
+                                                            "description": "User email",
+                                                        },
+                                                    },
+                                                },
+                                                "product": {
+                                                    "type": "object",
+                                                    "description": "Product object",
+                                                    "properties": {
+                                                        "name": {
+                                                            "type": "string",
+                                                            "description": "Product name",
+                                                        },
+                                                        "price": {
+                                                            "type": "number",
+                                                            "description": "Product price",
+                                                        },
+                                                    },
+                                                },
+                                            },
+                                        }
+                                    },
+                                }
+                            }
+                        },
+                    },
+                    "responses": {"200": {"description": "Success"}},
+                }
+            }
+        },
+    }
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        spec_path = Path(tmpdir) / "test.yaml"
+        output_dir = Path(tmpdir) / "output"
+        output_dir.mkdir()
+
+        with open(spec_path, "w") as f:
+            yaml.dump(spec, f)
+
+        generate_tools_file(spec_path, output_dir)
+
+        output_file = output_dir / "generated_test_tools.py"
+        content = output_file.read_text()
+
+        # "name" appears 3 times (collision), so all should have prefixes
+        assert "name: str | None = None," in content  # Top level - simple name
+        assert "user_name: str | None = None," in content  # Collision - needs prefix
+        assert "product_name: str | None = None," in content  # Collision - needs prefix
+
+        # "email" and "price" appear only once (no collision), so use simple names
+        assert "email: str | None = None," in content
+        assert "price: float | None = None," in content
+
+        # Verify body building uses correct names
+        assert 'request_data_obj["name"] = name' in content
+        assert 'user_obj["name"] = user_name' in content
+        assert 'product_obj["name"] = product_name' in content
+        assert 'user_obj["email"] = email' in content
+        assert 'product_obj["price"] = price' in content
+
+
+def test_reserved_keyword_handling():
+    """Test that Python reserved keywords are properly handled in parameter names."""
+    spec = {
+        "openapi": "3.0.0",
+        "info": {"title": "Test API", "version": "1.0.0"},
+        "servers": [{"url": "https://api.test.com"}],
+        "paths": {
+            "/test/keywords": {
+                "post": {
+                    "operationId": "testKeywords",
+                    "summary": "Test reserved keyword handling",
+                    "description": "Test reserved keyword handling",
+                    "requestBody": {
+                        "required": True,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "request_data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "timeframe": {
+                                                    "type": "object",
+                                                    "description": "Time range",
+                                                    "properties": {
+                                                        "from": {
+                                                            "type": "integer",
+                                                            "description": "Start time",
+                                                        },
+                                                        "to": {
+                                                            "type": "integer",
+                                                            "description": "End time",
+                                                        },
+                                                        "for": {
+                                                            "type": "string",
+                                                            "description": "Purpose",
+                                                        },
+                                                    },
+                                                },
+                                            },
+                                        }
+                                    },
+                                }
+                            }
+                        },
+                    },
+                    "responses": {"200": {"description": "Success"}},
+                }
+            }
+        },
+    }
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        spec_path = Path(tmpdir) / "test.yaml"
+        output_dir = Path(tmpdir) / "output"
+        output_dir.mkdir()
+
+        with open(spec_path, "w") as f:
+            yaml.dump(spec, f)
+
+        generate_tools_file(spec_path, output_dir)
+
+        output_file = output_dir / "generated_test_tools.py"
+        content = output_file.read_text()
+
+        # Reserved keywords should be renamed
+        assert "from_time: int | None = None," in content
+        assert "to_time: int | None = None," in content
+        assert "for_value: str | None = None," in content
+
+        # Body building should still use original field names
+        assert 'timeframe_obj["from"] = from_time' in content
+        assert 'timeframe_obj["to"] = to_time' in content
+        assert 'timeframe_obj["for"] = for_value' in content
+
+        # Should NOT have the reserved keywords as parameters
+        assert "from: int" not in content
+        assert "to: int" not in content
+        assert "for: str" not in content

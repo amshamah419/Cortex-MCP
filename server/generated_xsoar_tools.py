@@ -43,7 +43,7 @@ def sanitize_input(value: Any) -> Any:
     if isinstance(value, str):
         # Remove potentially dangerous characters
         # Allow alphanumeric, spaces, hyphens, underscores, and common punctuation
-        sanitized = re.sub(r"[^\w\s\-_.@,:/]", "", value)
+        sanitized = re.sub(r'[^\w\s\-_.@,:/]', '', value)
         # Limit length to prevent DoS
         return sanitized[:1000]
     return value
@@ -63,15 +63,12 @@ def validate_inputs(params: Dict[str, Any]) -> None:
 def sanitize_error_message(error: str) -> str:
     """Sanitize error messages to prevent information leakage."""
     # Remove sensitive information patterns
-    sanitized = re.sub(
-        r"api[_-]?key[=:]?[\s]?[\w-]+", "API_KEY_REDACTED", error, flags=re.IGNORECASE
-    )
-    sanitized = re.sub(r"token[=:]?[\s]?[\w-]+", "TOKEN_REDACTED", sanitized, flags=re.IGNORECASE)
-    sanitized = re.sub(
-        r"password[=:]?[\s]?[\w-]+", "PASSWORD_REDACTED", sanitized, flags=re.IGNORECASE
-    )
+    sanitized = re.sub(r'api[_-]?key[=:]?[\s]?[\w-]+', 'API_KEY_REDACTED', error, flags=re.IGNORECASE)
+    sanitized = re.sub(r'token[=:]?[\s]?[\w-]+', 'TOKEN_REDACTED', sanitized, flags=re.IGNORECASE)
+    sanitized = re.sub(r'password[=:]?[\s]?[\w-]+', 'PASSWORD_REDACTED', sanitized, flags=re.IGNORECASE)
     # Limit error message length
     return sanitized[:500]
+
 
 
 def set_server(s: Server) -> None:
@@ -86,22 +83,22 @@ async def xsoar_revoke_user_api_key(
 ) -> List[types.TextContent]:
     """
     Revoke API Key for user
-
+    
     Args:
         username (str): The username which the API keys assigned to (required)
-
+    
     Returns:
         List[types.TextContent]: 200 for success
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if username is not None:
         path_params["username"] = sanitize_input(username)
 
@@ -110,7 +107,7 @@ async def xsoar_revoke_user_api_key(
     url = base_url + "/apikeys/revoke/user/{username}"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -138,7 +135,7 @@ async def xsoar_revoke_user_api_key(
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -155,33 +152,35 @@ xsoar_revoke_user_api_key_schema = {
     },
 }
 
-
 @server.call_tool()
-async def xsoar_save_or_update_script() -> List[types.TextContent]:
+async def xsoar_save_or_update_script(
+
+) -> List[types.TextContent]:
     """
     Create or update a given automation.
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: The saved automation.
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/automation"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -209,7 +208,7 @@ async def xsoar_save_or_update_script() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -221,36 +220,40 @@ async def xsoar_save_or_update_script() -> List[types.TextContent]:
 # Schema for xsoar_save_or_update_script
 xsoar_save_or_update_script_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_copy_script() -> List[types.TextContent]:
+async def xsoar_copy_script(
+
+) -> List[types.TextContent]:
     """
     Copy given automation
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: The saved automation.
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/automation/copy"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -278,7 +281,7 @@ async def xsoar_copy_script() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -290,36 +293,40 @@ async def xsoar_copy_script() -> List[types.TextContent]:
 # Schema for xsoar_copy_script
 xsoar_copy_script_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_delete_automation_script() -> List[types.TextContent]:
+async def xsoar_delete_automation_script(
+
+) -> List[types.TextContent]:
     """
     Delete a given automation from the system.
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: automation deleted
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/automation/delete"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -347,7 +354,7 @@ async def xsoar_delete_automation_script() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -359,36 +366,40 @@ async def xsoar_delete_automation_script() -> List[types.TextContent]:
 # Schema for xsoar_delete_automation_script
 xsoar_delete_automation_script_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_import_script() -> List[types.TextContent]:
+async def xsoar_import_script(
+
+) -> List[types.TextContent]:
     """
     Import an automation to Cortex XSOAR
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: The saved automation
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/automation/import"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -416,7 +427,7 @@ async def xsoar_import_script() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -428,36 +439,40 @@ async def xsoar_import_script() -> List[types.TextContent]:
 # Schema for xsoar_import_script
 xsoar_import_script_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_get_automation_scripts() -> List[types.TextContent]:
+async def xsoar_get_automation_scripts(
+
+) -> List[types.TextContent]:
     """
     Search Automation by filter
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: automationScriptResult
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/automation/search"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -485,7 +500,7 @@ async def xsoar_get_automation_scripts() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -497,36 +512,40 @@ async def xsoar_get_automation_scripts() -> List[types.TextContent]:
 # Schema for xsoar_get_automation_scripts
 xsoar_get_automation_scripts_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_import_classifier() -> List[types.TextContent]:
+async def xsoar_import_classifier(
+
+) -> List[types.TextContent]:
     """
     Import a classifier to Cortex XSOAR
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: The saved classifiers
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/classifier/import"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -554,7 +573,7 @@ async def xsoar_import_classifier() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -566,36 +585,40 @@ async def xsoar_import_classifier() -> List[types.TextContent]:
 # Schema for xsoar_import_classifier
 xsoar_import_classifier_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_upload_content_packs() -> List[types.TextContent]:
+async def xsoar_upload_content_packs(
+
+) -> List[types.TextContent]:
     """
     Upload Pack to the Server. Can be used to upload a Pack for an offline scenario or a Pack that hasn't been released.
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: The pack was successfully uploaded
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/contentpacks/installed/upload"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -623,7 +646,7 @@ async def xsoar_upload_content_packs() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -635,36 +658,40 @@ async def xsoar_upload_content_packs() -> List[types.TextContent]:
 # Schema for xsoar_upload_content_packs
 xsoar_upload_content_packs_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_import_dashboard() -> List[types.TextContent]:
+async def xsoar_import_dashboard(
+
+) -> List[types.TextContent]:
     """
     Import a dashboard to Cortex XSOAR
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: The saved dashboard
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/dashboards/import"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -692,7 +719,7 @@ async def xsoar_import_dashboard() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -704,37 +731,41 @@ async def xsoar_import_dashboard() -> List[types.TextContent]:
 # Schema for xsoar_import_dashboard
 xsoar_import_dashboard_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_investigation_add_entry_handler() -> List[types.TextContent]:
+async def xsoar_investigation_add_entry_handler(
+
+) -> List[types.TextContent]:
     """
-        API to create an entry (markdown format) in existing investigation
-    Body example: {"investigationId":"1234","data":"entry content…"}
-
-        Args:
-            No parameters required
-
-        Returns:
-            List[types.TextContent]: Entry
+    API to create an entry (markdown format) in existing investigation
+Body example: {"investigationId":"1234","data":"entry content…"}
+    
+    Args:
+        No parameters required
+    
+    Returns:
+        List[types.TextContent]: Entry
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/entry"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -762,7 +793,7 @@ async def xsoar_investigation_add_entry_handler() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -774,9 +805,10 @@ async def xsoar_investigation_add_entry_handler() -> List[types.TextContent]:
 # Schema for xsoar_investigation_add_entry_handler
 xsoar_investigation_add_entry_handler_schema = {
     "type": "object",
-    "properties": {},
-}
+    "properties": {
 
+    },
+}
 
 @server.call_tool()
 async def xsoar_download_file(
@@ -784,22 +816,22 @@ async def xsoar_download_file(
 ) -> List[types.TextContent]:
     """
     Download file from Cortex XSOAR by entry ID
-
+    
     Args:
         entryid (str): Entry ID (required)
-
+    
     Returns:
         List[types.TextContent]: Return the entry
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if entryid is not None:
         path_params["entryid"] = sanitize_input(entryid)
 
@@ -808,7 +840,7 @@ async def xsoar_download_file(
     url = base_url + "/entry/download/{entryid}"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -836,7 +868,7 @@ async def xsoar_download_file(
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -853,34 +885,36 @@ xsoar_download_file_schema = {
     },
 }
 
-
 @server.call_tool()
-async def xsoar_investigation_add_entries_sync() -> List[types.TextContent]:
+async def xsoar_investigation_add_entries_sync(
+
+) -> List[types.TextContent]:
     """
-        API to create an entry (markdown format) in existing investigation
-    Body example: {"investigationId":"1234","data":"entry content…"}
-
-        Args:
-            No parameters required
-
-        Returns:
-            List[types.TextContent]: An array of the children entries of the executed entry.
+    API to create an entry (markdown format) in existing investigation
+Body example: {"investigationId":"1234","data":"entry content…"}
+    
+    Args:
+        No parameters required
+    
+    Returns:
+        List[types.TextContent]: An array of the children entries of the executed entry.
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/entry/execute/sync"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -908,7 +942,7 @@ async def xsoar_investigation_add_entries_sync() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -920,36 +954,40 @@ async def xsoar_investigation_add_entries_sync() -> List[types.TextContent]:
 # Schema for xsoar_investigation_add_entries_sync
 xsoar_investigation_add_entries_sync_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_entry_export_artifact() -> List[types.TextContent]:
+async def xsoar_entry_export_artifact(
+
+) -> List[types.TextContent]:
     """
     Export an entry artifact
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: created file name
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/entry/exportArtifact"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -977,7 +1015,7 @@ async def xsoar_entry_export_artifact() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -989,37 +1027,41 @@ async def xsoar_entry_export_artifact() -> List[types.TextContent]:
 # Schema for xsoar_entry_export_artifact
 xsoar_entry_export_artifact_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_investigation_add_formatted_entry_handler() -> List[types.TextContent]:
+async def xsoar_investigation_add_formatted_entry_handler(
+
+) -> List[types.TextContent]:
     """
-        API to create a formatted entry (table/json/text/markdown/html) in existing investigation
-    Body example: {"investigationId":"1234","format":"table/json/text/markdown/html","contents":"entry content…"}
-
-        Args:
-            No parameters required
-
-        Returns:
-            List[types.TextContent]: Entry
+    API to create a formatted entry (table/json/text/markdown/html) in existing investigation
+Body example: {"investigationId":"1234","format":"table/json/text/markdown/html","contents":"entry content…"}
+    
+    Args:
+        No parameters required
+    
+    Returns:
+        List[types.TextContent]: Entry
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/entry/formatted"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -1047,7 +1089,7 @@ async def xsoar_investigation_add_formatted_entry_handler() -> List[types.TextCo
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -1059,37 +1101,41 @@ async def xsoar_investigation_add_formatted_entry_handler() -> List[types.TextCo
 # Schema for xsoar_investigation_add_formatted_entry_handler
 xsoar_investigation_add_formatted_entry_handler_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_update_entry_note() -> List[types.TextContent]:
+async def xsoar_update_entry_note(
+
+) -> List[types.TextContent]:
     """
-        API to mark entry as note, can be used also to remove the note
-    Body example: {"id":1\@1234","version":"-1","investigationId":"1234","data":"true/false"}
-
-        Args:
-            No parameters required
-
-        Returns:
-            List[types.TextContent]: Entry
+    API to mark entry as note, can be used also to remove the note
+Body example: {"id":1\@1234","version":"-1","investigationId":"1234","data":"true/false"}
+    
+    Args:
+        No parameters required
+    
+    Returns:
+        List[types.TextContent]: Entry
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/entry/note"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -1117,7 +1163,7 @@ async def xsoar_update_entry_note() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -1129,37 +1175,41 @@ async def xsoar_update_entry_note() -> List[types.TextContent]:
 # Schema for xsoar_update_entry_note
 xsoar_update_entry_note_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_update_entry_tags_op() -> List[types.TextContent]:
+async def xsoar_update_entry_tags_op(
+
+) -> List[types.TextContent]:
     """
-        API to set entry tags
-    Body example: {"id":"1\@1234","version":"-1","investigationId":"1234","tags":["tag1","tag2"]"}
-
-        Args:
-            No parameters required
-
-        Returns:
-            List[types.TextContent]: Entry
+    API to set entry tags
+Body example: {"id":"1\@1234","version":"-1","investigationId":"1234","tags":["tag1","tag2"]"}
+    
+    Args:
+        No parameters required
+    
+    Returns:
+        List[types.TextContent]: Entry
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/entry/tags"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -1187,7 +1237,7 @@ async def xsoar_update_entry_tags_op() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -1199,37 +1249,41 @@ async def xsoar_update_entry_tags_op() -> List[types.TextContent]:
 # Schema for xsoar_update_entry_tags_op
 xsoar_update_entry_tags_op_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_save_evidence() -> List[types.TextContent]:
+async def xsoar_save_evidence(
+
+) -> List[types.TextContent]:
     """
-        Save an evidence entity
-    To update evidence custom fields you should lowercase them and remove all spaces. For example: Scan IP -> scanip
-
-        Args:
-            No parameters required
-
-        Returns:
-            List[types.TextContent]: The new / updated Evidence
+    Save an evidence entity
+To update evidence custom fields you should lowercase them and remove all spaces. For example: Scan IP -> scanip
+    
+    Args:
+        No parameters required
+    
+    Returns:
+        List[types.TextContent]: The new / updated Evidence
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/evidence"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -1257,7 +1311,7 @@ async def xsoar_save_evidence() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -1269,36 +1323,40 @@ async def xsoar_save_evidence() -> List[types.TextContent]:
 # Schema for xsoar_save_evidence
 xsoar_save_evidence_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_delete_evidence_op() -> List[types.TextContent]:
+async def xsoar_delete_evidence_op(
+
+) -> List[types.TextContent]:
     """
     Delete an evidence entity
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: Deleted evidence ID
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/evidence/delete"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -1326,7 +1384,7 @@ async def xsoar_delete_evidence_op() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -1338,36 +1396,40 @@ async def xsoar_delete_evidence_op() -> List[types.TextContent]:
 # Schema for xsoar_delete_evidence_op
 xsoar_delete_evidence_op_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_search_evidence() -> List[types.TextContent]:
+async def xsoar_search_evidence(
+
+) -> List[types.TextContent]:
     """
     Search for an evidence entutiy by filter
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: EvidencesSearchResponse
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/evidence/search"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -1395,7 +1457,7 @@ async def xsoar_search_evidence() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -1407,36 +1469,40 @@ async def xsoar_search_evidence() -> List[types.TextContent]:
 # Schema for xsoar_search_evidence
 xsoar_search_evidence_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_health_handler() -> List[types.TextContent]:
+async def xsoar_health_handler(
+
+) -> List[types.TextContent]:
     """
     Check if Cortex XSOAR server is available
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: OK status
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/health"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -1464,7 +1530,7 @@ async def xsoar_health_handler() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -1476,36 +1542,40 @@ async def xsoar_health_handler() -> List[types.TextContent]:
 # Schema for xsoar_health_handler
 xsoar_health_handler_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_containers() -> List[types.TextContent]:
+async def xsoar_containers(
+
+) -> List[types.TextContent]:
     """
     Gets info on the containers - amount of running, inactive and total containers
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: Gets info on the containers - amount of running, inactive and total containers
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/health/containers"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -1533,7 +1603,7 @@ async def xsoar_containers() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -1545,40 +1615,44 @@ async def xsoar_containers() -> List[types.TextContent]:
 # Schema for xsoar_containers
 xsoar_containers_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_create_incident() -> List[types.TextContent]:
+async def xsoar_create_incident(
+
+) -> List[types.TextContent]:
     """
-        Create or update incident according to JSON structure.
-    To update incident custom fields you should lowercase them and remove all spaces. For example: Scan IP -> scanip
-    To get the actual key name you can also go to Cortex XSOAR CLI and run /incident_add and look for the key that you would like to update
+    Create or update incident according to JSON structure.
+To update incident custom fields you should lowercase them and remove all spaces. For example: Scan IP -> scanip
+To get the actual key name you can also go to Cortex XSOAR CLI and run /incident_add and look for the key that you would like to update
 
-    Use the 'createInvestigation\: true' to start the investigation process automatically. (by running a playbook based on incident type.)
-
-        Args:
-            No parameters required
-
-        Returns:
-            List[types.TextContent]: IncidentWrapper
+Use the 'createInvestigation\: true' to start the investigation process automatically. (by running a playbook based on incident type.)
+    
+    Args:
+        No parameters required
+    
+    Returns:
+        List[types.TextContent]: IncidentWrapper
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/incident"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -1606,7 +1680,7 @@ async def xsoar_create_incident() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -1618,38 +1692,42 @@ async def xsoar_create_incident() -> List[types.TextContent]:
 # Schema for xsoar_create_incident
 xsoar_create_incident_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_create_incidents_batch() -> List[types.TextContent]:
+async def xsoar_create_incidents_batch(
+
+) -> List[types.TextContent]:
     """
-        Update a batch of incidents.
-    To update incident custom fields you should lowercase them and remove all spaces. For example: Scan IP -> scanip
-    To get the actual key name you can also go to Cortex XSOAR CLI and run /incident_add and look for the key that you would like to update
-
-        Args:
-            No parameters required
-
-        Returns:
-            List[types.TextContent]:
+    Update a batch of incidents.
+To update incident custom fields you should lowercase them and remove all spaces. For example: Scan IP -> scanip
+To get the actual key name you can also go to Cortex XSOAR CLI and run /incident_add and look for the key that you would like to update
+    
+    Args:
+        No parameters required
+    
+    Returns:
+        List[types.TextContent]: 
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/incident/batch"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -1677,7 +1755,7 @@ async def xsoar_create_incidents_batch() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -1689,36 +1767,40 @@ async def xsoar_create_incidents_batch() -> List[types.TextContent]:
 # Schema for xsoar_create_incidents_batch
 xsoar_create_incidents_batch_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_export_incidents_to_csv_batch() -> List[types.TextContent]:
+async def xsoar_export_incidents_to_csv_batch(
+
+) -> List[types.TextContent]:
     """
     Exports an incidents batch to CSV file (returns file ID)
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: csv file name
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/incident/batch/exportToCsv"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -1746,7 +1828,7 @@ async def xsoar_export_incidents_to_csv_batch() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -1758,38 +1840,42 @@ async def xsoar_export_incidents_to_csv_batch() -> List[types.TextContent]:
 # Schema for xsoar_export_incidents_to_csv_batch
 xsoar_export_incidents_to_csv_batch_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_close_incidents_batch() -> List[types.TextContent]:
+async def xsoar_close_incidents_batch(
+
+) -> List[types.TextContent]:
     """
-        Closes an incidents batch
-    To update incident custom fields you should lowercase them and remove all spaces. For example: Scan IP -> scanip
-    To get the actual key name you can also go to Cortex XSOAR CLI and run /incident_add and look for the key that you would like to update
-
-        Args:
-            No parameters required
-
-        Returns:
-            List[types.TextContent]: IncidentSearchResponseWrapper
+    Closes an incidents batch
+To update incident custom fields you should lowercase them and remove all spaces. For example: Scan IP -> scanip
+To get the actual key name you can also go to Cortex XSOAR CLI and run /incident_add and look for the key that you would like to update
+    
+    Args:
+        No parameters required
+    
+    Returns:
+        List[types.TextContent]: IncidentSearchResponseWrapper
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/incident/batchClose"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -1817,7 +1903,7 @@ async def xsoar_close_incidents_batch() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -1829,36 +1915,40 @@ async def xsoar_close_incidents_batch() -> List[types.TextContent]:
 # Schema for xsoar_close_incidents_batch
 xsoar_close_incidents_batch_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_delete_incidents_batch() -> List[types.TextContent]:
+async def xsoar_delete_incidents_batch(
+
+) -> List[types.TextContent]:
     """
     Deletes an incidents batch
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: IncidentSearchResponseWrapper
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/incident/batchDelete"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -1886,7 +1976,7 @@ async def xsoar_delete_incidents_batch() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -1898,9 +1988,10 @@ async def xsoar_delete_incidents_batch() -> List[types.TextContent]:
 # Schema for xsoar_delete_incidents_batch
 xsoar_delete_incidents_batch_schema = {
     "type": "object",
-    "properties": {},
-}
+    "properties": {
 
+    },
+}
 
 @server.call_tool()
 async def xsoar_incident_as_csv(
@@ -1908,22 +1999,22 @@ async def xsoar_incident_as_csv(
 ) -> List[types.TextContent]:
     """
     Get an incident CSV file that was exported, by ID
-
+    
     Args:
         id (str): CSV file to fetch (returned from batch export to csv call) (required)
-
+    
     Returns:
         List[types.TextContent]: Return Csv file
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if id is not None:
         path_params["id"] = sanitize_input(id)
 
@@ -1932,7 +2023,7 @@ async def xsoar_incident_as_csv(
     url = base_url + "/incident/csv/{id}"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -1960,7 +2051,7 @@ async def xsoar_incident_as_csv(
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -1973,40 +2064,39 @@ async def xsoar_incident_as_csv(
 xsoar_incident_as_csv_schema = {
     "type": "object",
     "properties": {
-        "id": {
-            "type": "str",
-            "description": "CSV file to fetch (returned from batch export to csv call)",
-        },
+        "id": {"type": "str", "description": "CSV file to fetch (returned from batch export to csv call)"},
     },
 }
 
-
 @server.call_tool()
-async def xsoar_create_incident_json() -> List[types.TextContent]:
+async def xsoar_create_incident_json(
+
+) -> List[types.TextContent]:
     """
     Create single incident from raw JSON, builds incident according to default mapping
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: Created
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/incident/json"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -2034,7 +2124,7 @@ async def xsoar_create_incident_json() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -2046,9 +2136,10 @@ async def xsoar_create_incident_json() -> List[types.TextContent]:
 # Schema for xsoar_create_incident_json
 xsoar_create_incident_json_schema = {
     "type": "object",
-    "properties": {},
-}
+    "properties": {
 
+    },
+}
 
 @server.call_tool()
 async def xsoar_incident_file_upload(
@@ -2056,22 +2147,22 @@ async def xsoar_incident_file_upload(
 ) -> List[types.TextContent]:
     """
     Add file attachement to an incidents
-
+    
     Args:
         id (str): Incident id to update (required)
-
+    
     Returns:
         List[types.TextContent]: IncidentWrapper
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if id is not None:
         path_params["id"] = sanitize_input(id)
 
@@ -2080,7 +2171,7 @@ async def xsoar_incident_file_upload(
     url = base_url + "/incident/upload/{id}"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -2108,7 +2199,7 @@ async def xsoar_incident_file_upload(
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -2125,30 +2216,29 @@ xsoar_incident_file_upload_schema = {
     },
 }
 
-
 @server.call_tool()
 async def xsoar_set_tags_field(
     id: str,
 ) -> List[types.TextContent]:
     """
-        Sets the select values of a specific tags field. The values passed to the route override the existing select
-    values of the field. To reset the select values pass an empty array.
-
-        Args:
-            id (str): The machine name of the field prefixed with the type. For example indicator_tags or incident_dbotmirrortags (required)
-
-        Returns:
-            List[types.TextContent]: empty
+    Sets the select values of a specific tags field. The values passed to the route override the existing select
+values of the field. To reset the select values pass an empty array.
+    
+    Args:
+        id (str): The machine name of the field prefixed with the type. For example indicator_tags or incident_dbotmirrortags (required)
+    
+    Returns:
+        List[types.TextContent]: empty
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if id is not None:
         path_params["id"] = sanitize_input(id)
 
@@ -2157,7 +2247,7 @@ async def xsoar_set_tags_field(
     url = base_url + "/incidentfield/tags/reset/{id}"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -2185,7 +2275,7 @@ async def xsoar_set_tags_field(
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -2198,13 +2288,9 @@ async def xsoar_set_tags_field(
 xsoar_set_tags_field_schema = {
     "type": "object",
     "properties": {
-        "id": {
-            "type": "str",
-            "description": "The machine name of the field prefixed with the type. For example indicator_tags or incident_dbotmirrortags",
-        },
+        "id": {"type": "str", "description": "The machine name of the field prefixed with the type. For example indicator_tags or incident_dbotmirrortags"},
     },
 }
-
 
 @server.call_tool()
 async def xsoar_incidents_fields_by_incident_type(
@@ -2212,22 +2298,22 @@ async def xsoar_incidents_fields_by_incident_type(
 ) -> List[types.TextContent]:
     """
     Get all incident fields associated with incident type
-
+    
     Args:
         type (str): the name (case sensitive) of the incident type (required)
-
+    
     Returns:
         List[types.TextContent]: Returns a list of incident fields associated with the incident type
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if type is not None:
         path_params["type"] = sanitize_input(type)
 
@@ -2236,7 +2322,7 @@ async def xsoar_incidents_fields_by_incident_type(
     url = base_url + "/incidentfields/associatedTypes/{type}"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -2264,7 +2350,7 @@ async def xsoar_incidents_fields_by_incident_type(
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -2281,33 +2367,35 @@ xsoar_incidents_fields_by_incident_type_schema = {
     },
 }
 
-
 @server.call_tool()
-async def xsoar_import_incident_fields() -> List[types.TextContent]:
+async def xsoar_import_incident_fields(
+
+) -> List[types.TextContent]:
     """
     Import an incident field to Cortex XSOAR
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: The saved incident field
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/incidentfields/import"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -2335,7 +2423,7 @@ async def xsoar_import_incident_fields() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -2347,38 +2435,42 @@ async def xsoar_import_incident_fields() -> List[types.TextContent]:
 # Schema for xsoar_import_incident_fields
 xsoar_import_incident_fields_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_search_incidents() -> List[types.TextContent]:
+async def xsoar_search_incidents(
+
+) -> List[types.TextContent]:
     """
-        Search incidents across all indices. You can filter by multiple options.
+    Search incidents across all indices. You can filter by multiple options.
 
-    **Note:** You cannot paginate results in a multi-tenant environment.
-
-        Args:
-            No parameters required
-
-        Returns:
-            List[types.TextContent]: incidentSearchResponse
+**Note:** You cannot paginate results in a multi-tenant environment.
+    
+    Args:
+        No parameters required
+    
+    Returns:
+        List[types.TextContent]: incidentSearchResponse
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/incidents/search"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -2406,7 +2498,7 @@ async def xsoar_search_incidents() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -2418,36 +2510,40 @@ async def xsoar_search_incidents() -> List[types.TextContent]:
 # Schema for xsoar_search_incidents
 xsoar_search_incidents_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_create_or_update_incident_type() -> List[types.TextContent]:
+async def xsoar_create_or_update_incident_type(
+
+) -> List[types.TextContent]:
     """
     API to create new Incident Type
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: IncidentType
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/incidenttype"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -2475,7 +2571,7 @@ async def xsoar_create_or_update_incident_type() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -2487,36 +2583,40 @@ async def xsoar_create_or_update_incident_type() -> List[types.TextContent]:
 # Schema for xsoar_create_or_update_incident_type
 xsoar_create_or_update_incident_type_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_import_incident_types_handler() -> List[types.TextContent]:
+async def xsoar_import_incident_types_handler(
+
+) -> List[types.TextContent]:
     """
     Import an incident type to Cortex XSOAR.
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: The saved incident type
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/incidenttypes/import"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -2544,7 +2644,7 @@ async def xsoar_import_incident_types_handler() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -2556,37 +2656,41 @@ async def xsoar_import_incident_types_handler() -> List[types.TextContent]:
 # Schema for xsoar_import_incident_types_handler
 xsoar_import_incident_types_handler_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_indicators_create() -> List[types.TextContent]:
+async def xsoar_indicators_create(
+
+) -> List[types.TextContent]:
     """
-        Create an indicator entity
-    To update indicator custom fields you should lowercase them and remove all spaces. For example: Scan IP -> scanip
-
-        Args:
-            No parameters required
-
-        Returns:
-            List[types.TextContent]: IocObject
+    Create an indicator entity
+To update indicator custom fields you should lowercase them and remove all spaces. For example: Scan IP -> scanip
+    
+    Args:
+        No parameters required
+    
+    Returns:
+        List[types.TextContent]: IocObject
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/indicator/create"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -2614,7 +2718,7 @@ async def xsoar_indicators_create() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -2626,37 +2730,41 @@ async def xsoar_indicators_create() -> List[types.TextContent]:
 # Schema for xsoar_indicators_create
 xsoar_indicators_create_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_indicators_edit() -> List[types.TextContent]:
+async def xsoar_indicators_edit(
+
+) -> List[types.TextContent]:
     """
-        Edit an indicator entity
-    To update indicator custom fields you should lowercase them and remove all spaces. For example: Scan IP -> scanip
-
-        Args:
-            No parameters required
-
-        Returns:
-            List[types.TextContent]: IocObject
+    Edit an indicator entity
+To update indicator custom fields you should lowercase them and remove all spaces. For example: Scan IP -> scanip
+    
+    Args:
+        No parameters required
+    
+    Returns:
+        List[types.TextContent]: IocObject
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/indicator/edit"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -2684,7 +2792,7 @@ async def xsoar_indicators_edit() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -2696,37 +2804,41 @@ async def xsoar_indicators_edit() -> List[types.TextContent]:
 # Schema for xsoar_indicators_edit
 xsoar_indicators_edit_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_indicator_whitelist() -> List[types.TextContent]:
+async def xsoar_indicator_whitelist(
+
+) -> List[types.TextContent]:
     """
-        Whitelists or deletes an indicator entity
-    In order to delete an indicator and not whitelist, set doNotWhitelist boolean field to true
-
-        Args:
-            No parameters required
-
-        Returns:
-            List[types.TextContent]: UpdateResponse
+    Whitelists or deletes an indicator entity
+In order to delete an indicator and not whitelist, set doNotWhitelist boolean field to true
+    
+    Args:
+        No parameters required
+    
+    Returns:
+        List[types.TextContent]: UpdateResponse
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/indicator/whitelist"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -2754,7 +2866,7 @@ async def xsoar_indicator_whitelist() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -2766,36 +2878,40 @@ async def xsoar_indicator_whitelist() -> List[types.TextContent]:
 # Schema for xsoar_indicator_whitelist
 xsoar_indicator_whitelist_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_export_indicators_to_stix_batch() -> List[types.TextContent]:
+async def xsoar_export_indicators_to_stix_batch(
+
+) -> List[types.TextContent]:
     """
     Exports an indicators batch to STIX file (returns file ID)
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: STIX file name
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/indicators/batch/export/stix"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -2823,7 +2939,7 @@ async def xsoar_export_indicators_to_stix_batch() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -2835,36 +2951,40 @@ async def xsoar_export_indicators_to_stix_batch() -> List[types.TextContent]:
 # Schema for xsoar_export_indicators_to_stix_batch
 xsoar_export_indicators_to_stix_batch_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_export_indicators_to_csv_batch() -> List[types.TextContent]:
+async def xsoar_export_indicators_to_csv_batch(
+
+) -> List[types.TextContent]:
     """
     Exports an indicators batch to CSV file (returns file ID)
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: csv file name
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/indicators/batch/exportToCsv"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -2892,7 +3012,7 @@ async def xsoar_export_indicators_to_csv_batch() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -2904,37 +3024,41 @@ async def xsoar_export_indicators_to_csv_batch() -> List[types.TextContent]:
 # Schema for xsoar_export_indicators_to_csv_batch
 xsoar_export_indicators_to_csv_batch_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_delete_indicators_batch() -> List[types.TextContent]:
+async def xsoar_delete_indicators_batch(
+
+) -> List[types.TextContent]:
     """
-        Batch whitelist or delete indicators entities
-    In order to delete indicators and not whitelist, set doNotWhitelist boolean field to true
-
-        Args:
-            No parameters required
-
-        Returns:
-            List[types.TextContent]: UpdateResponse
+    Batch whitelist or delete indicators entities
+In order to delete indicators and not whitelist, set doNotWhitelist boolean field to true
+    
+    Args:
+        No parameters required
+    
+    Returns:
+        List[types.TextContent]: UpdateResponse
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/indicators/batchDelete"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -2962,7 +3086,7 @@ async def xsoar_delete_indicators_batch() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -2974,9 +3098,10 @@ async def xsoar_delete_indicators_batch() -> List[types.TextContent]:
 # Schema for xsoar_delete_indicators_batch
 xsoar_delete_indicators_batch_schema = {
     "type": "object",
-    "properties": {},
-}
+    "properties": {
 
+    },
+}
 
 @server.call_tool()
 async def xsoar_indicators_as_csv(
@@ -2984,22 +3109,22 @@ async def xsoar_indicators_as_csv(
 ) -> List[types.TextContent]:
     """
     Get an indicators CSV file that was exported, by ID
-
+    
     Args:
         id (str): CSV file to fetch (returned from batch export to csv call) (required)
-
+    
     Returns:
         List[types.TextContent]: Return Csv file
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if id is not None:
         path_params["id"] = sanitize_input(id)
 
@@ -3008,7 +3133,7 @@ async def xsoar_indicators_as_csv(
     url = base_url + "/indicators/csv/{id}"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -3036,7 +3161,7 @@ async def xsoar_indicators_as_csv(
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -3049,46 +3174,45 @@ async def xsoar_indicators_as_csv(
 xsoar_indicators_as_csv_schema = {
     "type": "object",
     "properties": {
-        "id": {
-            "type": "str",
-            "description": "CSV file to fetch (returned from batch export to csv call)",
-        },
+        "id": {"type": "str", "description": "CSV file to fetch (returned from batch export to csv call)"},
     },
 }
 
-
 @server.call_tool()
-async def xsoar_create_feed_indicators_json() -> List[types.TextContent]:
+async def xsoar_create_feed_indicators_json(
+
+) -> List[types.TextContent]:
     """
-        Create indicators from raw JSON (similar to ingesting from a feed). Builds indicators according to the specified feed classifier,
-    or uses the default one if not specified.
-    Indicator properties (all optional except for value): **value** (string, required) | **type** (string) | **score** (number, 0-3,
-    default `0`, where `0` means None, `1` Good, `2` Suspicious, and `3` Bad) | **sourceBrand** (string, default `"External"`) | **sourceInstance**
-    (string, default `"External"`) | **reliability** (string, one of `"A - Completely reliable"`, `"B - Usually reliable"`, `"C - Fairly
-    reliable"`, `"D - Not usually reliable"`, `"E - Unreliable"`, `"F - Reliability cannot be judged"`) | **expirationPolicy** (string,
-    one of `"never"`, `"interval"`, `"indicatorType"`) | **expirationInterval** (number, in minutes)
-
-        Args:
-            No parameters required
-
-        Returns:
-            List[types.TextContent]: Indicators created
+    Create indicators from raw JSON (similar to ingesting from a feed). Builds indicators according to the specified feed classifier,
+or uses the default one if not specified.
+Indicator properties (all optional except for value): **value** (string, required) | **type** (string) | **score** (number, 0-3,
+default `0`, where `0` means None, `1` Good, `2` Suspicious, and `3` Bad) | **sourceBrand** (string, default `"External"`) | **sourceInstance**
+(string, default `"External"`) | **reliability** (string, one of `"A - Completely reliable"`, `"B - Usually reliable"`, `"C - Fairly
+reliable"`, `"D - Not usually reliable"`, `"E - Unreliable"`, `"F - Reliability cannot be judged"`) | **expirationPolicy** (string,
+one of `"never"`, `"interval"`, `"indicatorType"`) | **expirationInterval** (number, in minutes)
+    
+    Args:
+        No parameters required
+    
+    Returns:
+        List[types.TextContent]: Indicators created
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/indicators/feed/json"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -3116,7 +3240,7 @@ async def xsoar_create_feed_indicators_json() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -3128,36 +3252,40 @@ async def xsoar_create_feed_indicators_json() -> List[types.TextContent]:
 # Schema for xsoar_create_feed_indicators_json
 xsoar_create_feed_indicators_json_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_indicators_search() -> List[types.TextContent]:
+async def xsoar_indicators_search(
+
+) -> List[types.TextContent]:
     """
     Search indicators by filter
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: indicatorResult
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/indicators/search"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -3185,7 +3313,7 @@ async def xsoar_indicators_search() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -3197,9 +3325,10 @@ async def xsoar_indicators_search() -> List[types.TextContent]:
 # Schema for xsoar_indicators_search
 xsoar_indicators_search_schema = {
     "type": "object",
-    "properties": {},
-}
+    "properties": {
 
+    },
+}
 
 @server.call_tool()
 async def xsoar_indicators_as_stix(
@@ -3207,22 +3336,22 @@ async def xsoar_indicators_as_stix(
 ) -> List[types.TextContent]:
     """
     Get an indicators STIX V2 file that was exported, by ID
-
+    
     Args:
         id (str): STIX V2 file to fetch (returned from batch export to STIX call) (required)
-
+    
     Returns:
         List[types.TextContent]: Return STIX V2 file
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if id is not None:
         path_params["id"] = sanitize_input(id)
 
@@ -3231,7 +3360,7 @@ async def xsoar_indicators_as_stix(
     url = base_url + "/indicators/stix/v2/{id}"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -3259,7 +3388,7 @@ async def xsoar_indicators_as_stix(
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -3272,40 +3401,39 @@ async def xsoar_indicators_as_stix(
 xsoar_indicators_as_stix_schema = {
     "type": "object",
     "properties": {
-        "id": {
-            "type": "str",
-            "description": "STIX V2 file to fetch (returned from batch export to STIX call)",
-        },
+        "id": {"type": "str", "description": "STIX V2 file to fetch (returned from batch export to STIX call)"},
     },
 }
 
-
 @server.call_tool()
-async def xsoar_indicators_timeline_delete() -> List[types.TextContent]:
+async def xsoar_indicators_timeline_delete(
+
+) -> List[types.TextContent]:
     """
     Delete indicators timeline by filter
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: IndicatorEditBulkResponse
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/indicators/timeline/delete"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -3333,7 +3461,7 @@ async def xsoar_indicators_timeline_delete() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -3345,36 +3473,40 @@ async def xsoar_indicators_timeline_delete() -> List[types.TextContent]:
 # Schema for xsoar_indicators_timeline_delete
 xsoar_indicators_timeline_delete_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_indicators_create_batch() -> List[types.TextContent]:
+async def xsoar_indicators_create_batch(
+
+) -> List[types.TextContent]:
     """
     Create indicators from a file
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: IocObjects
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/indicators/upload"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -3402,7 +3534,7 @@ async def xsoar_indicators_create_batch() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -3414,36 +3546,40 @@ async def xsoar_indicators_create_batch() -> List[types.TextContent]:
 # Schema for xsoar_indicators_create_batch
 xsoar_indicators_create_batch_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_create_or_update_whitelisted() -> List[types.TextContent]:
+async def xsoar_create_or_update_whitelisted(
+
+) -> List[types.TextContent]:
     """
     Create or update excluded indicators list
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: WhitelistedIndicator
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/indicators/whitelist/update"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -3471,7 +3607,7 @@ async def xsoar_create_or_update_whitelisted() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -3483,9 +3619,10 @@ async def xsoar_create_or_update_whitelisted() -> List[types.TextContent]:
 # Schema for xsoar_create_or_update_whitelisted
 xsoar_create_or_update_whitelisted_schema = {
     "type": "object",
-    "properties": {},
-}
+    "properties": {
 
+    },
+}
 
 @server.call_tool()
 async def xsoar_add_ad_hoc_task(
@@ -3493,22 +3630,22 @@ async def xsoar_add_ad_hoc_task(
 ) -> List[types.TextContent]:
     """
     Add an ad-hoc task to a running playbook
-
+    
     Args:
         investigation_id (str): investigation ID (required)
-
+    
     Returns:
         List[types.TextContent]: InvestigationPlaybook
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if investigation_id is not None:
         path_params["investigationId"] = sanitize_input(investigation_id)
 
@@ -3517,7 +3654,7 @@ async def xsoar_add_ad_hoc_task(
     url = base_url + "/inv-playbook/task/add/{investigationId}"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -3545,7 +3682,7 @@ async def xsoar_add_ad_hoc_task(
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -3562,33 +3699,35 @@ xsoar_add_ad_hoc_task_schema = {
     },
 }
 
-
 @server.call_tool()
-async def xsoar_task_assign() -> List[types.TextContent]:
+async def xsoar_task_assign(
+
+) -> List[types.TextContent]:
     """
     Assign a task to an owner
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: InvestigationPlaybook
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/inv-playbook/task/assign"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -3616,7 +3755,7 @@ async def xsoar_task_assign() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -3628,37 +3767,41 @@ async def xsoar_task_assign() -> List[types.TextContent]:
 # Schema for xsoar_task_assign
 xsoar_task_assign_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_complete_task() -> List[types.TextContent]:
+async def xsoar_complete_task(
+
+) -> List[types.TextContent]:
     """
-        Complete a task with a file attachment
-    Deprecated - use "/v2/inv-playbook/task/complete"
-
-        Args:
-            No parameters required
-
-        Returns:
-            List[types.TextContent]: InvestigationPlaybook
+    Complete a task with a file attachment
+Deprecated - use "/v2/inv-playbook/task/complete"
+    
+    Args:
+        No parameters required
+    
+    Returns:
+        List[types.TextContent]: InvestigationPlaybook
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/inv-playbook/task/complete"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -3686,7 +3829,7 @@ async def xsoar_complete_task() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -3698,36 +3841,40 @@ async def xsoar_complete_task() -> List[types.TextContent]:
 # Schema for xsoar_complete_task
 xsoar_complete_task_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_simple_complete_task() -> List[types.TextContent]:
+async def xsoar_simple_complete_task(
+
+) -> List[types.TextContent]:
     """
     Complete a task without a file attachment
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: InvestigationPlaybook
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/inv-playbook/task/complete/simple"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -3755,7 +3902,7 @@ async def xsoar_simple_complete_task() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -3767,9 +3914,10 @@ async def xsoar_simple_complete_task() -> List[types.TextContent]:
 # Schema for xsoar_simple_complete_task
 xsoar_simple_complete_task_schema = {
     "type": "object",
-    "properties": {},
-}
+    "properties": {
 
+    },
+}
 
 @server.call_tool()
 async def xsoar_delete_ad_hoc_task(
@@ -3778,23 +3926,23 @@ async def xsoar_delete_ad_hoc_task(
 ) -> List[types.TextContent]:
     """
     Delete an ad-hoc task from a running playbook
-
+    
     Args:
         inv_pb_task_id (str): ad-hoc task ID (required)
         investigation_id (str): investigation ID (required)
-
+    
     Returns:
         List[types.TextContent]: InvestigationPlaybook
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if inv_pb_task_id is not None:
         path_params["invPBTaskId"] = sanitize_input(inv_pb_task_id)
     if investigation_id is not None:
@@ -3805,7 +3953,7 @@ async def xsoar_delete_ad_hoc_task(
     url = base_url + "/inv-playbook/task/delete/{investigationId}/{invPBTaskId}"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -3833,7 +3981,7 @@ async def xsoar_delete_ad_hoc_task(
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -3851,33 +3999,35 @@ xsoar_delete_ad_hoc_task_schema = {
     },
 }
 
-
 @server.call_tool()
-async def xsoar_task_set_due() -> List[types.TextContent]:
+async def xsoar_task_set_due(
+
+) -> List[types.TextContent]:
     """
     Set the task due date
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: InvestigationPlaybook
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/inv-playbook/task/due"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -3905,7 +4055,7 @@ async def xsoar_task_set_due() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -3917,9 +4067,10 @@ async def xsoar_task_set_due() -> List[types.TextContent]:
 # Schema for xsoar_task_set_due
 xsoar_task_set_due_schema = {
     "type": "object",
-    "properties": {},
-}
+    "properties": {
 
+    },
+}
 
 @server.call_tool()
 async def xsoar_edit_ad_hoc_task(
@@ -3927,22 +4078,22 @@ async def xsoar_edit_ad_hoc_task(
 ) -> List[types.TextContent]:
     """
     Edit an ad-hoc task in a running playbook
-
+    
     Args:
         investigation_id (str): investigation ID (required)
-
+    
     Returns:
         List[types.TextContent]: InvestigationPlaybook
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if investigation_id is not None:
         path_params["investigationId"] = sanitize_input(investigation_id)
 
@@ -3951,7 +4102,7 @@ async def xsoar_edit_ad_hoc_task(
     url = base_url + "/inv-playbook/task/edit/{investigationId}"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -3979,7 +4130,7 @@ async def xsoar_edit_ad_hoc_task(
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -3996,33 +4147,35 @@ xsoar_edit_ad_hoc_task_schema = {
     },
 }
 
-
 @server.call_tool()
-async def xsoar_task_add_comment() -> List[types.TextContent]:
+async def xsoar_task_add_comment(
+
+) -> List[types.TextContent]:
     """
     Add comment to a task
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: InvestigationPlaybook
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/inv-playbook/task/note/add"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -4050,7 +4203,7 @@ async def xsoar_task_add_comment() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -4062,36 +4215,40 @@ async def xsoar_task_add_comment() -> List[types.TextContent]:
 # Schema for xsoar_task_add_comment
 xsoar_task_add_comment_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_task_un_complete() -> List[types.TextContent]:
+async def xsoar_task_un_complete(
+
+) -> List[types.TextContent]:
     """
     Reopen a closed task and change the status to uncomplete
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: InvestigationPlaybook
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/inv-playbook/task/uncomplete"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -4119,7 +4276,7 @@ async def xsoar_task_un_complete() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -4131,37 +4288,41 @@ async def xsoar_task_un_complete() -> List[types.TextContent]:
 # Schema for xsoar_task_un_complete
 xsoar_task_un_complete_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_search_investigations() -> List[types.TextContent]:
+async def xsoar_search_investigations(
+
+) -> List[types.TextContent]:
     """
-        This will search investigations across all indices
-    You can filter by multiple options
-
-        Args:
-            No parameters required
-
-        Returns:
-            List[types.TextContent]: investigationSearchResponse
+    This will search investigations across all indices
+You can filter by multiple options
+    
+    Args:
+        No parameters required
+    
+    Returns:
+        List[types.TextContent]: investigationSearchResponse
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/investigations/search"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -4189,7 +4350,7 @@ async def xsoar_search_investigations() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -4201,36 +4362,40 @@ async def xsoar_search_investigations() -> List[types.TextContent]:
 # Schema for xsoar_search_investigations
 xsoar_search_investigations_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_logout_everyone_handler() -> List[types.TextContent]:
+async def xsoar_logout_everyone_handler(
+
+) -> List[types.TextContent]:
     """
     Sign out all open users sessions
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: no content
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/logout/everyone"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -4258,7 +4423,7 @@ async def xsoar_logout_everyone_handler() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -4270,36 +4435,40 @@ async def xsoar_logout_everyone_handler() -> List[types.TextContent]:
 # Schema for xsoar_logout_everyone_handler
 xsoar_logout_everyone_handler_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_logout_myself_handler() -> List[types.TextContent]:
+async def xsoar_logout_myself_handler(
+
+) -> List[types.TextContent]:
     """
     Sign out all my open sessions
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: no content
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/logout/myself"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -4327,7 +4496,7 @@ async def xsoar_logout_myself_handler() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -4339,36 +4508,40 @@ async def xsoar_logout_myself_handler() -> List[types.TextContent]:
 # Schema for xsoar_logout_myself_handler
 xsoar_logout_myself_handler_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_logout_myself_other_sessions_handler() -> List[types.TextContent]:
+async def xsoar_logout_myself_other_sessions_handler(
+
+) -> List[types.TextContent]:
     """
     Sign out all my other open sessions
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: no content
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/logout/myself/other"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -4396,7 +4569,7 @@ async def xsoar_logout_myself_other_sessions_handler() -> List[types.TextContent
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -4408,9 +4581,10 @@ async def xsoar_logout_myself_other_sessions_handler() -> List[types.TextContent
 # Schema for xsoar_logout_myself_other_sessions_handler
 xsoar_logout_myself_other_sessions_handler_schema = {
     "type": "object",
-    "properties": {},
-}
+    "properties": {
 
+    },
+}
 
 @server.call_tool()
 async def xsoar_logout_user_sessions_handler(
@@ -4418,22 +4592,22 @@ async def xsoar_logout_user_sessions_handler(
 ) -> List[types.TextContent]:
     """
     Sign out all sessions of the provided username
-
+    
     Args:
         username (str): Username to logout (required)
-
+    
     Returns:
         List[types.TextContent]: no content
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if username is not None:
         path_params["username"] = sanitize_input(username)
 
@@ -4442,7 +4616,7 @@ async def xsoar_logout_user_sessions_handler(
     url = base_url + "/logout/user/{username}"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -4470,7 +4644,7 @@ async def xsoar_logout_user_sessions_handler(
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -4487,33 +4661,35 @@ xsoar_logout_user_sessions_handler_schema = {
     },
 }
 
-
 @server.call_tool()
-async def xsoar_override_playbook_yaml() -> List[types.TextContent]:
+async def xsoar_override_playbook_yaml(
+
+) -> List[types.TextContent]:
     """
     Import and override playbook in Cortex XSOAR
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: The saved playbook
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/playbook/save/yaml"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -4541,7 +4717,7 @@ async def xsoar_override_playbook_yaml() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -4553,34 +4729,35 @@ async def xsoar_override_playbook_yaml() -> List[types.TextContent]:
 # Schema for xsoar_override_playbook_yaml
 xsoar_override_playbook_yaml_schema = {
     "type": "object",
-    "properties": {},
-}
+    "properties": {
 
+    },
+}
 
 @server.call_tool()
 async def xsoar_download_latest_report(
     id: str,
 ) -> List[types.TextContent]:
     """
-        Get the latest report by its ID.
+    Get the latest report by its ID.
 
-    **Note:** To get the report, it must be a scheduled report with recipients.
-
-        Args:
-            id (str): the ID of the report to get (required)
-
-        Returns:
-            List[types.TextContent]: Return a report file
+**Note:** To get the report, it must be a scheduled report with recipients.
+    
+    Args:
+        id (str): the ID of the report to get (required)
+    
+    Returns:
+        List[types.TextContent]: Return a report file
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if id is not None:
         path_params["id"] = sanitize_input(id)
 
@@ -4589,7 +4766,7 @@ async def xsoar_download_latest_report(
     url = base_url + "/report/{id}/latest"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -4617,7 +4794,7 @@ async def xsoar_download_latest_report(
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -4634,7 +4811,6 @@ xsoar_download_latest_report_schema = {
     },
 }
 
-
 @server.call_tool()
 async def xsoar_execute_report(
     request_id: str,
@@ -4642,23 +4818,23 @@ async def xsoar_execute_report(
 ) -> List[types.TextContent]:
     """
     Execute a new report
-
+    
     Args:
         request_id (str): the ID to register the request under (required)
         id (str): the ID of the report to get (required)
-
+    
     Returns:
         List[types.TextContent]: Request registered
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if request_id is not None:
         path_params["requestId"] = sanitize_input(request_id)
     if id is not None:
@@ -4669,7 +4845,7 @@ async def xsoar_execute_report(
     url = base_url + "/report/{id}/{requestId}/execute"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -4697,7 +4873,7 @@ async def xsoar_execute_report(
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -4715,33 +4891,35 @@ xsoar_execute_report_schema = {
     },
 }
 
-
 @server.call_tool()
-async def xsoar_all_reports() -> List[types.TextContent]:
+async def xsoar_all_reports(
+
+) -> List[types.TextContent]:
     """
     Get all of the reports
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: Return array of reports
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/reports"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -4769,7 +4947,7 @@ async def xsoar_all_reports() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -4781,36 +4959,40 @@ async def xsoar_all_reports() -> List[types.TextContent]:
 # Schema for xsoar_all_reports
 xsoar_all_reports_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_upload_report() -> List[types.TextContent]:
+async def xsoar_upload_report(
+
+) -> List[types.TextContent]:
     """
     Upload a report to Cortex XSOAR
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: A list of all the reports in the instance
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/reports/upload"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -4838,7 +5020,7 @@ async def xsoar_upload_report() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -4850,9 +5032,10 @@ async def xsoar_upload_report() -> List[types.TextContent]:
 # Schema for xsoar_upload_report
 xsoar_upload_report_schema = {
     "type": "object",
-    "properties": {},
-}
+    "properties": {
 
+    },
+}
 
 @server.call_tool()
 async def xsoar_report_by_id(
@@ -4860,22 +5043,22 @@ async def xsoar_report_by_id(
 ) -> List[types.TextContent]:
     """
     Get a report by its ID
-
+    
     Args:
         id (str): the ID of the report to get (required)
-
+    
     Returns:
         List[types.TextContent]: Return a report
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if id is not None:
         path_params["id"] = sanitize_input(id)
 
@@ -4884,7 +5067,7 @@ async def xsoar_report_by_id(
     url = base_url + "/reports/{id}"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -4912,7 +5095,7 @@ async def xsoar_report_by_id(
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -4929,33 +5112,35 @@ xsoar_report_by_id_schema = {
     },
 }
 
-
 @server.call_tool()
-async def xsoar_get_audits() -> List[types.TextContent]:
+async def xsoar_get_audits(
+
+) -> List[types.TextContent]:
     """
     Get audits by filter
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: auditResult
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/settings/audits"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -4983,7 +5168,7 @@ async def xsoar_get_audits() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -4995,36 +5180,40 @@ async def xsoar_get_audits() -> List[types.TextContent]:
 # Schema for xsoar_get_audits
 xsoar_get_audits_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_docker_images() -> List[types.TextContent]:
+async def xsoar_docker_images(
+
+) -> List[types.TextContent]:
     """
     Get list of all available docker image names
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: DockerImagesResult
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/settings/docker-images"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -5052,7 +5241,7 @@ async def xsoar_docker_images() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -5064,36 +5253,40 @@ async def xsoar_docker_images() -> List[types.TextContent]:
 # Schema for xsoar_docker_images
 xsoar_docker_images_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_create_docker_image() -> List[types.TextContent]:
+async def xsoar_create_docker_image(
+
+) -> List[types.TextContent]:
     """
     Create an image with a given list of dependencies
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: NewDockerImageResult
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/settings/docker-images"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -5121,7 +5314,7 @@ async def xsoar_create_docker_image() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -5133,36 +5326,40 @@ async def xsoar_create_docker_image() -> List[types.TextContent]:
 # Schema for xsoar_create_docker_image
 xsoar_create_docker_image_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_integration_upload() -> List[types.TextContent]:
+async def xsoar_integration_upload(
+
+) -> List[types.TextContent]:
     """
     Upload an integration to Cortex XSOAR
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: The saved configuration
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/settings/integration-conf/upload"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -5190,7 +5387,7 @@ async def xsoar_integration_upload() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -5202,36 +5399,40 @@ async def xsoar_integration_upload() -> List[types.TextContent]:
 # Schema for xsoar_integration_upload
 xsoar_integration_upload_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_reset_roi_widget() -> List[types.TextContent]:
+async def xsoar_reset_roi_widget(
+
+) -> List[types.TextContent]:
     """
     Reset ROI widget
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: ROI widget has been reset
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/statistics/application/roi"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -5259,7 +5460,7 @@ async def xsoar_reset_roi_widget() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -5271,37 +5472,41 @@ async def xsoar_reset_roi_widget() -> List[types.TextContent]:
 # Schema for xsoar_reset_roi_widget
 xsoar_reset_roi_widget_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_get_stats_for_dashboard_old_format() -> List[types.TextContent]:
+async def xsoar_get_stats_for_dashboard_old_format(
+
+) -> List[types.TextContent]:
     """
-        Get a given dashboard statistics result.
-    Deprecated - use "/v2/statistics/dashboards/query
-
-        Args:
-            No parameters required
-
-        Returns:
-            List[types.TextContent]: Return an array of stats results for each widget cell in dashboard.
+    Get a given dashboard statistics result.
+Deprecated - use "/v2/statistics/dashboards/query
+    
+    Args:
+        No parameters required
+    
+    Returns:
+        List[types.TextContent]: Return an array of stats results for each widget cell in dashboard.
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/statistics/dashboards/query"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -5329,7 +5534,7 @@ async def xsoar_get_stats_for_dashboard_old_format() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -5341,63 +5546,67 @@ async def xsoar_get_stats_for_dashboard_old_format() -> List[types.TextContent]:
 # Schema for xsoar_get_stats_for_dashboard_old_format
 xsoar_get_stats_for_dashboard_old_format_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_get_stats_for_widget_old_format() -> List[types.TextContent]:
+async def xsoar_get_stats_for_widget_old_format(
+
+) -> List[types.TextContent]:
     """
-        Get a given widget object statistics result.
-    Note: This route has many return types based on the widget type and data. Each 200X represent a 200 OK request of specific widget type and data
+    Get a given widget object statistics result.
+Note: This route has many return types based on the widget type and data. Each 200X represent a 200 OK request of specific widget type and data
 
-    Deprecated - use "/v2/statistics/widgets/query
-
-        Args:
-            No parameters required
-
-        Returns:
-            List[types.TextContent]: Response differ according to the widget type
-      -  Incident data type of a "table" or "list" widget returns incidentSearchResponse
-         total:
-           type: integer
-           data:
-             type: array
-          items:
-            "$ref": "#/definitions/Incident"
-        - Indicators data type of a "table" or "list" widget returns IoCsResponse
-          total:
-            type: integer
-          data:
-            type: array
-            items:
-              "$ref": "#/definitions/IocObject"
-        - Number widget returns a simple number
-          type: integer
-        - Trend widget returns a trend object
-          "$ref": "#/definitions/StatsTrendsResponse"
-        - Text widget returns a text object, describing the final text and the placeholders values.
-          "$ref": "#/definitions/StatsTextResponse"
-        - A chart data array by groups. When requesting a date, the key is the date string, according to the specified time frame. Empty groups (dates) are also returned.
-          type: array
-          items:
-            "$ref": "#/definitions/Group"
+Deprecated - use "/v2/statistics/widgets/query
+    
+    Args:
+        No parameters required
+    
+    Returns:
+        List[types.TextContent]: Response differ according to the widget type
+  -  Incident data type of a "table" or "list" widget returns incidentSearchResponse
+     total:
+       type: integer
+       data:
+         type: array
+      items:
+        "$ref": "#/definitions/Incident"
+    - Indicators data type of a "table" or "list" widget returns IoCsResponse
+      total:
+        type: integer
+      data:
+        type: array
+        items:
+          "$ref": "#/definitions/IocObject"
+    - Number widget returns a simple number
+      type: integer
+    - Trend widget returns a trend object
+      "$ref": "#/definitions/StatsTrendsResponse"
+    - Text widget returns a text object, describing the final text and the placeholders values.
+      "$ref": "#/definitions/StatsTextResponse"
+    - A chart data array by groups. When requesting a date, the key is the date string, according to the specified time frame. Empty groups (dates) are also returned.
+      type: array
+      items:
+        "$ref": "#/definitions/Group"
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/statistics/widgets/query"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -5425,7 +5634,7 @@ async def xsoar_get_stats_for_widget_old_format() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -5437,36 +5646,40 @@ async def xsoar_get_stats_for_widget_old_format() -> List[types.TextContent]:
 # Schema for xsoar_get_stats_for_widget_old_format
 xsoar_get_stats_for_widget_old_format_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_complete_task_v2() -> List[types.TextContent]:
+async def xsoar_complete_task_v2(
+
+) -> List[types.TextContent]:
     """
     Complete a task with command and multiple file attachments
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: InvestigationPlaybook
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/v2/inv-playbook/task/complete"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -5494,7 +5707,7 @@ async def xsoar_complete_task_v2() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -5506,36 +5719,40 @@ async def xsoar_complete_task_v2() -> List[types.TextContent]:
 # Schema for xsoar_complete_task_v2
 xsoar_complete_task_v2_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_submit_task_form() -> List[types.TextContent]:
+async def xsoar_submit_task_form(
+
+) -> List[types.TextContent]:
     """
     Submit a data collection task with given answers and multiple file attachments
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: InvestigationPlaybook
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/v2/inv-playbook/task/form/submit"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -5563,7 +5780,7 @@ async def xsoar_submit_task_form() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -5575,36 +5792,40 @@ async def xsoar_submit_task_form() -> List[types.TextContent]:
 # Schema for xsoar_submit_task_form
 xsoar_submit_task_form_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_get_stats_for_dashboard() -> List[types.TextContent]:
+async def xsoar_get_stats_for_dashboard(
+
+) -> List[types.TextContent]:
     """
     Get a given dashboard statistics result.
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: Return an array of stats results for each widget cell in dashboard.
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/v2/statistics/dashboards/query"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -5632,7 +5853,7 @@ async def xsoar_get_stats_for_dashboard() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -5644,63 +5865,67 @@ async def xsoar_get_stats_for_dashboard() -> List[types.TextContent]:
 # Schema for xsoar_get_stats_for_dashboard
 xsoar_get_stats_for_dashboard_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_get_stats_for_widget() -> List[types.TextContent]:
+async def xsoar_get_stats_for_widget(
+
+) -> List[types.TextContent]:
     """
-        Get the statistics for the specified widget.
-    **Note:** This endpoint has many return types depending on the widget type and data. Each 200X represents a 200 OK request of specific widget type and data.
-
-        Args:
-            No parameters required
-
-        Returns:
-            List[types.TextContent]: Response differ according to the widget type
-      -  Incident data type of a "table" or "list" widget returns incidentSearchResponse
-         total:
-           type: integer
-           data:
-             type: array
-          items:
-            "$ref": "#/definitions/Incident"
-        - Indicators data type of a "table" or "list" widget returns IoCsResponse
-          total:
-            type: integer
-          data:
-            type: array
-            items:
-              "$ref": "#/definitions/IocObject"
-        - Number widget returns a simple number
-          type: integer
-        - Trend widget returns a trend object
-          "$ref": "#/definitions/StatsTrendsResponse"
-        - Text widget returns a text object, describing the final text and the placeholders values.
-          "$ref": "#/definitions/StatsTextResponse"
-        - Line chart widget or Column chart widget returns StatsResponseWithReferenceLine
-          "$ref": "#/definitions/StatsResponseWithReferenceLine"
-        - A chart data array by groups. When requesting a date, the key is the date string, according to the specified time frame. Empty groups (dates) are also returned.
-          type: array
-          items:
-            "$ref": "#/definitions/Group"
+    Get the statistics for the specified widget.
+**Note:** This endpoint has many return types depending on the widget type and data. Each 200X represents a 200 OK request of specific widget type and data.
+    
+    Args:
+        No parameters required
+    
+    Returns:
+        List[types.TextContent]: Response differ according to the widget type
+  -  Incident data type of a "table" or "list" widget returns incidentSearchResponse
+     total:
+       type: integer
+       data:
+         type: array
+      items:
+        "$ref": "#/definitions/Incident"
+    - Indicators data type of a "table" or "list" widget returns IoCsResponse
+      total:
+        type: integer
+      data:
+        type: array
+        items:
+          "$ref": "#/definitions/IocObject"
+    - Number widget returns a simple number
+      type: integer
+    - Trend widget returns a trend object
+      "$ref": "#/definitions/StatsTrendsResponse"
+    - Text widget returns a text object, describing the final text and the placeholders values.
+      "$ref": "#/definitions/StatsTextResponse"
+    - Line chart widget or Column chart widget returns StatsResponseWithReferenceLine
+      "$ref": "#/definitions/StatsResponseWithReferenceLine"
+    - A chart data array by groups. When requesting a date, the key is the date string, according to the specified time frame. Empty groups (dates) are also returned.
+      type: array
+      items:
+        "$ref": "#/definitions/Group"
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/v2/statistics/widgets/query"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -5728,7 +5953,7 @@ async def xsoar_get_stats_for_widget() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -5740,36 +5965,40 @@ async def xsoar_get_stats_for_widget() -> List[types.TextContent]:
 # Schema for xsoar_get_stats_for_widget
 xsoar_get_stats_for_widget_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_all_widgets() -> List[types.TextContent]:
+async def xsoar_all_widgets(
+
+) -> List[types.TextContent]:
     """
     Get all widgets
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: Return all the widgets in the system.
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/widgets"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -5797,7 +6026,7 @@ async def xsoar_all_widgets() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -5809,36 +6038,40 @@ async def xsoar_all_widgets() -> List[types.TextContent]:
 # Schema for xsoar_all_widgets
 xsoar_all_widgets_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_save_widget() -> List[types.TextContent]:
+async def xsoar_save_widget(
+
+) -> List[types.TextContent]:
     """
     Add or update a given widget based on Id.
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: The saved widget newest version.
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/widgets"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -5866,7 +6099,7 @@ async def xsoar_save_widget() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -5878,36 +6111,40 @@ async def xsoar_save_widget() -> List[types.TextContent]:
 # Schema for xsoar_save_widget
 xsoar_save_widget_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
 
-
 @server.call_tool()
-async def xsoar_import_widget() -> List[types.TextContent]:
+async def xsoar_import_widget(
+
+) -> List[types.TextContent]:
     """
     Import a widget to the system, ignoring ID or version, used to import new widgets.
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: The saved widget
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/widgets/import"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -5935,7 +6172,7 @@ async def xsoar_import_widget() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -5947,9 +6184,10 @@ async def xsoar_import_widget() -> List[types.TextContent]:
 # Schema for xsoar_import_widget
 xsoar_import_widget_schema = {
     "type": "object",
-    "properties": {},
-}
+    "properties": {
 
+    },
+}
 
 @server.call_tool()
 async def xsoar_get_widget(
@@ -5957,22 +6195,22 @@ async def xsoar_get_widget(
 ) -> List[types.TextContent]:
     """
     Get a widget object by a given ID.
-
+    
     Args:
         id (str): The ID of widget to get. (required)
-
+    
     Returns:
         List[types.TextContent]: Return the widget if found.
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if id is not None:
         path_params["id"] = sanitize_input(id)
 
@@ -5981,7 +6219,7 @@ async def xsoar_get_widget(
     url = base_url + "/widgets/{id}"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -6009,7 +6247,7 @@ async def xsoar_get_widget(
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -6026,29 +6264,28 @@ xsoar_get_widget_schema = {
     },
 }
 
-
 @server.call_tool()
 async def xsoar_delete_widget(
     id: str,
 ) -> List[types.TextContent]:
     """
     Remove a given widget Id from the system.
-
+    
     Args:
         id (str): Widget id to remove (returned from widget save or widgets get) (required)
-
+    
     Returns:
         List[types.TextContent]: widget deleted
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
-
+    
     if id is not None:
         path_params["id"] = sanitize_input(id)
 
@@ -6057,7 +6294,7 @@ async def xsoar_delete_widget(
     url = base_url + "/widgets/{id}"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -6085,7 +6322,7 @@ async def xsoar_delete_widget(
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -6098,40 +6335,39 @@ async def xsoar_delete_widget(
 xsoar_delete_widget_schema = {
     "type": "object",
     "properties": {
-        "id": {
-            "type": "str",
-            "description": "Widget id to remove (returned from widget save or widgets get)",
-        },
+        "id": {"type": "str", "description": "Widget id to remove (returned from widget save or widgets get)"},
     },
 }
 
-
 @server.call_tool()
-async def xsoar_workers_status_handler() -> List[types.TextContent]:
+async def xsoar_workers_status_handler(
+
+) -> List[types.TextContent]:
     """
     Get workers status
-
+    
     Args:
         No parameters required
-
+    
     Returns:
         List[types.TextContent]: Workers status
     """
     # Input validation
     validate_inputs(locals())
-
+    
     # Build request parameters
     params = {}
     body = {}
     path_params = {}
     headers = {}
+    
 
     # Get base URL from environment
     base_url = get_api_config().get("xsoar_api_url", "")
     url = base_url + "/workers/status"
     for key, value in path_params.items():
         url = url.replace("{" + key + "}", str(value))
-
+    
     # Make the API request with security controls
     try:
         async with get_http_client() as client:
@@ -6159,7 +6395,7 @@ async def xsoar_workers_status_handler() -> List[types.TextContent]:
                 text=sanitize_error_message(f"Request failed: {str(e)}"),
             )
         ]
-
+    
     return [
         types.TextContent(
             type="text",
@@ -6171,5 +6407,7 @@ async def xsoar_workers_status_handler() -> List[types.TextContent]:
 # Schema for xsoar_workers_status_handler
 xsoar_workers_status_handler_schema = {
     "type": "object",
-    "properties": {},
+    "properties": {
+
+    },
 }
