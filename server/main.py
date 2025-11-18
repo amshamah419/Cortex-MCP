@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
 import sys
 from pathlib import Path
 from typing import Any, Dict, Iterable, List
@@ -27,12 +28,15 @@ except ImportError:
 
 
 def _log(event: str, **kwargs: Any) -> None:
-    try:
-        payload = {"event": event, **kwargs}
-        print(json.dumps(payload), file=sys.stderr, flush=True)
-    except Exception:
-        # Best-effort logging
-        pass
+    # Logging disabled to avoid interfering with MCP protocol (stderr is used for protocol messages)
+    # Enable via environment variable if needed: CORTEXSYNAPSE_ENABLE_LOGGING=1
+    if os.getenv("CORTEXSYNAPSE_ENABLE_LOGGING", "").lower() in ("1", "true", "yes"):
+        try:
+            payload = {"event": event, **kwargs}
+            print(json.dumps(payload), file=sys.stderr, flush=True)
+        except Exception:
+            # Best-effort logging
+            pass
 
 
 def _merge_registries() -> tuple[Dict[str, Any], Dict[str, Any], Dict[str, str]]:
