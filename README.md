@@ -30,10 +30,11 @@ As a developer working with XSOAR and XSIAM, you need to frequently interact wit
 
 ## Key Features
 
-- **213 production-ready tools** - Auto-generated from official XSIAM/XSOAR OpenAPI specifications
-  - 128 XSIAM tools (XQL queries, incidents, alerts, endpoints, threat intelligence)
-  - 85 XSOAR tools (playbooks, investigations, automations, indicators)
-  - **[📚 Full Tool Documentation](docs/README.md)** - Comprehensive documentation for all tools organized by category
+- **70 curated tools** - Generated from official XSIAM/XSOAR OpenAPI specifications and filtered to focus on the most useful workflows
+  - 7 unified tools (select XSOAR or XSIAM via the `platform` field)
+  - 39 XSIAM tools (incidents, alerts, XQL, endpoints, threat intelligence)
+  - 24 XSOAR tools (playbooks, automations, incidents, dashboards, indicators)
+  - **[📚 Tool Reference](docs/README.md)** - Consolidated documentation for every tool
 - **Containerized deployment** - Docker support for easy integration with AI IDE workflows
 - **Live API integration** - Connect to your actual XSOAR/XSIAM instances
 - **Type-safe operations** - Full Python type hints for reliable AI agent interactions
@@ -222,7 +223,7 @@ Organized into categories:
 
 ## Extending with Custom Tools
 
-While the server comes with 211 production tools, you can add custom tools by providing additional OpenAPI specifications:
+While the server ships with 70 curated tools, you can add custom tools by providing additional OpenAPI specifications:
 
 1. Add your OpenAPI spec to `specs/`:
 ```bash
@@ -295,13 +296,13 @@ AI IDE/Agent → MCP Protocol → CortexSynapse Server → XSOAR/XSIAM API
 ```
 
 1. Developer asks AI assistant to perform a task
-2. AI agent selects appropriate tool(s) from 211 available
+2. AI agent selects appropriate tool(s) from 70 available
 3. MCP server executes API calls to live XSOAR/XSIAM instance
 4. Results returned to AI agent for processing and presentation
 
 ### Code Generation (Optional - For Custom Tools)
 
-For adding custom tools beyond the 211 built-in ones:
+For adding custom tools beyond the 70 built-in ones:
 
 ```
 Custom OpenAPI Spec → generator.py → generated_custom_tools.py → Container Rebuild
