@@ -1,0 +1,478 @@
+{
+  "unified": {
+    "get_incidents": {
+      "description": "Get a list of incidents filtered by various criteria",
+      "xsoar": {
+        "route": "/incidents/search",
+        "method": "POST",
+        "operationId": "searchIncidents"
+      },
+      "xsiam": {
+        "route": "/public_api/v1/incidents/get_incidents",
+        "method": "POST",
+        "operationId": "postGetIncidents"
+      }
+    },
+    "update_incident": {
+      "description": "Update an existing incident",
+      "xsoar": {
+        "route": "/incident",
+        "method": "PUT",
+        "operationId": "createIncident"
+      },
+      "xsiam": {
+        "route": "/public_api/v1/incidents/update_incident",
+        "method": "POST",
+        "operationId": "postUpdateIncident"
+      }
+    },
+    "get_automation_scripts": {
+      "description": "Get automation scripts",
+      "xsoar": {
+        "route": "/automation/search",
+        "method": "POST",
+        "operationId": "getAutomationScripts"
+      },
+      "xsiam": {
+        "route": "/public_api/v1/scripts/get",
+        "method": "POST",
+        "operationId": "post-public_api-v1-scripts-get"
+      }
+    },
+    "save_or_update_script": {
+      "description": "Create or update an automation script",
+      "xsoar": {
+        "route": "/automation",
+        "method": "POST",
+        "operationId": "saveOrUpdateScript"
+      },
+      "xsiam": {
+        "route": "/public_api/v1/scripts/insert",
+        "method": "POST",
+        "operationId": "post-public_api-v1-scripts-insert"
+      }
+    },
+    "import_script": {
+      "description": "Import an automation script",
+      "xsoar": {
+        "route": "/automation/import",
+        "method": "POST",
+        "operationId": "importScript"
+      },
+      "xsiam": {
+        "route": "/public_api/v1/scripts/insert",
+        "method": "POST",
+        "operationId": "post-public_api-v1-scripts-insert"
+      }
+    },
+    "delete_automation_script": {
+      "description": "Delete an automation script",
+      "xsoar": {
+        "route": "/automation/delete",
+        "method": "POST",
+        "operationId": "deleteAutomationScript"
+      },
+      "xsiam": {
+        "route": "/public_api/v1/scripts/delete",
+        "method": "POST",
+        "operationId": "post-public_api-v1-scripts-delete"
+      }
+    },
+    "get_audits": {
+      "description": "Get audit logs",
+      "xsoar": {
+        "route": "/settings/audits",
+        "method": "GET",
+        "operationId": "getAudits"
+      },
+      "xsiam": {
+        "route": "/public_api/v1/audits/management_logs",
+        "method": "POST",
+        "operationId": "postManagementLogs"
+      }
+    }
+  },
+  "xsoar": {
+    "revoke_user_api_key": {
+      "route": "/apikeys/revoke/user/{username}",
+      "method": "POST",
+      "operationId": "revokeUserAPIKey",
+      "description": "Revoke API Key for user"
+    },
+    "copy_script": {
+      "route": "/automation/copy",
+      "method": "POST",
+      "operationId": "copyScript",
+      "description": "Copy given automation"
+    },
+    "import_classifier": {
+      "route": "/classifier/import",
+      "method": "POST",
+      "operationId": "importClassifier",
+      "description": "Import an incident classifier to Cortex XSOAR"
+    },
+    "upload_content_packs": {
+      "route": "/contentpacks/installed/upload",
+      "method": "POST",
+      "operationId": "uploadContentPacks",
+      "description": "Upload content packs to Cortex XSOAR"
+    },
+    "import_dashboard": {
+      "route": "/dashboards/import",
+      "method": "POST",
+      "operationId": "importDashboard",
+      "description": "Import a dashboard to Cortex XSOAR"
+    },
+    "investigation_add_entry": {
+      "route": "/entry",
+      "method": "POST",
+      "operationId": "investigationAddEntryHandler",
+      "description": "Add an entry to an investigation"
+    },
+    "save_evidence": {
+      "route": "/evidence",
+      "method": "POST",
+      "operationId": "saveEvidence",
+      "description": "Save evidence to an investigation"
+    },
+    "create_incidents_batch": {
+      "route": "/incident/batch",
+      "method": "POST",
+      "operationId": "createIncidentsBatch",
+      "description": "Update a batch of incidents"
+    },
+    "create_or_update_incident_type": {
+      "route": "/incidenttype",
+      "method": "POST",
+      "operationId": "createOrUpdateIncidentType",
+      "description": "API to create new Incident Type"
+    },
+    "import_incident_types": {
+      "route": "/incidenttypes/import",
+      "method": "POST",
+      "operationId": "importIncidentTypesHandler",
+      "description": "Import an incident type to Cortex XSOAR"
+    },
+    "import_incident_fields": {
+      "route": "/incidentfields/import",
+      "method": "POST",
+      "operationId": "importIncidentFields",
+      "description": "Import an incident field to Cortex XSOAR"
+    },
+    "indicators_create": {
+      "route": "/indicator/create",
+      "method": "POST",
+      "operationId": "indicatorsCreate",
+      "description": "Create indicators"
+    },
+    "indicators_search": {
+      "route": "/indicators/search",
+      "method": "POST",
+      "operationId": "indicatorsSearch",
+      "description": "Search indicators"
+    },
+    "indicators_edit": {
+      "route": "/indicator/edit",
+      "method": "POST",
+      "operationId": "indicatorsEdit",
+      "description": "Edit indicators"
+    },
+    "delete_indicators_batch": {
+      "route": "/indicators/batchDelete",
+      "method": "POST",
+      "operationId": "deleteIndicatorsBatch",
+      "description": "Batch whitelist or delete indicators"
+    },
+    "indicator_whitelist": {
+      "route": "/indicator/whitelist",
+      "method": "POST",
+      "operationId": "indicatorWhitelist",
+      "description": "Whitelists or deletes an indicator"
+    },
+    "override_playbook_yaml": {
+      "route": "/playbook/save/yaml",
+      "method": "POST",
+      "operationId": "overridePlaybookYaml",
+      "description": "Import and override playbook in Cortex XSOAR"
+    },
+    "get_all_widgets": {
+      "route": "/widgets",
+      "method": "GET",
+      "operationId": "getAllWidgets",
+      "description": "Get all widgets"
+    },
+    "save_widget": {
+      "route": "/widgets",
+      "method": "POST",
+      "operationId": "saveWidget",
+      "description": "Save a widget"
+    },
+    "get_widget": {
+      "route": "/widgets/{id}",
+      "method": "GET",
+      "operationId": "getWidget",
+      "description": "Get a widget by ID"
+    },
+    "integration_upload": {
+      "route": "/settings/integration-conf/upload",
+      "method": "POST",
+      "operationId": "integrationUpload",
+      "description": "Upload an integration to Cortex XSOAR"
+    },
+    "health_handler": {
+      "route": "/health",
+      "method": "GET",
+      "operationId": "healthHandler",
+      "description": "Health check endpoint"
+    },
+    "close_incidents_batch": {
+      "route": "/incident/batchClose",
+      "method": "POST",
+      "operationId": "closeIncidentsBatch",
+      "description": "Closes an incidents batch"
+    },
+    "delete_incidents_batch": {
+      "route": "/incident/batchDelete",
+      "method": "POST",
+      "operationId": "deleteIncidentsBatch",
+      "description": "Deletes an incidents batch"
+    }
+  },
+  "xsiam": {
+    "get_alerts": {
+      "route": "/public_api/v1/alerts/get_alerts",
+      "method": "POST",
+      "operationId": "post-public_api-v1-alerts-get_alerts",
+      "description": "Get a list of all or filtered alerts"
+    },
+    "create_alert": {
+      "route": "/public_api/v1/alerts/create_alert",
+      "method": "POST",
+      "operationId": "postCreateAlert",
+      "description": "Create a custom alert"
+    },
+    "update_alerts": {
+      "route": "/public_api/v1/alerts/update_alerts",
+      "method": "POST",
+      "operationId": "postUpdateAlerts",
+      "description": "Update one or more alerts"
+    },
+    "insert_parsed_alerts": {
+      "route": "/public_api/v1/alerts/insert_parsed_alerts",
+      "method": "POST",
+      "operationId": "postInsertParsedAlerts",
+      "description": "Upload alerts from external alert sources"
+    },
+    "insert_cef_alerts": {
+      "route": "/public_api/v1/alerts/insert_cef_alerts",
+      "method": "POST",
+      "operationId": "postInsertCefAlerts",
+      "description": "Upload alerts in CEF format"
+    },
+    "start_xql_query": {
+      "route": "/public_api/v1/xql/start_xql_query",
+      "method": "POST",
+      "operationId": "postStartXqlQuery",
+      "description": "Execute an XQL query"
+    },
+    "get_query_results": {
+      "route": "/public_api/v1/xql/get_query_results",
+      "method": "POST",
+      "operationId": "postGetQueryResults",
+      "description": "Retrieve results of an executed XQL query"
+    },
+    "get_query_results_stream": {
+      "route": "/public_api/v1/xql/get_query_results_stream",
+      "method": "POST",
+      "operationId": "postGetQueryResultsStream",
+      "description": "Retrieve XQL query results with more than 1000 results"
+    },
+    "xql_library_get": {
+      "route": "/public_api/xql_library/get",
+      "method": "POST",
+      "operationId": "post-public_api-xql_library-get",
+      "description": "Retrieve a detailed list of XQL query libraries"
+    },
+    "xql_library_insert": {
+      "route": "/public_api/xql_library/insert",
+      "method": "POST",
+      "operationId": "post-public_api-xql_library-insert",
+      "description": "Insert new XQL queries or update existing XQL queries"
+    },
+    "xql_library_delete": {
+      "route": "/public_api/xql_library/delete",
+      "method": "POST",
+      "operationId": "post-public_api-xql_library-delete",
+      "description": "Delete XQL queries"
+    },
+    "xql_get_datasets": {
+      "route": "/public_api/v1/xql/get_datasets",
+      "method": "POST",
+      "operationId": "post-public_api-v1-xql-get_datasets",
+      "description": "Retrieve a list of all the datasets and their properties"
+    },
+    "xql_add_dataset": {
+      "route": "/public_api/v1/xql/add_dataset",
+      "method": "POST",
+      "operationId": "post-public_api-v1-xql-add_dataset",
+      "description": "Add a dataset of type lookup with the specified name and schema"
+    },
+    "xql_lookups_add_data": {
+      "route": "/public_api/v1/xql/lookups/add_data",
+      "method": "POST",
+      "operationId": "post-public_api-v1-xql-lookups-add_data",
+      "description": "Add or update data in a lookup dataset"
+    },
+    "xql_lookups_get_data": {
+      "route": "/public_api/v1/xql/lookups/get_data",
+      "method": "POST",
+      "operationId": "post-public_api-v1-xql-lookups-get_data",
+      "description": "Get data from a lookup dataset"
+    },
+    "get_endpoints": {
+      "route": "/public_api/v1/endpoints/get_endpoints",
+      "method": "POST",
+      "operationId": "postGetEndpoints",
+      "description": "Gets a list of all of your endpoints"
+    },
+    "endpoints_file_retrieval": {
+      "route": "/public_api/v1/endpoints/file_retrieval",
+      "method": "POST",
+      "operationId": "post-public_api-v1-endpoints-file_retrieval",
+      "description": "Retrieve files from selected endpoints"
+    },
+    "isolate": {
+      "route": "/public_api/v1/endpoints/isolate",
+      "method": "POST",
+      "operationId": "post-public_api-v1-endpoints-isolate",
+      "description": "Isolate one or more endpoints"
+    },
+    "unisolate": {
+      "route": "/public_api/v1/endpoints/unisolate",
+      "method": "POST",
+      "operationId": "postUnisolate",
+      "description": "Reverse the isolation of one or more endpoints"
+    },
+    "scan": {
+      "route": "/public_api/v1/endpoints/scan",
+      "method": "POST",
+      "operationId": "postScan",
+      "description": "Run a scan on selected endpoints"
+    },
+    "quarantine": {
+      "route": "/public_api/v1/endpoints/quarantine",
+      "method": "POST",
+      "operationId": "postQuarantine",
+      "description": "Quarantine file on selected endpoints"
+    },
+    "restore": {
+      "route": "/public_api/v1/endpoints/restore",
+      "method": "POST",
+      "operationId": "postRestore",
+      "description": "Restore a quarantined file"
+    },
+    "run_script": {
+      "route": "/public_api/v1/scripts/run_script",
+      "method": "POST",
+      "operationId": "postRunScript",
+      "description": "Initiate a new endpoint script execution action"
+    },
+    "get_scripts": {
+      "route": "/public_api/v1/scripts/get_scripts",
+      "method": "POST",
+      "operationId": "postGetScripts",
+      "description": "Get a list of scripts available in the scripts library"
+    },
+    "get_script_execution_status": {
+      "route": "/public_api/v1/scripts/get_script_execution_status",
+      "method": "POST",
+      "operationId": "postGetScriptExecutionStatus",
+      "description": "Retrieve the status of a script execution action"
+    },
+    "get_script_execution_results": {
+      "route": "/public_api/v1/scripts/get_script_execution_results",
+      "method": "POST",
+      "operationId": "postGetScriptExecutionResults",
+      "description": "Retrieve the results of a script execution action"
+    },
+    "indicators_get": {
+      "route": "/public_api/v1/indicators/get",
+      "method": "POST",
+      "operationId": "post-public_api-v1-indicators-get",
+      "description": "Get a list of IOCs"
+    },
+    "indicators_insert": {
+      "route": "/public_api/v1/indicators/insert",
+      "method": "POST",
+      "operationId": "post-public_api-v1-indicators-insert",
+      "description": "Insert new IOCs or update existing IOCs"
+    },
+    "indicators_delete": {
+      "route": "/public_api/v1/indicators/delete",
+      "method": "POST",
+      "operationId": "post-public_api-v1-indicators-delete",
+      "description": "Delete IOCs selected by filter"
+    },
+    "bioc_get": {
+      "route": "/public_api/v1/bioc/get",
+      "method": "POST",
+      "operationId": "post-public_api-v1-bioc-get",
+      "description": "Return a list of BIOCs"
+    },
+    "bioc_insert": {
+      "route": "/public_api/v1/bioc/insert",
+      "method": "POST",
+      "operationId": "post-public_api-v1-bioc-insert",
+      "description": "Insert new BIOCs or update existing BIOCs"
+    },
+    "bioc_delete": {
+      "route": "/public_api/v1/bioc/delete",
+      "method": "POST",
+      "operationId": "post-public_api-v1-bioc-delete",
+      "description": "Delete BIOCs selected by filter"
+    },
+    "get_healthcheck": {
+      "route": "/public_api/v1/healthcheck",
+      "method": "GET",
+      "operationId": "getHealthcheck",
+      "description": "Perform a health check of your Cortex XSIAM environment"
+    },
+    "get_incident_extra_data": {
+      "route": "/public_api/v1/incidents/get_incident_extra_data",
+      "method": "POST",
+      "operationId": "post-public_api-v1-incidents-get_incident_extra_data",
+      "description": "Get extra data fields of a specific incident including alerts and key artifacts"
+    },
+    "playbooks_get": {
+      "route": "/public_api/v1/playbooks/get",
+      "method": "POST",
+      "operationId": "post-public_api-v1-playbooks-get",
+      "description": "Get a playbook by filtering based on its name or ID"
+    },
+    "playbooks_insert": {
+      "route": "/public_api/v1/playbooks/insert",
+      "method": "POST",
+      "operationId": "post-public_api-v1-playbooks-insert",
+      "description": "Add or update a playbook by passing the YAML in a ZIP file"
+    },
+    "dashboards_get": {
+      "route": "/public_api/v1/dashboards/get",
+      "method": "POST",
+      "operationId": "post-public_api-v1-dashboards-get",
+      "description": "Get dashboard details by filtering based on the dashboard name, dashboard ID, time the dashboard was generated, or dashboard source"
+    },
+    "dashboards_insert": {
+      "route": "/public_api/v1/dashboards/insert",
+      "method": "POST",
+      "operationId": "post-public_api-v1-dashboards-insert",
+      "description": "Add or update the dashboards retrieved by the Get dashboards API"
+    },
+    "get_action_status": {
+      "route": "/public_api/v1/actions/get_action_status",
+      "method": "POST",
+      "operationId": "postGetActionStatus",
+      "description": "Retrieve the status of the requested actions according to the action ID"
+    }
+  }
+}
+

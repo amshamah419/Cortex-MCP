@@ -14,8 +14,7 @@ COPY codegen/ codegen/
 COPY specs/ specs/
 
 # Generate tools from OpenAPI specs
-RUN pip install --no-cache-dir pyyaml && \
-    python -m codegen.generator
+RUN python -m codegen.generator
 
 # Build the package
 RUN python -m build

@@ -2,77 +2,64 @@
 """
 Generate user-facing documentation for all MCP tools.
 Organizes tools by category into markdown files in the docs/ directory.
+Supports registry-based tools and unified tools.
 """
 
 import re
+import ast
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 from collections import defaultdict
 
 
-def extract_tool_info(filepath: Path, prefix: str) -> List[Dict[str, Any]]:
-    """Extract tool information from generated file."""
+def extract_tool_info_from_registry(filepath: Path) -> List[Dict[str, Any]]:
+    """Extract tool information from registry-based generated file."""
     content = filepath.read_text()
     
-    # Pattern to match function definitions and their docstrings
-    pattern = (
-        r'@server\.call_tool\(\)\s+'
-        r'async def (' + prefix + r'_\w+)\((.*?)\) -> List\[types\.TextContent\]:\s+'
-        r'"""(.*?)"""'
-    )
-    
     tools = []
-    for match in re.finditer(pattern, content, re.DOTALL):
-        name = match.group(1)
-        params = match.group(2)
-        docstring = match.group(3)
+    
+    # Extract TOOL_DESCRIPTIONS dictionary
+    desc_pattern = r'TOOL_DESCRIPTIONS\[([^\]]+)\]\s*=\s*([^\n]+)'
+    descriptions = {}
+    for match in re.finditer(desc_pattern, content):
+        tool_name = match.group(1).strip('"\'')
+        desc = match.group(2).strip('"\'')
+        descriptions[tool_name] = desc
+    
+    # Extract TOOL_SCHEMAS to identify unified tools
+    schema_pattern = r'TOOL_SCHEMAS\[([^\]]+)\]\s*=\s*([A-Z_]+_INPUT_SCHEMA)'
+    schemas = {}
+    for match in re.finditer(schema_pattern, content):
+        tool_name = match.group(1).strip('"\'')
+        schema_type = match.group(2)
+        schemas[tool_name] = schema_type
+    
+    # Get all tool names from TOOL_HANDLERS
+    handler_pattern = r'TOOL_HANDLERS\[([^\]]+)\]\s*=\s*'
+    for match in re.finditer(handler_pattern, content):
+        tool_name = match.group(1).strip('"\'')
+        description = descriptions.get(tool_name, "No description available")
+        is_unified = schemas.get(tool_name) == "UNIFIED_INPUT_SCHEMA"
         
-        # Parse docstring sections
-        sections = parse_docstring(docstring)
+        # Extract parameters from schema
+        params = []
+        if is_unified:
+            params.append("platform (str): Platform to use - 'xsoar' or 'xsiam' (required for unified tools)")
+        params.append("path (Dict[str, Any]): Path parameters (optional)")
+        params.append("query (Dict[str, Any]): Query parameters (optional)")
+        params.append("headers (Dict[str, Any]): HTTP headers (optional)")
+        params.append("body (Any): Request body (optional)")
         
         tools.append({
-            'name': name,
-            'params': params,
-            'description': sections['description'],
-            'args': sections['args'],
-            'returns': sections['returns'],
+            'name': tool_name,
+            'params': ', '.join(params),
+            'description': description,
+            'args': '\n'.join(f"- {p}" for p in params),
+            'returns': 'List[types.TextContent]: API response',
+            'is_unified': is_unified
         })
     
     return tools
-
-
-def parse_docstring(docstring: str) -> Dict[str, str]:
-    """Parse docstring into sections."""
-    lines = docstring.split('\n')
-    
-    description_lines = []
-    args_lines = []
-    returns_lines = []
-    
-    current_section = 'description'
-    
-    for line in lines:
-        line = line.strip()
-        
-        if line.startswith('Args:'):
-            current_section = 'args'
-            continue
-        elif line.startswith('Returns:'):
-            current_section = 'returns'
-            continue
-        
-        if current_section == 'description' and line:
-            description_lines.append(line)
-        elif current_section == 'args' and line:
-            args_lines.append(line)
-        elif current_section == 'returns' and line:
-            returns_lines.append(line)
-    
-    return {
-        'description': ' '.join(description_lines),
-        'args': '\n'.join(args_lines),
-        'returns': '\n'.join(returns_lines),
-    }
 
 
 def categorize_xsiam_tools(tools: List[Dict[str, Any]]) -> Dict[str, List[Dict[str, Any]]]:
@@ -83,7 +70,7 @@ def categorize_xsiam_tools(tools: List[Dict[str, Any]]) -> Dict[str, List[Dict[s
         name = tool['name'].lower()
         
         # Categorize based on tool name
-        if 'xql' in name or 'query' in name and 'xql' in tool['description'].lower():
+        if 'xql' in name or ('query' in name and 'xql' in tool['description'].lower()):
             category = 'XQL Queries'
         elif 'incident' in name:
             category = 'Incidents'
@@ -95,12 +82,18 @@ def categorize_xsiam_tools(tools: List[Dict[str, Any]]) -> Dict[str, List[Dict[s
             category = 'Assets & Identity'
         elif 'violation' in name or 'policy' in name:
             category = 'Policy & Compliance'
-        elif 'scan' in name or 'isolate' in name or 'unisolate' in name:
+        elif 'scan' in name or 'isolate' in name or 'unisolate' in name or 'quarantine' in name or 'restore' in name:
             category = 'Response Actions'
-        elif 'hash' in name or 'reputation' in name or 'ioc' in name:
+        elif 'hash' in name or 'reputation' in name or 'ioc' in name or 'indicator' in name or 'bioc' in name:
             category = 'Threat Intelligence'
-        elif 'audit' in name or 'rbac' in name or 'role' in name:
+        elif 'audit' in name or 'rbac' in name or 'role' in name or 'healthcheck' in name:
             category = 'Administration'
+        elif 'playbook' in name:
+            category = 'Playbooks'
+        elif 'dashboard' in name:
+            category = 'Dashboards'
+        elif 'script' in name:
+            category = 'Scripts'
         else:
             category = 'Other Operations'
         
@@ -131,7 +124,7 @@ def categorize_xsoar_tools(tools: List[Dict[str, Any]]) -> Dict[str, List[Dict[s
             category = 'Evidence & Entries'
         elif 'user' in name or 'role' in name or 'api_key' in name:
             category = 'User Management'
-        elif 'classifier' in name or 'mapper' in name or 'layout' in name:
+        elif 'classifier' in name or 'mapper' in name or 'layout' in name or 'content' in name:
             category = 'Content Management'
         elif 'widget' in name or 'dashboard' in name:
             category = 'Dashboards & Widgets'
@@ -145,16 +138,41 @@ def categorize_xsoar_tools(tools: List[Dict[str, Any]]) -> Dict[str, List[Dict[s
     return dict(categories)
 
 
+def categorize_unified_tools(tools: List[Dict[str, Any]]) -> Dict[str, List[Dict[str, Any]]]:
+    """Categorize unified tools."""
+    categories = defaultdict(list)
+    
+    for tool in tools:
+        name = tool['name'].lower()
+        
+        if 'incident' in name:
+            category = 'Incidents'
+        elif 'script' in name or 'automation' in name:
+            category = 'Automations & Scripts'
+        elif 'audit' in name:
+            category = 'Logs & Audits'
+        else:
+            category = 'Unified Operations'
+        
+        categories[category].append(tool)
+    
+    return dict(categories)
+
+
 def generate_tool_doc(tool: Dict[str, Any]) -> str:
     """Generate markdown documentation for a single tool."""
     doc = f"### `{tool['name']}`\n\n"
+    
+    if tool.get('is_unified'):
+        doc += "**Unified Tool** - Works with both XSOAR and XSIAM platforms\n\n"
+    
     doc += f"{tool['description']}\n\n"
     
     if tool['args'] and tool['args'] != 'No parameters required':
         doc += "**Parameters:**\n\n"
         for arg_line in tool['args'].split('\n'):
             if arg_line.strip():
-                doc += f"- {arg_line.strip()}\n"
+                doc += f"{arg_line.strip()}\n"
         doc += "\n"
     else:
         doc += "**Parameters:** None\n\n"
@@ -181,14 +199,31 @@ def generate_category_doc(category: str, tools: List[Dict[str, Any]], prefix: st
     return doc
 
 
-def generate_index(xsiam_categories: Dict, xsoar_categories: Dict) -> str:
+def generate_index(xsiam_categories: Dict, xsoar_categories: Dict, unified_categories: Dict) -> str:
     """Generate main index documentation."""
+    total_xsiam = sum(len(tools) for tools in xsiam_categories.values())
+    total_xsoar = sum(len(tools) for tools in xsoar_categories.values())
+    total_unified = sum(len(tools) for tools in unified_categories.values())
+    total = total_xsiam + total_xsoar + total_unified
+    
     doc = "# Cortex MCP Tools Documentation\n\n"
     doc += "This documentation provides detailed information about all available MCP tools for XSIAM and XSOAR.\n\n"
-    doc += f"**Total Tools:** {sum(len(tools) for tools in xsiam_categories.values()) + sum(len(tools) for tools in xsoar_categories.values())}\n\n"
+    doc += f"**Total Tools:** {total}\n\n"
+    doc += f"- **Unified Tools:** {total_unified} (work with both platforms)\n"
+    doc += f"- **XSIAM Tools:** {total_xsiam}\n"
+    doc += f"- **XSOAR Tools:** {total_xsoar}\n\n"
     
     doc += "## 📚 Documentation Structure\n\n"
     doc += "Tools are organized by platform and functionality:\n\n"
+    
+    if unified_categories:
+        doc += "### Unified Tools\n\n"
+        doc += "These tools work with both XSOAR and XSIAM platforms. Use the `platform` parameter to specify which platform to use.\n\n"
+        for category in sorted(unified_categories.keys()):
+            tools = unified_categories[category]
+            filename = category.lower().replace(' ', '-').replace('&', 'and')
+            doc += f"- **[{category}](unified/{filename}.md)** ({len(tools)} tools)\n"
+        doc += "\n"
     
     doc += "### XSIAM Tools\n\n"
     for category in sorted(xsiam_categories.keys()):
@@ -211,6 +246,8 @@ def generate_index(xsiam_categories: Dict, xsoar_categories: Dict) -> str:
     doc += "## 📖 Using the Tools\n\n"
     doc += "All tools follow the MCP (Model Context Protocol) standard. "
     doc += "They are designed to be used with AI-powered IDEs like Windsurf, Cursor, and Roo Code.\n\n"
+    doc += "**Unified Tools**: Tools marked as 'Unified Tool' accept a `platform` parameter ('xsoar' or 'xsiam') "
+    doc += "to work with either platform. These tools automatically route to the correct API endpoint based on the platform.\n\n"
     doc += "For setup instructions and examples, see:\n"
     doc += "- [README.md](../README.md) - Setup and configuration\n"
     doc += "- [EXAMPLES.md](../EXAMPLES.md) - Usage examples and workflows\n"
@@ -226,21 +263,34 @@ def main():
     
     xsiam_dir = docs_dir / 'xsiam'
     xsoar_dir = docs_dir / 'xsoar'
+    unified_dir = docs_dir / 'unified'
     xsiam_dir.mkdir(exist_ok=True)
     xsoar_dir.mkdir(exist_ok=True)
+    unified_dir.mkdir(exist_ok=True)
     
     # Extract tool information
     print("Extracting tool information...")
-    xsiam_tools = extract_tool_info(Path('server/generated_xsiam_tools.py'), 'xsiam')
-    xsoar_tools = extract_tool_info(Path('server/generated_xsoar_tools.py'), 'xsoar')
+    xsiam_tools = extract_tool_info_from_registry(Path('server/generated_xsiam_tools.py'))
+    xsoar_tools = extract_tool_info_from_registry(Path('server/generated_xsoar_tools.py'))
+    unified_tools = []
+    
+    unified_file = Path('server/generated_unified_tools.py')
+    if unified_file.exists():
+        unified_tools = extract_tool_info_from_registry(unified_file)
     
     print(f"Found {len(xsiam_tools)} XSIAM tools")
     print(f"Found {len(xsoar_tools)} XSOAR tools")
+    print(f"Found {len(unified_tools)} unified tools")
     
     # Categorize tools
     print("\nCategorizing tools...")
     xsiam_categories = categorize_xsiam_tools(xsiam_tools)
     xsoar_categories = categorize_xsoar_tools(xsoar_tools)
+    unified_categories = categorize_unified_tools(unified_tools) if unified_tools else {}
+    
+    print(f"\nUnified categories: {len(unified_categories)}")
+    for cat, tools in sorted(unified_categories.items()):
+        print(f"  - {cat}: {len(tools)} tools")
     
     print(f"\nXSIAM categories: {len(xsiam_categories)}")
     for cat, tools in sorted(xsiam_categories.items()):
@@ -252,6 +302,14 @@ def main():
     
     # Generate documentation files
     print("\nGenerating documentation files...")
+    
+    # Generate unified docs
+    for category, tools in unified_categories.items():
+        filename = category.lower().replace(' ', '-').replace('&', 'and')
+        filepath = unified_dir / f'{filename}.md'
+        content = generate_category_doc(category, tools, 'unified')
+        filepath.write_text(content)
+        print(f"  Created {filepath}")
     
     # Generate XSIAM docs
     for category, tools in xsiam_categories.items():
@@ -270,7 +328,7 @@ def main():
         print(f"  Created {filepath}")
     
     # Generate index
-    index_content = generate_index(xsiam_categories, xsoar_categories)
+    index_content = generate_index(xsiam_categories, xsoar_categories, unified_categories)
     index_path = docs_dir / 'README.md'
     index_path.write_text(index_content)
     print(f"\n  Created {index_path}")

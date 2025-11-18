@@ -152,11 +152,18 @@ python -m server.main
 
 ## Available Tools
 
-All 213 tools are thoroughly documented with descriptions, parameters, and return values.
+All 70 tools are thoroughly documented with descriptions, parameters, and return values.
 
 **📚 [View Complete Tool Documentation](docs/README.md)**
 
-### XSIAM Tools (128 tools)
+### Unified Tools (7 tools)
+
+These tools work with both XSOAR and XSIAM platforms. Use the `platform` parameter to specify which platform to use:
+- **Incidents**: get, update
+- **Automations/Scripts**: get, create/update, import, delete
+- **Logs**: get audits
+
+### XSIAM Tools (39 tools)
 
 Organized into categories:
 - **[XQL Queries](docs/xsiam/xql-queries.md)** (12 tools) - Execute and manage XQL queries for threat hunting
@@ -170,7 +177,7 @@ Organized into categories:
 - **[Administration](docs/xsiam/administration.md)** (1 tool) - Audit logs and RBAC
 - **[Other Operations](docs/xsiam/other-operations.md)** (78 tools) - Additional XSIAM operations
 
-### XSOAR Tools (85 tools)
+### XSOAR Tools (24 tools)
 
 Organized into categories:
 - **[Incidents & Investigations](docs/xsoar/incidents-and-investigations.md)** (17 tools) - Create, update, and manage incidents
