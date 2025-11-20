@@ -18,15 +18,36 @@ TOOL_HANDLERS: Dict[str, Callable[[Dict[str, Any]], Awaitable[List[types.TextCon
 TOOL_SCHEMAS: Dict[str, Dict[str, Any]] = {}
 TOOL_DESCRIPTIONS: Dict[str, str] = {}
 
-COMMON_INPUT_SCHEMA = {'type': 'object', 'properties': {'path': {'type': 'object', 'additionalProperties': True}, 'query': {'type': 'object', 'additionalProperties': True}, 'headers': {'type': 'object', 'additionalProperties': True}, 'body': {'oneOf': [{'type': 'object'}, {'type': 'array'}, {'type': 'string'}, {'type': 'number'}, {'type': 'boolean'}, {'type': 'null'}]}}, 'additionalProperties': False}
+COMMON_INPUT_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "path": {"type": "object", "additionalProperties": True},
+        "query": {"type": "object", "additionalProperties": True},
+        "headers": {"type": "object", "additionalProperties": True},
+        "body": {
+            "oneOf": [
+                {"type": "object"},
+                {"type": "array"},
+                {"type": "string"},
+                {"type": "number"},
+                {"type": "boolean"},
+                {"type": "null"},
+            ]
+        },
+    },
+    "additionalProperties": False,
+}
+
 
 def _get_base_url() -> str:
     return os.getenv("XSOAR_API_URL", "https://your-xsoar-instance.com")
+
 
 def _get_http_client() -> httpx.AsyncClient:
     verify = os.getenv("VERIFY_SSL", "true").lower() == "true"
     timeout = float(os.getenv("API_TIMEOUT", "30"))
     return httpx.AsyncClient(timeout=timeout, verify=verify)
+
 
 def _build_url(base_url: str, route: str, path_params: Dict[str, Any] | None) -> str:
     url = base_url + route
@@ -34,6 +55,7 @@ def _build_url(base_url: str, route: str, path_params: Dict[str, Any] | None) ->
         for k, v in path_params.items():
             url = url.replace("{" + k + "}", str(v))
     return url
+
 
 def _sanitize_headers(headers: Dict[str, Any] | None) -> Dict[str, str]:
     result: Dict[str, str] = {}
@@ -48,10 +70,14 @@ def _sanitize_headers(headers: Dict[str, Any] | None) -> Dict[str, str]:
         result["Authorization"] = api_key
     return result
 
+
 def _sanitize_query(query: Dict[str, Any] | None) -> Dict[str, Any]:
     return {} if query is None else dict(query)
 
-def _make_handler(method: str, route: str) -> Callable[[Dict[str, Any]], Awaitable[List[types.TextContent]]]:
+
+def _make_handler(
+    method: str, route: str
+) -> Callable[[Dict[str, Any]], Awaitable[List[types.TextContent]]]:
     async def handler(arguments: Dict[str, Any]) -> List[types.TextContent]:
         path = arguments.get("path")
         query = arguments.get("query")
@@ -61,19 +87,29 @@ def _make_handler(method: str, route: str) -> Callable[[Dict[str, Any]], Awaitab
         url = _build_url(base_url, route, path)
         try:
             async with _get_http_client() as client:
-                resp = await client.request(method=method, url=url, params=_sanitize_query(query), headers=_sanitize_headers(headers), json=body)
+                resp = await client.request(
+                    method=method,
+                    url=url,
+                    params=_sanitize_query(query),
+                    headers=_sanitize_headers(headers),
+                    json=body,
+                )
                 text = resp.text
                 try:
                     data = resp.json()
                     text = json.dumps(data)
                 except Exception:
                     pass
-            return [types.TextContent(type='text', text=text)]
+            return [types.TextContent(type="text", text=text)]
         except Exception as e:
-            return [types.TextContent(type='text', text=f'ERROR: {e}')]
+            return [types.TextContent(type="text", text=f"ERROR: {e}")]
+
     return handler
 
-TOOL_HANDLERS["xsoar_revoke_user_api_key"] = _make_handler("POST", "/apikeys/revoke/user/{username}")
+
+TOOL_HANDLERS["xsoar_revoke_user_api_key"] = _make_handler(
+    "POST", "/apikeys/revoke/user/{username}"
+)
 TOOL_SCHEMAS["xsoar_revoke_user_api_key"] = COMMON_INPUT_SCHEMA
 TOOL_DESCRIPTIONS["xsoar_revoke_user_api_key"] = "Revoke API Key for user"
 
@@ -85,7 +121,9 @@ TOOL_HANDLERS["xsoar_import_classifier"] = _make_handler("POST", "/classifier/im
 TOOL_SCHEMAS["xsoar_import_classifier"] = COMMON_INPUT_SCHEMA
 TOOL_DESCRIPTIONS["xsoar_import_classifier"] = "Import an incident classifier to Cortex XSOAR"
 
-TOOL_HANDLERS["xsoar_upload_content_packs"] = _make_handler("POST", "/contentpacks/installed/upload")
+TOOL_HANDLERS["xsoar_upload_content_packs"] = _make_handler(
+    "POST", "/contentpacks/installed/upload"
+)
 TOOL_SCHEMAS["xsoar_upload_content_packs"] = COMMON_INPUT_SCHEMA
 TOOL_DESCRIPTIONS["xsoar_upload_content_packs"] = "Upload content packs to Cortex XSOAR"
 
@@ -153,7 +191,9 @@ TOOL_HANDLERS["xsoar_get_widget"] = _make_handler("GET", "/widgets/{id}")
 TOOL_SCHEMAS["xsoar_get_widget"] = COMMON_INPUT_SCHEMA
 TOOL_DESCRIPTIONS["xsoar_get_widget"] = "Get a widget by ID"
 
-TOOL_HANDLERS["xsoar_integration_upload"] = _make_handler("POST", "/settings/integration-conf/upload")
+TOOL_HANDLERS["xsoar_integration_upload"] = _make_handler(
+    "POST", "/settings/integration-conf/upload"
+)
 TOOL_SCHEMAS["xsoar_integration_upload"] = COMMON_INPUT_SCHEMA
 TOOL_DESCRIPTIONS["xsoar_integration_upload"] = "Upload an integration to Cortex XSOAR"
 
@@ -168,4 +208,3 @@ TOOL_DESCRIPTIONS["xsoar_close_incidents_batch"] = "Closes an incidents batch"
 TOOL_HANDLERS["xsoar_delete_incidents_batch"] = _make_handler("POST", "/incident/batchDelete")
 TOOL_SCHEMAS["xsoar_delete_incidents_batch"] = COMMON_INPUT_SCHEMA
 TOOL_DESCRIPTIONS["xsoar_delete_incidents_batch"] = "Deletes an incidents batch"
-

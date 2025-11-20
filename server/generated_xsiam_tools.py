@@ -18,15 +18,36 @@ TOOL_HANDLERS: Dict[str, Callable[[Dict[str, Any]], Awaitable[List[types.TextCon
 TOOL_SCHEMAS: Dict[str, Dict[str, Any]] = {}
 TOOL_DESCRIPTIONS: Dict[str, str] = {}
 
-COMMON_INPUT_SCHEMA = {'type': 'object', 'properties': {'path': {'type': 'object', 'additionalProperties': True}, 'query': {'type': 'object', 'additionalProperties': True}, 'headers': {'type': 'object', 'additionalProperties': True}, 'body': {'oneOf': [{'type': 'object'}, {'type': 'array'}, {'type': 'string'}, {'type': 'number'}, {'type': 'boolean'}, {'type': 'null'}]}}, 'additionalProperties': False}
+COMMON_INPUT_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "path": {"type": "object", "additionalProperties": True},
+        "query": {"type": "object", "additionalProperties": True},
+        "headers": {"type": "object", "additionalProperties": True},
+        "body": {
+            "oneOf": [
+                {"type": "object"},
+                {"type": "array"},
+                {"type": "string"},
+                {"type": "number"},
+                {"type": "boolean"},
+                {"type": "null"},
+            ]
+        },
+    },
+    "additionalProperties": False,
+}
+
 
 def _get_base_url() -> str:
     return os.getenv("XSIAM_API_URL", "https://api-yourfqdn")
+
 
 def _get_http_client() -> httpx.AsyncClient:
     verify = os.getenv("VERIFY_SSL", "true").lower() == "true"
     timeout = float(os.getenv("API_TIMEOUT", "30"))
     return httpx.AsyncClient(timeout=timeout, verify=verify)
+
 
 def _build_url(base_url: str, route: str, path_params: Dict[str, Any] | None) -> str:
     url = base_url + route
@@ -34,6 +55,7 @@ def _build_url(base_url: str, route: str, path_params: Dict[str, Any] | None) ->
         for k, v in path_params.items():
             url = url.replace("{" + k + "}", str(v))
     return url
+
 
 def _sanitize_headers(headers: Dict[str, Any] | None) -> Dict[str, str]:
     result: Dict[str, str] = {}
@@ -51,10 +73,14 @@ def _sanitize_headers(headers: Dict[str, Any] | None) -> Dict[str, str]:
         result["x-xdr-auth-id"] = api_key_id
     return result
 
+
 def _sanitize_query(query: Dict[str, Any] | None) -> Dict[str, Any]:
     return {} if query is None else dict(query)
 
-def _make_handler(method: str, route: str) -> Callable[[Dict[str, Any]], Awaitable[List[types.TextContent]]]:
+
+def _make_handler(
+    method: str, route: str
+) -> Callable[[Dict[str, Any]], Awaitable[List[types.TextContent]]]:
     async def handler(arguments: Dict[str, Any]) -> List[types.TextContent]:
         path = arguments.get("path")
         query = arguments.get("query")
@@ -64,17 +90,25 @@ def _make_handler(method: str, route: str) -> Callable[[Dict[str, Any]], Awaitab
         url = _build_url(base_url, route, path)
         try:
             async with _get_http_client() as client:
-                resp = await client.request(method=method, url=url, params=_sanitize_query(query), headers=_sanitize_headers(headers), json=body)
+                resp = await client.request(
+                    method=method,
+                    url=url,
+                    params=_sanitize_query(query),
+                    headers=_sanitize_headers(headers),
+                    json=body,
+                )
                 text = resp.text
                 try:
                     data = resp.json()
                     text = json.dumps(data)
                 except Exception:
                     pass
-            return [types.TextContent(type='text', text=text)]
+            return [types.TextContent(type="text", text=text)]
         except Exception as e:
-            return [types.TextContent(type='text', text=f'ERROR: {e}')]
+            return [types.TextContent(type="text", text=f"ERROR: {e}")]
+
     return handler
+
 
 TOOL_HANDLERS["xsiam_get_alerts"] = _make_handler("POST", "/public_api/v1/alerts/get_alerts")
 TOOL_SCHEMAS["xsiam_get_alerts"] = COMMON_INPUT_SCHEMA
@@ -88,11 +122,15 @@ TOOL_HANDLERS["xsiam_update_alerts"] = _make_handler("POST", "/public_api/v1/ale
 TOOL_SCHEMAS["xsiam_update_alerts"] = COMMON_INPUT_SCHEMA
 TOOL_DESCRIPTIONS["xsiam_update_alerts"] = "Update one or more alerts"
 
-TOOL_HANDLERS["xsiam_insert_parsed_alerts"] = _make_handler("POST", "/public_api/v1/alerts/insert_parsed_alerts")
+TOOL_HANDLERS["xsiam_insert_parsed_alerts"] = _make_handler(
+    "POST", "/public_api/v1/alerts/insert_parsed_alerts"
+)
 TOOL_SCHEMAS["xsiam_insert_parsed_alerts"] = COMMON_INPUT_SCHEMA
 TOOL_DESCRIPTIONS["xsiam_insert_parsed_alerts"] = "Upload alerts from external alert sources"
 
-TOOL_HANDLERS["xsiam_insert_cef_alerts"] = _make_handler("POST", "/public_api/v1/alerts/insert_cef_alerts")
+TOOL_HANDLERS["xsiam_insert_cef_alerts"] = _make_handler(
+    "POST", "/public_api/v1/alerts/insert_cef_alerts"
+)
 TOOL_SCHEMAS["xsiam_insert_cef_alerts"] = COMMON_INPUT_SCHEMA
 TOOL_DESCRIPTIONS["xsiam_insert_cef_alerts"] = "Upload alerts in CEF format"
 
@@ -100,13 +138,19 @@ TOOL_HANDLERS["xsiam_start_xql_query"] = _make_handler("POST", "/public_api/v1/x
 TOOL_SCHEMAS["xsiam_start_xql_query"] = COMMON_INPUT_SCHEMA
 TOOL_DESCRIPTIONS["xsiam_start_xql_query"] = "Execute an XQL query"
 
-TOOL_HANDLERS["xsiam_get_query_results"] = _make_handler("POST", "/public_api/v1/xql/get_query_results")
+TOOL_HANDLERS["xsiam_get_query_results"] = _make_handler(
+    "POST", "/public_api/v1/xql/get_query_results"
+)
 TOOL_SCHEMAS["xsiam_get_query_results"] = COMMON_INPUT_SCHEMA
 TOOL_DESCRIPTIONS["xsiam_get_query_results"] = "Retrieve results of an executed XQL query"
 
-TOOL_HANDLERS["xsiam_get_query_results_stream"] = _make_handler("POST", "/public_api/v1/xql/get_query_results_stream")
+TOOL_HANDLERS["xsiam_get_query_results_stream"] = _make_handler(
+    "POST", "/public_api/v1/xql/get_query_results_stream"
+)
 TOOL_SCHEMAS["xsiam_get_query_results_stream"] = COMMON_INPUT_SCHEMA
-TOOL_DESCRIPTIONS["xsiam_get_query_results_stream"] = "Retrieve XQL query results with more than 1000 results"
+TOOL_DESCRIPTIONS["xsiam_get_query_results_stream"] = (
+    "Retrieve XQL query results with more than 1000 results"
+)
 
 TOOL_HANDLERS["xsiam_xql_library_get"] = _make_handler("POST", "/public_api/xql_library/get")
 TOOL_SCHEMAS["xsiam_xql_library_get"] = COMMON_INPUT_SCHEMA
@@ -114,7 +158,9 @@ TOOL_DESCRIPTIONS["xsiam_xql_library_get"] = "Retrieve a detailed list of XQL qu
 
 TOOL_HANDLERS["xsiam_xql_library_insert"] = _make_handler("POST", "/public_api/xql_library/insert")
 TOOL_SCHEMAS["xsiam_xql_library_insert"] = COMMON_INPUT_SCHEMA
-TOOL_DESCRIPTIONS["xsiam_xql_library_insert"] = "Insert new XQL queries or update existing XQL queries"
+TOOL_DESCRIPTIONS["xsiam_xql_library_insert"] = (
+    "Insert new XQL queries or update existing XQL queries"
+)
 
 TOOL_HANDLERS["xsiam_xql_library_delete"] = _make_handler("POST", "/public_api/xql_library/delete")
 TOOL_SCHEMAS["xsiam_xql_library_delete"] = COMMON_INPUT_SCHEMA
@@ -122,25 +168,37 @@ TOOL_DESCRIPTIONS["xsiam_xql_library_delete"] = "Delete XQL queries"
 
 TOOL_HANDLERS["xsiam_xql_get_datasets"] = _make_handler("POST", "/public_api/v1/xql/get_datasets")
 TOOL_SCHEMAS["xsiam_xql_get_datasets"] = COMMON_INPUT_SCHEMA
-TOOL_DESCRIPTIONS["xsiam_xql_get_datasets"] = "Retrieve a list of all the datasets and their properties"
+TOOL_DESCRIPTIONS["xsiam_xql_get_datasets"] = (
+    "Retrieve a list of all the datasets and their properties"
+)
 
 TOOL_HANDLERS["xsiam_xql_add_dataset"] = _make_handler("POST", "/public_api/v1/xql/add_dataset")
 TOOL_SCHEMAS["xsiam_xql_add_dataset"] = COMMON_INPUT_SCHEMA
-TOOL_DESCRIPTIONS["xsiam_xql_add_dataset"] = "Add a dataset of type lookup with the specified name and schema"
+TOOL_DESCRIPTIONS["xsiam_xql_add_dataset"] = (
+    "Add a dataset of type lookup with the specified name and schema"
+)
 
-TOOL_HANDLERS["xsiam_xql_lookups_add_data"] = _make_handler("POST", "/public_api/v1/xql/lookups/add_data")
+TOOL_HANDLERS["xsiam_xql_lookups_add_data"] = _make_handler(
+    "POST", "/public_api/v1/xql/lookups/add_data"
+)
 TOOL_SCHEMAS["xsiam_xql_lookups_add_data"] = COMMON_INPUT_SCHEMA
 TOOL_DESCRIPTIONS["xsiam_xql_lookups_add_data"] = "Add or update data in a lookup dataset"
 
-TOOL_HANDLERS["xsiam_xql_lookups_get_data"] = _make_handler("POST", "/public_api/v1/xql/lookups/get_data")
+TOOL_HANDLERS["xsiam_xql_lookups_get_data"] = _make_handler(
+    "POST", "/public_api/v1/xql/lookups/get_data"
+)
 TOOL_SCHEMAS["xsiam_xql_lookups_get_data"] = COMMON_INPUT_SCHEMA
 TOOL_DESCRIPTIONS["xsiam_xql_lookups_get_data"] = "Get data from a lookup dataset"
 
-TOOL_HANDLERS["xsiam_get_endpoints"] = _make_handler("POST", "/public_api/v1/endpoints/get_endpoints")
+TOOL_HANDLERS["xsiam_get_endpoints"] = _make_handler(
+    "POST", "/public_api/v1/endpoints/get_endpoints"
+)
 TOOL_SCHEMAS["xsiam_get_endpoints"] = COMMON_INPUT_SCHEMA
 TOOL_DESCRIPTIONS["xsiam_get_endpoints"] = "Gets a list of all of your endpoints"
 
-TOOL_HANDLERS["xsiam_endpoints_file_retrieval"] = _make_handler("POST", "/public_api/v1/endpoints/file_retrieval")
+TOOL_HANDLERS["xsiam_endpoints_file_retrieval"] = _make_handler(
+    "POST", "/public_api/v1/endpoints/file_retrieval"
+)
 TOOL_SCHEMAS["xsiam_endpoints_file_retrieval"] = COMMON_INPUT_SCHEMA
 TOOL_DESCRIPTIONS["xsiam_endpoints_file_retrieval"] = "Retrieve files from selected endpoints"
 
@@ -172,13 +230,21 @@ TOOL_HANDLERS["xsiam_get_scripts"] = _make_handler("POST", "/public_api/v1/scrip
 TOOL_SCHEMAS["xsiam_get_scripts"] = COMMON_INPUT_SCHEMA
 TOOL_DESCRIPTIONS["xsiam_get_scripts"] = "Get a list of scripts available in the scripts library"
 
-TOOL_HANDLERS["xsiam_get_script_execution_status"] = _make_handler("POST", "/public_api/v1/scripts/get_script_execution_status")
+TOOL_HANDLERS["xsiam_get_script_execution_status"] = _make_handler(
+    "POST", "/public_api/v1/scripts/get_script_execution_status"
+)
 TOOL_SCHEMAS["xsiam_get_script_execution_status"] = COMMON_INPUT_SCHEMA
-TOOL_DESCRIPTIONS["xsiam_get_script_execution_status"] = "Retrieve the status of a script execution action"
+TOOL_DESCRIPTIONS["xsiam_get_script_execution_status"] = (
+    "Retrieve the status of a script execution action"
+)
 
-TOOL_HANDLERS["xsiam_get_script_execution_results"] = _make_handler("POST", "/public_api/v1/scripts/get_script_execution_results")
+TOOL_HANDLERS["xsiam_get_script_execution_results"] = _make_handler(
+    "POST", "/public_api/v1/scripts/get_script_execution_results"
+)
 TOOL_SCHEMAS["xsiam_get_script_execution_results"] = COMMON_INPUT_SCHEMA
-TOOL_DESCRIPTIONS["xsiam_get_script_execution_results"] = "Retrieve the results of a script execution action"
+TOOL_DESCRIPTIONS["xsiam_get_script_execution_results"] = (
+    "Retrieve the results of a script execution action"
+)
 
 TOOL_HANDLERS["xsiam_indicators_get"] = _make_handler("POST", "/public_api/v1/indicators/get")
 TOOL_SCHEMAS["xsiam_indicators_get"] = COMMON_INPUT_SCHEMA
@@ -206,11 +272,17 @@ TOOL_DESCRIPTIONS["xsiam_bioc_delete"] = "Delete BIOCs selected by filter"
 
 TOOL_HANDLERS["xsiam_get_healthcheck"] = _make_handler("GET", "/public_api/v1/healthcheck")
 TOOL_SCHEMAS["xsiam_get_healthcheck"] = COMMON_INPUT_SCHEMA
-TOOL_DESCRIPTIONS["xsiam_get_healthcheck"] = "Perform a health check of your Cortex XSIAM environment"
+TOOL_DESCRIPTIONS["xsiam_get_healthcheck"] = (
+    "Perform a health check of your Cortex XSIAM environment"
+)
 
-TOOL_HANDLERS["xsiam_get_incident_extra_data"] = _make_handler("POST", "/public_api/v1/incidents/get_incident_extra_data")
+TOOL_HANDLERS["xsiam_get_incident_extra_data"] = _make_handler(
+    "POST", "/public_api/v1/incidents/get_incident_extra_data"
+)
 TOOL_SCHEMAS["xsiam_get_incident_extra_data"] = COMMON_INPUT_SCHEMA
-TOOL_DESCRIPTIONS["xsiam_get_incident_extra_data"] = "Get extra data fields of a specific incident including alerts and key artifacts"
+TOOL_DESCRIPTIONS["xsiam_get_incident_extra_data"] = (
+    "Get extra data fields of a specific incident including alerts and key artifacts"
+)
 
 TOOL_HANDLERS["xsiam_playbooks_get"] = _make_handler("POST", "/public_api/v1/playbooks/get")
 TOOL_SCHEMAS["xsiam_playbooks_get"] = COMMON_INPUT_SCHEMA
@@ -218,17 +290,26 @@ TOOL_DESCRIPTIONS["xsiam_playbooks_get"] = "Get a playbook by filtering based on
 
 TOOL_HANDLERS["xsiam_playbooks_insert"] = _make_handler("POST", "/public_api/v1/playbooks/insert")
 TOOL_SCHEMAS["xsiam_playbooks_insert"] = COMMON_INPUT_SCHEMA
-TOOL_DESCRIPTIONS["xsiam_playbooks_insert"] = "Add or update a playbook by passing the YAML in a ZIP file"
+TOOL_DESCRIPTIONS["xsiam_playbooks_insert"] = (
+    "Add or update a playbook by passing the YAML in a ZIP file"
+)
 
 TOOL_HANDLERS["xsiam_dashboards_get"] = _make_handler("POST", "/public_api/v1/dashboards/get")
 TOOL_SCHEMAS["xsiam_dashboards_get"] = COMMON_INPUT_SCHEMA
-TOOL_DESCRIPTIONS["xsiam_dashboards_get"] = "Get dashboard details by filtering based on the dashboard name, dashboard ID, time the dashboard was generated, or dashboard source"
+TOOL_DESCRIPTIONS["xsiam_dashboards_get"] = (
+    "Get dashboard details by filtering based on the dashboard name, dashboard ID, time the dashboard was generated, or dashboard source"
+)
 
 TOOL_HANDLERS["xsiam_dashboards_insert"] = _make_handler("POST", "/public_api/v1/dashboards/insert")
 TOOL_SCHEMAS["xsiam_dashboards_insert"] = COMMON_INPUT_SCHEMA
-TOOL_DESCRIPTIONS["xsiam_dashboards_insert"] = "Add or update the dashboards retrieved by the Get dashboards API"
+TOOL_DESCRIPTIONS["xsiam_dashboards_insert"] = (
+    "Add or update the dashboards retrieved by the Get dashboards API"
+)
 
-TOOL_HANDLERS["xsiam_get_action_status"] = _make_handler("POST", "/public_api/v1/actions/get_action_status")
+TOOL_HANDLERS["xsiam_get_action_status"] = _make_handler(
+    "POST", "/public_api/v1/actions/get_action_status"
+)
 TOOL_SCHEMAS["xsiam_get_action_status"] = COMMON_INPUT_SCHEMA
-TOOL_DESCRIPTIONS["xsiam_get_action_status"] = "Retrieve the status of the requested actions according to the action ID"
-
+TOOL_DESCRIPTIONS["xsiam_get_action_status"] = (
+    "Retrieve the status of the requested actions according to the action ID"
+)

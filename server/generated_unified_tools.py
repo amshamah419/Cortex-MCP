@@ -17,7 +17,31 @@ TOOL_HANDLERS: Dict[str, Callable[[Dict[str, Any]], Awaitable[List[types.TextCon
 TOOL_SCHEMAS: Dict[str, Dict[str, Any]] = {}
 TOOL_DESCRIPTIONS: Dict[str, str] = {}
 
-UNIFIED_INPUT_SCHEMA = {'type': 'object', 'properties': {'platform': {'type': 'string', 'enum': ['xsoar', 'xsiam'], 'description': 'Platform to use (xsoar or xsiam)'}, 'path': {'type': 'object', 'additionalProperties': True}, 'query': {'type': 'object', 'additionalProperties': True}, 'headers': {'type': 'object', 'additionalProperties': True}, 'body': {'oneOf': [{'type': 'object'}, {'type': 'array'}, {'type': 'string'}, {'type': 'number'}, {'type': 'boolean'}, {'type': 'null'}]}}, 'additionalProperties': False}
+UNIFIED_INPUT_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "platform": {
+            "type": "string",
+            "enum": ["xsoar", "xsiam"],
+            "description": "Platform to use (xsoar or xsiam)",
+        },
+        "path": {"type": "object", "additionalProperties": True},
+        "query": {"type": "object", "additionalProperties": True},
+        "headers": {"type": "object", "additionalProperties": True},
+        "body": {
+            "oneOf": [
+                {"type": "object"},
+                {"type": "array"},
+                {"type": "string"},
+                {"type": "number"},
+                {"type": "boolean"},
+                {"type": "null"},
+            ]
+        },
+    },
+    "additionalProperties": False,
+}
+
 
 def _get_base_url(platform: str) -> str:
     if platform == "xsiam":
@@ -25,10 +49,12 @@ def _get_base_url(platform: str) -> str:
     else:
         return os.getenv("XSOAR_API_URL", "https://your-xsoar-instance.com")
 
+
 def _get_http_client() -> httpx.AsyncClient:
     verify = os.getenv("VERIFY_SSL", "true").lower() == "true"
     timeout = float(os.getenv("API_TIMEOUT", "30"))
     return httpx.AsyncClient(timeout=timeout, verify=verify)
+
 
 def _build_url(base_url: str, route: str, path_params: Dict[str, Any] | None) -> str:
     url = base_url + route
@@ -36,6 +62,7 @@ def _build_url(base_url: str, route: str, path_params: Dict[str, Any] | None) ->
         for k, v in path_params.items():
             url = url.replace("{" + k + "}", str(v))
     return url
+
 
 def _sanitize_headers(headers: Dict[str, Any] | None, platform: str) -> Dict[str, str]:
     result: Dict[str, str] = {}
@@ -58,10 +85,14 @@ def _sanitize_headers(headers: Dict[str, Any] | None, platform: str) -> Dict[str
             result["Authorization"] = api_key
     return result
 
+
 def _sanitize_query(query: Dict[str, Any] | None) -> Dict[str, Any]:
     return {} if query is None else dict(query)
 
-def _make_unified_handler_get_incidents() -> Callable[[Dict[str, Any]], Awaitable[List[types.TextContent]]]:
+
+def _make_unified_handler_get_incidents() -> (
+    Callable[[Dict[str, Any]], Awaitable[List[types.TextContent]]]
+):
     async def handler(arguments: Dict[str, Any]) -> List[types.TextContent]:
         platform = arguments.get("platform", "xsoar")
         path = arguments.get("path")
@@ -69,7 +100,7 @@ def _make_unified_handler_get_incidents() -> Callable[[Dict[str, Any]], Awaitabl
         headers = arguments.get("headers")
         body = arguments.get("body")
         base_url = _get_base_url(platform)
-        
+
         # Select route and method based on platform
         if platform == "xsiam":
             route = "/public_api/v1/incidents/get_incidents"
@@ -77,28 +108,39 @@ def _make_unified_handler_get_incidents() -> Callable[[Dict[str, Any]], Awaitabl
         else:
             route = "/incidents/search"
             method = "POST"
-        
+
         url = _build_url(base_url, route, path)
         headers = _sanitize_headers(headers, platform)
         try:
             async with _get_http_client() as client:
-                resp = await client.request(method=method, url=url, params=_sanitize_query(query), headers=headers, json=body)
+                resp = await client.request(
+                    method=method,
+                    url=url,
+                    params=_sanitize_query(query),
+                    headers=headers,
+                    json=body,
+                )
                 text = resp.text
                 try:
                     data = resp.json()
                     text = json.dumps(data)
                 except Exception:
                     pass
-            return [types.TextContent(type='text', text=text)]
+            return [types.TextContent(type="text", text=text)]
         except Exception as e:
-            return [types.TextContent(type='text', text=f'ERROR: {e}')]
+            return [types.TextContent(type="text", text=f"ERROR: {e}")]
+
     return handler
+
 
 TOOL_HANDLERS["get_incidents"] = _make_unified_handler_get_incidents()
 TOOL_SCHEMAS["get_incidents"] = UNIFIED_INPUT_SCHEMA
 TOOL_DESCRIPTIONS["get_incidents"] = "Get a list of incidents filtered by various criteria"
 
-def _make_unified_handler_update_incident() -> Callable[[Dict[str, Any]], Awaitable[List[types.TextContent]]]:
+
+def _make_unified_handler_update_incident() -> (
+    Callable[[Dict[str, Any]], Awaitable[List[types.TextContent]]]
+):
     async def handler(arguments: Dict[str, Any]) -> List[types.TextContent]:
         platform = arguments.get("platform", "xsoar")
         path = arguments.get("path")
@@ -106,7 +148,7 @@ def _make_unified_handler_update_incident() -> Callable[[Dict[str, Any]], Awaita
         headers = arguments.get("headers")
         body = arguments.get("body")
         base_url = _get_base_url(platform)
-        
+
         # Select route and method based on platform
         if platform == "xsiam":
             route = "/public_api/v1/incidents/update_incident"
@@ -114,28 +156,39 @@ def _make_unified_handler_update_incident() -> Callable[[Dict[str, Any]], Awaita
         else:
             route = "/incident"
             method = "PUT"
-        
+
         url = _build_url(base_url, route, path)
         headers = _sanitize_headers(headers, platform)
         try:
             async with _get_http_client() as client:
-                resp = await client.request(method=method, url=url, params=_sanitize_query(query), headers=headers, json=body)
+                resp = await client.request(
+                    method=method,
+                    url=url,
+                    params=_sanitize_query(query),
+                    headers=headers,
+                    json=body,
+                )
                 text = resp.text
                 try:
                     data = resp.json()
                     text = json.dumps(data)
                 except Exception:
                     pass
-            return [types.TextContent(type='text', text=text)]
+            return [types.TextContent(type="text", text=text)]
         except Exception as e:
-            return [types.TextContent(type='text', text=f'ERROR: {e}')]
+            return [types.TextContent(type="text", text=f"ERROR: {e}")]
+
     return handler
+
 
 TOOL_HANDLERS["update_incident"] = _make_unified_handler_update_incident()
 TOOL_SCHEMAS["update_incident"] = UNIFIED_INPUT_SCHEMA
 TOOL_DESCRIPTIONS["update_incident"] = "Update an existing incident"
 
-def _make_unified_handler_get_automation_scripts() -> Callable[[Dict[str, Any]], Awaitable[List[types.TextContent]]]:
+
+def _make_unified_handler_get_automation_scripts() -> (
+    Callable[[Dict[str, Any]], Awaitable[List[types.TextContent]]]
+):
     async def handler(arguments: Dict[str, Any]) -> List[types.TextContent]:
         platform = arguments.get("platform", "xsoar")
         path = arguments.get("path")
@@ -143,7 +196,7 @@ def _make_unified_handler_get_automation_scripts() -> Callable[[Dict[str, Any]],
         headers = arguments.get("headers")
         body = arguments.get("body")
         base_url = _get_base_url(platform)
-        
+
         # Select route and method based on platform
         if platform == "xsiam":
             route = "/public_api/v1/scripts/get"
@@ -151,28 +204,39 @@ def _make_unified_handler_get_automation_scripts() -> Callable[[Dict[str, Any]],
         else:
             route = "/automation/search"
             method = "POST"
-        
+
         url = _build_url(base_url, route, path)
         headers = _sanitize_headers(headers, platform)
         try:
             async with _get_http_client() as client:
-                resp = await client.request(method=method, url=url, params=_sanitize_query(query), headers=headers, json=body)
+                resp = await client.request(
+                    method=method,
+                    url=url,
+                    params=_sanitize_query(query),
+                    headers=headers,
+                    json=body,
+                )
                 text = resp.text
                 try:
                     data = resp.json()
                     text = json.dumps(data)
                 except Exception:
                     pass
-            return [types.TextContent(type='text', text=text)]
+            return [types.TextContent(type="text", text=text)]
         except Exception as e:
-            return [types.TextContent(type='text', text=f'ERROR: {e}')]
+            return [types.TextContent(type="text", text=f"ERROR: {e}")]
+
     return handler
+
 
 TOOL_HANDLERS["get_automation_scripts"] = _make_unified_handler_get_automation_scripts()
 TOOL_SCHEMAS["get_automation_scripts"] = UNIFIED_INPUT_SCHEMA
 TOOL_DESCRIPTIONS["get_automation_scripts"] = "Get automation scripts"
 
-def _make_unified_handler_save_or_update_script() -> Callable[[Dict[str, Any]], Awaitable[List[types.TextContent]]]:
+
+def _make_unified_handler_save_or_update_script() -> (
+    Callable[[Dict[str, Any]], Awaitable[List[types.TextContent]]]
+):
     async def handler(arguments: Dict[str, Any]) -> List[types.TextContent]:
         platform = arguments.get("platform", "xsoar")
         path = arguments.get("path")
@@ -180,7 +244,7 @@ def _make_unified_handler_save_or_update_script() -> Callable[[Dict[str, Any]], 
         headers = arguments.get("headers")
         body = arguments.get("body")
         base_url = _get_base_url(platform)
-        
+
         # Select route and method based on platform
         if platform == "xsiam":
             route = "/public_api/v1/scripts/insert"
@@ -188,28 +252,39 @@ def _make_unified_handler_save_or_update_script() -> Callable[[Dict[str, Any]], 
         else:
             route = "/automation"
             method = "POST"
-        
+
         url = _build_url(base_url, route, path)
         headers = _sanitize_headers(headers, platform)
         try:
             async with _get_http_client() as client:
-                resp = await client.request(method=method, url=url, params=_sanitize_query(query), headers=headers, json=body)
+                resp = await client.request(
+                    method=method,
+                    url=url,
+                    params=_sanitize_query(query),
+                    headers=headers,
+                    json=body,
+                )
                 text = resp.text
                 try:
                     data = resp.json()
                     text = json.dumps(data)
                 except Exception:
                     pass
-            return [types.TextContent(type='text', text=text)]
+            return [types.TextContent(type="text", text=text)]
         except Exception as e:
-            return [types.TextContent(type='text', text=f'ERROR: {e}')]
+            return [types.TextContent(type="text", text=f"ERROR: {e}")]
+
     return handler
+
 
 TOOL_HANDLERS["save_or_update_script"] = _make_unified_handler_save_or_update_script()
 TOOL_SCHEMAS["save_or_update_script"] = UNIFIED_INPUT_SCHEMA
 TOOL_DESCRIPTIONS["save_or_update_script"] = "Create or update an automation script"
 
-def _make_unified_handler_import_script() -> Callable[[Dict[str, Any]], Awaitable[List[types.TextContent]]]:
+
+def _make_unified_handler_import_script() -> (
+    Callable[[Dict[str, Any]], Awaitable[List[types.TextContent]]]
+):
     async def handler(arguments: Dict[str, Any]) -> List[types.TextContent]:
         platform = arguments.get("platform", "xsoar")
         path = arguments.get("path")
@@ -217,7 +292,7 @@ def _make_unified_handler_import_script() -> Callable[[Dict[str, Any]], Awaitabl
         headers = arguments.get("headers")
         body = arguments.get("body")
         base_url = _get_base_url(platform)
-        
+
         # Select route and method based on platform
         if platform == "xsiam":
             route = "/public_api/v1/scripts/insert"
@@ -225,28 +300,39 @@ def _make_unified_handler_import_script() -> Callable[[Dict[str, Any]], Awaitabl
         else:
             route = "/automation/import"
             method = "POST"
-        
+
         url = _build_url(base_url, route, path)
         headers = _sanitize_headers(headers, platform)
         try:
             async with _get_http_client() as client:
-                resp = await client.request(method=method, url=url, params=_sanitize_query(query), headers=headers, json=body)
+                resp = await client.request(
+                    method=method,
+                    url=url,
+                    params=_sanitize_query(query),
+                    headers=headers,
+                    json=body,
+                )
                 text = resp.text
                 try:
                     data = resp.json()
                     text = json.dumps(data)
                 except Exception:
                     pass
-            return [types.TextContent(type='text', text=text)]
+            return [types.TextContent(type="text", text=text)]
         except Exception as e:
-            return [types.TextContent(type='text', text=f'ERROR: {e}')]
+            return [types.TextContent(type="text", text=f"ERROR: {e}")]
+
     return handler
+
 
 TOOL_HANDLERS["import_script"] = _make_unified_handler_import_script()
 TOOL_SCHEMAS["import_script"] = UNIFIED_INPUT_SCHEMA
 TOOL_DESCRIPTIONS["import_script"] = "Import an automation script"
 
-def _make_unified_handler_delete_automation_script() -> Callable[[Dict[str, Any]], Awaitable[List[types.TextContent]]]:
+
+def _make_unified_handler_delete_automation_script() -> (
+    Callable[[Dict[str, Any]], Awaitable[List[types.TextContent]]]
+):
     async def handler(arguments: Dict[str, Any]) -> List[types.TextContent]:
         platform = arguments.get("platform", "xsoar")
         path = arguments.get("path")
@@ -254,7 +340,7 @@ def _make_unified_handler_delete_automation_script() -> Callable[[Dict[str, Any]
         headers = arguments.get("headers")
         body = arguments.get("body")
         base_url = _get_base_url(platform)
-        
+
         # Select route and method based on platform
         if platform == "xsiam":
             route = "/public_api/v1/scripts/delete"
@@ -262,28 +348,39 @@ def _make_unified_handler_delete_automation_script() -> Callable[[Dict[str, Any]
         else:
             route = "/automation/delete"
             method = "POST"
-        
+
         url = _build_url(base_url, route, path)
         headers = _sanitize_headers(headers, platform)
         try:
             async with _get_http_client() as client:
-                resp = await client.request(method=method, url=url, params=_sanitize_query(query), headers=headers, json=body)
+                resp = await client.request(
+                    method=method,
+                    url=url,
+                    params=_sanitize_query(query),
+                    headers=headers,
+                    json=body,
+                )
                 text = resp.text
                 try:
                     data = resp.json()
                     text = json.dumps(data)
                 except Exception:
                     pass
-            return [types.TextContent(type='text', text=text)]
+            return [types.TextContent(type="text", text=text)]
         except Exception as e:
-            return [types.TextContent(type='text', text=f'ERROR: {e}')]
+            return [types.TextContent(type="text", text=f"ERROR: {e}")]
+
     return handler
+
 
 TOOL_HANDLERS["delete_automation_script"] = _make_unified_handler_delete_automation_script()
 TOOL_SCHEMAS["delete_automation_script"] = UNIFIED_INPUT_SCHEMA
 TOOL_DESCRIPTIONS["delete_automation_script"] = "Delete an automation script"
 
-def _make_unified_handler_get_audits() -> Callable[[Dict[str, Any]], Awaitable[List[types.TextContent]]]:
+
+def _make_unified_handler_get_audits() -> (
+    Callable[[Dict[str, Any]], Awaitable[List[types.TextContent]]]
+):
     async def handler(arguments: Dict[str, Any]) -> List[types.TextContent]:
         platform = arguments.get("platform", "xsoar")
         path = arguments.get("path")
@@ -291,7 +388,7 @@ def _make_unified_handler_get_audits() -> Callable[[Dict[str, Any]], Awaitable[L
         headers = arguments.get("headers")
         body = arguments.get("body")
         base_url = _get_base_url(platform)
-        
+
         # Select route and method based on platform
         if platform == "xsiam":
             route = "/public_api/v1/audits/management_logs"
@@ -299,24 +396,31 @@ def _make_unified_handler_get_audits() -> Callable[[Dict[str, Any]], Awaitable[L
         else:
             route = "/settings/audits"
             method = "GET"
-        
+
         url = _build_url(base_url, route, path)
         headers = _sanitize_headers(headers, platform)
         try:
             async with _get_http_client() as client:
-                resp = await client.request(method=method, url=url, params=_sanitize_query(query), headers=headers, json=body)
+                resp = await client.request(
+                    method=method,
+                    url=url,
+                    params=_sanitize_query(query),
+                    headers=headers,
+                    json=body,
+                )
                 text = resp.text
                 try:
                     data = resp.json()
                     text = json.dumps(data)
                 except Exception:
                     pass
-            return [types.TextContent(type='text', text=text)]
+            return [types.TextContent(type="text", text=text)]
         except Exception as e:
-            return [types.TextContent(type='text', text=f'ERROR: {e}')]
+            return [types.TextContent(type="text", text=f"ERROR: {e}")]
+
     return handler
+
 
 TOOL_HANDLERS["get_audits"] = _make_unified_handler_get_audits()
 TOOL_SCHEMAS["get_audits"] = UNIFIED_INPUT_SCHEMA
 TOOL_DESCRIPTIONS["get_audits"] = "Get audit logs"
-
